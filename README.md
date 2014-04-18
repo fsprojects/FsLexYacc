@@ -1,4 +1,4 @@
-FSharp.ProjectScaffold
+FsLexYacc
 =======================
 
 A prototypical F# library (file system layout and tooling), recommended by the F# Foundation.
@@ -111,7 +111,7 @@ as well as using some more general libraries (e.g. <a href="http://www.nunit.org
       <td><a href="../../tree/master/src">src</a></td>
       <td>
         <p>Use this directory to house the actual codebase (e.g. one, or more, Visual Studio F# projects) in your solution. 
-        A good way to get started is to rename the project included in this sample (FSharp.ProjectTemplate). 
+        A good way to get started is to rename the project included in this sample (FsLexYacc). 
         Alternately, delete the sample project and create your own.</p>
         <p><em>NOTE: When you rename the sample project, or add aditional projects to this directory, you may need to edit <code>build.fsx</code> and/or <code>generate.fsx</code>. 
         You will, likely, also need to update your <code>.sln</code> file(s).
@@ -192,7 +192,7 @@ as well as using some more general libraries (e.g. <a href="http://www.nunit.org
       </td>
     </tr>
     <tr>
-      <td><a href="FSharp.ProjectScaffold.sln">FSharp.ProjectScaffold.sln</a></td>
+      <td><a href="FsLexYacc.sln">FsLexYacc.sln</a></td>
       <td>
         <p>This is a standard Visual Studio solution file. Use it to collect you projects, including tests. 
         Additionally, this example solution includes many of the important non-project files.
@@ -271,4 +271,4 @@ as well as using some more general libraries (e.g. <a href="http://www.nunit.org
 
 ---
 
-<a href="http://fsprojects.github.io/FSharp.ProjectScaffold" target="_blank">Sample API documents available here.</a>
+<a href="http://fsprojects.github.io/FsLexYacc" target="_blank">Sample API documents available here.</a>

@@ -1,0 +1,25 @@
+﻿{
+
+module Lexer
+
+// Opens methods related to fslex.exe
+open Microsoft.FSharp.Text.Lexing
+
+let newline (lexbuf: LexBuffer<_>) = 
+  lexbuf.StartPos <- lexbuf.StartPos.NextLine
+
+}
+
+// Regular expressions
+let whitespace = [' ' '\t' ]
+let newline = ('\n' | '\r' '\n')
+
+rule tokenstream = parse
+// --------------------------
+| "hello" 		{ Parser.HELLO }
+// --------------------------
+| whitespace	{ tokenstream lexbuf }
+| newline	{ newline lexbuf; tokenstream lexbuf }
+// --------------------------
+| _    		{ failwith ("ParseError" + LexBuffer<_>.LexemeString lexbuf) }
+| eof   	{ Parser.EOF }

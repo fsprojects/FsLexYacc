@@ -1,0 +1,10 @@
+
+z1 (let x in id end)
+x2 (id + id
+y3 (id + id + id)
+z4 (id + id * id)
+z5 (let x + in id end)
+z6 (let x + in id end)
+z7 (let x + y in id end)
+z8 (let x ))) in id end)
+

@@ -2,6 +2,7 @@
 // FAKE build script 
 // --------------------------------------------------------------------------------------
 
+#I @"packages/FAKE/tools"
 #r @"packages/FAKE/tools/FakeLib.dll"
 open Fake 
 open Fake.Git
@@ -21,25 +22,22 @@ open System
 
 // The name of the project 
 // (used by attributes in AssemblyInfo, name of a NuGet package and directory in 'src')
-let project = "FSharp.ProjectTemplate"
-
+let projects = [ "FsLex"; "FsYacc"; "FsLexYacc.Build.Tasks"; "FsLexYacc.Runtime" ]
 // Short summary of the project
 // (used as description in AssemblyInfo and as a short summary for NuGet package)
-let summary = "A short summary of your project."
+let summary = "FsLex/FsYacc lexer/parser generation tools"
 
 // Longer description of the project
 // (used as a description for NuGet package; line breaks are automatically cleaned up)
-let description = """
-  A lengthy description of your project. 
-  This can have multiple lines and will be cleaned up. """
+let description = """FsLex/FsYacc lexer/parser generation tools"""
 // List of author names (for NuGet package)
-let authors = [ "Your Name" ]
+let authors = [ "Microsoft Research"; "The F# Software Foundation" ]
 // Tags for your project (for NuGet package)
-let tags = "F# fsharp tags which describe your project"
+let tags = "F# fsharp programming fslex fsyacc parser generator"
 
 // File system information 
 // (<solutionFile>.sln is built during the building process)
-let solutionFile  = "FSharp.ProjectScaffold"
+let solutionFile  = "FsLexYacc"
 // Pattern specifying assemblies to be tested using NUnit
 let testAssemblies = "tests/**/bin/Release/*Tests*.dll"
 
@@ -47,7 +45,7 @@ let testAssemblies = "tests/**/bin/Release/*Tests*.dll"
 // The profile where the project is posted 
 let gitHome = "https://github.com/fsprojects"
 // The name of the project on GitHub
-let gitName = "FSharp.ProjectScaffold"
+let gitName = "FsLexYacc"
 
 // --------------------------------------------------------------------------------------
 // END TODO: The rest of the file includes standard build steps 
@@ -59,13 +57,14 @@ let release = parseReleaseNotes (IO.File.ReadAllLines "RELEASE_NOTES.md")
 
 // Generate assembly info files with the right version & up-to-date information
 Target "AssemblyInfo" (fun _ ->
-  let fileName = "src/" + project + "/AssemblyInfo.fs"
-  CreateFSharpAssemblyInfo fileName
-      [ Attribute.Title project
-        Attribute.Product project
-        Attribute.Description summary
-        Attribute.Version release.AssemblyVersion
-        Attribute.FileVersion release.AssemblyVersion ] 
+  for project in projects do 
+      let fileName = "src/" + project + "/AssemblyInfo.fs"
+      CreateFSharpAssemblyInfo fileName
+          [ Attribute.Title project
+            Attribute.Product project
+            Attribute.Description summary
+            Attribute.Version release.AssemblyVersion
+            Attribute.FileVersion release.AssemblyVersion ] 
 )
 
 // --------------------------------------------------------------------------------------
@@ -106,6 +105,7 @@ Target "RunTests" (fun _ ->
 // Build a NuGet package
 
 Target "NuGet" (fun _ ->
+  for project in projects do 
     NuGet (fun p -> 
         { p with   
             Authors = authors

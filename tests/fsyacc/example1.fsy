@@ -1,0 +1,14 @@
+%{
+
+%} 
+
+%type <int> ntS
+%token Tc Td
+%start ntS
+
+%%	
+
+ntS: ntC ntC { } 
+ntC: Tc ntC { }
+ntC: Td { } 
+

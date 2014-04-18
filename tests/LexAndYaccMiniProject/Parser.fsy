@@ -1,0 +1,27 @@
+﻿%{
+
+
+%}
+
+// The start token becomes a parser function in the compiled code:
+%start start
+
+// Regular tokens
+%token HELLO
+
+// Misc tokens
+%token EOF
+
+// This is the type of the data produced by a successful reduction of the 'start'
+// symbol:
+%type < int > start
+
+%%
+
+// These are the rules of the grammar along with the F# code of the 
+// actions executed as rules are reduced.  
+start: File EOF { $1 }
+
+File:
+	| HELLO						{ 1 }
+	| HELLO HELLO				    { 2 }

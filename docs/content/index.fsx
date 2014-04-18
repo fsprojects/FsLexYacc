@@ -4,7 +4,7 @@
 #I "../../bin"
 
 (**
-F# Project Scaffold
+FsLex, FsYacc 
 ===================
 
 Documentation
@@ -59,9 +59,9 @@ The library is available under Public Domain license, which allows modification 
 redistribution for both commercial and non-commercial purposes. For more information see the 
 [License file][license] in the GitHub repository. 
 
-  [content]: https://github.com/fsprojects/FSharp.ProjectScaffold/tree/master/docs/content
-  [gh]: https://github.com/fsprojects/FSharp.ProjectScaffold
-  [issues]: https://github.com/fsprojects/FSharp.ProjectScaffold/issues
-  [readme]: https://github.com/fsprojects/FSharp.ProjectScaffold/blob/master/README.md
-  [license]: https://github.com/fsprojects/FSharp.ProjectScaffold/blob/master/LICENSE.txt
+  [content]: https://github.com/fsprojects/FsLexYacc/tree/master/docs/content
+  [gh]: https://github.com/fsprojects/FsLexYacc
+  [issues]: https://github.com/fsprojects/FsLexYacc/issues
+  [readme]: https://github.com/fsprojects/FsLexYacc/blob/master/README.md
+  [license]: https://github.com/fsprojects/FsLexYacc/blob/master/LICENSE.txt
 *)

@@ -1,0 +1,14 @@
+%{
+
+%} 
+
+%type <int> a b
+%token A B
+%start a 
+%start b
+
+%%	
+
+a: A { } 
+b: B { }
+

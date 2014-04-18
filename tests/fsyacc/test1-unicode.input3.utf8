@@ -1,0 +1,9 @@
+
+next line tests one unicode character class
+ÄËÖÏÜâæçñõö + id
+next line tests specific unicode characters
+≠ ≠≠ ≈≈ ≈≈≈
+id + id
+next line tests some more random unicode characters
+МНОПРСТУФХЦẀẁẂќ αβΛΘΩΨΧΣδζȚŶǺ
+id

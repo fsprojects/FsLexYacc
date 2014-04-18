@@ -4,7 +4,7 @@
 // --------------------------------------------------------------------------------------
 
 // Binaries that have XML documentation (in a corresponding generated XML file)
-let referenceBinaries = [ "FsLexYacc.dll" ]
+let referenceBinaries = [ "FsLexYacc.Runtime.dll" ]
 // Web site location for the generated documentation
 let website = "/FsLexYacc"
 

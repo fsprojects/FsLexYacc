@@ -23,8 +23,8 @@ type FsYacc() =
     let mutable _open  : string = null
     let mutable _module  : string = null
 
-    let mutable toolPath : string = "."
-    let mutable toolExe : string = "fsyacc.exe"
+    let mutable toolPath = System.IO.Path.GetDirectoryName(typeof<FsYacc>.Assembly.Location)
+    let mutable toolExe = "fsyacc.exe"
 
     // [<Required>]
     member this.InputFile

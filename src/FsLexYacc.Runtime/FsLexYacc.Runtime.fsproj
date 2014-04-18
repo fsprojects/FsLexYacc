@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform>AnyCPU</Platform>
-    <ProjectGuid>{BD2284A5-AA4D-442D-B4FB-E43B2FE9DD2A}</ProjectGuid>
+    <ProjectGuid>{7e90d6ce-a10b-4858-a5bc-41df7250cbcc}</ProjectGuid>
     <TreatWarningsAsErrors>
     </TreatWarningsAsErrors>
     <!-- 5310 tracks reenabling -->

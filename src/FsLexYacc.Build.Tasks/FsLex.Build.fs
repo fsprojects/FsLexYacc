@@ -27,7 +27,7 @@ type FsLex() =
     let mutable unicode   = false
     let mutable otherFlags   = ""
 
-    let mutable toolPath =  "."
+    let mutable toolPath = System.IO.Path.GetDirectoryName(typeof<FsLex>.Assembly.Location)
     let mutable toolExe = "fslex.exe"
 
     // [<Required>]

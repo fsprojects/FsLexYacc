@@ -36,6 +36,10 @@
     <DocumentationFile>..\..\bin\fslex.xml</DocumentationFile>
     <Tailcalls>true</Tailcalls>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DefineConstants>INTERNALIZED_FSLEXYACC_RUNTIME</DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
     <FsLex Include="fslexlex.fsl">
       <OtherFlags>--unicode --lexlib Internal.Utilities.Text.Lexing</OtherFlags>

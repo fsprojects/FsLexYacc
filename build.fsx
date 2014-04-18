@@ -23,6 +23,7 @@ open System
 // The name of the project 
 // (used by attributes in AssemblyInfo, name of a NuGet package and directory in 'src')
 let projects = [ "FsLex"; "FsYacc"; "FsLexYacc.Build.Tasks"; "FsLexYacc.Runtime" ]
+let project = "FsLexYacc"
 // Short summary of the project
 // (used as description in AssemblyInfo and as a short summary for NuGet package)
 let summary = "FsLex/FsYacc lexer/parser generation tools"
@@ -105,7 +106,6 @@ Target "RunTests" (fun _ ->
 // Build a NuGet package
 
 Target "NuGet" (fun _ ->
-  for project in projects do 
     NuGet (fun p -> 
         { p with   
             Authors = authors
@@ -162,6 +162,8 @@ Target "All" DoNothing
   ==> "CleanDocs"
   ==> "GenerateDocs"
   ==> "ReleaseDocs"
+
+"All" 
   ==> "NuGet"
   ==> "Release"
 

@@ -3,19 +3,18 @@
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{3b566646-652d-41ed-95a9-c0da626150c8}</ProjectGuid>
+    <ProjectGuid>1c6df01c-c1f1-4a6b-9e74-24a55479939b</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>LexAndYaccMiniProject</RootNamespace>
-    <AssemblyName>LexAndYaccMiniProject</AssemblyName>
+    <RootNamespace>TestProjectUsingNugetPackage</RootNamespace>
+    <AssemblyName>TestProjectUsingNugetPackage</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Name>LexAndYaccMiniProject</Name>
+    <TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>
+    <Name>TestProjectUsingNugetPackage</Name>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,37 +22,25 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
-    <DocumentationFile>bin\Debug\LexAndYaccMiniProject.XML</DocumentationFile>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DocumentationFile>bin\Debug\TestProjectUsingNugetPackage.XML</DocumentationFile>
+    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <Tailcalls>true</Tailcalls>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
-    <DocumentationFile>bin\Release\LexAndYaccMiniProject.XML</DocumentationFile>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DocumentationFile>bin\Release\TestProjectUsingNugetPackage.XML</DocumentationFile>
+    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Parser.fsi" />
-    <Compile Include="Parser.fs" />
-    <Compile Include="Lexer.fs" />
-    <Compile Include="Program.fs" />
-    <None Include="App.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <FsYacc Include="Parser.fsy">
-      <OtherFlags>--module Parser</OtherFlags>
-    </FsYacc>
-    <FsLex Include="Lexer.fsl">
-      <OtherFlags>--unicode</OtherFlags>
-    </FsLex>
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="FsLexYacc.Runtime">
-      <HintPath>..\..\bin\FsLexYacc.Runtime.dll</HintPath>
+      <HintPath>..\packages\FsLexYacc.6.0.0\lib\net40\FsLexYacc.Runtime.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
@@ -61,9 +48,30 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
   </ItemGroup>
+  <ItemGroup>
+    <FsYacc Include="..\LexAndYaccMiniProject\Parser.fsy">
+      <OtherFlags>--module Parser</OtherFlags>
+    </FsYacc>
+    <FsLex Include="..\LexAndYaccMiniProject\Lexer.fsl">
+      <OtherFlags>--unicode</OtherFlags>
+    </FsLex>
+    <Compile Include="Parser.fsi" />
+    <Compile Include="Parser.fs" />
+    <Compile Include="Lexer.fs" />
+
+    <Compile Include="Program.fs" />
+    <None Include="App.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <PropertyGroup>
+    <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
+  </PropertyGroup>
   <Choose>
-    <When Condition="'$(VisualStudioVersion)' == '11.0' OR '$(VisualStudioVersion)' == '10.0'">
+    <When Condition="'$(VisualStudioVersion)' == '11.0'">
       <PropertyGroup Condition="Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')">
         <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
       </PropertyGroup>
@@ -75,5 +83,5 @@
     </Otherwise>
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
-  <Import Project="..\..\bin\FsLexYacc.targets" />
+  <Import Project="..\packages\FsLexYacc.6.0.0\bin\FsLexYacc.targets" />
 </Project>

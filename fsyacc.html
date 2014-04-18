@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Overview
+</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A short summary of your project">
+    <meta name="author" content="Your Name">
+
+    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+
+    <link type="text/css" rel="stylesheet" href="/FsLexYacc/content/style.css" />
+    <script type="text/javascript" src="/FsLexYacc/content/tips.js"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+          <li><a href="http://fsharp.org">fsharp.org</a></li>
+          <li><a href="http://github.com/fsprojects/FsLexYacc">github page</a></li>
+        </ul>
+        <h3 class="muted"><a href="/FsLexYacc/index.html">FsLexYacc</a></h3>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="span9" id="main">
+          
+<h1>Overview</h1>
+
+<p>fsyacc.exe is a LALR parser generator. It follows a similar specification to the OCamlYacc parser generator (especially when used with the ''ml compatibility' switch)</p>
+
+<h2>Getting Started</h2>
+
+<p>Install the FsLexYacc nuget package.</p>
+
+<h2>Sample input</h2>
+
+<p>Parser generators typically produce numbers represented by values in an F# Union Type. For example:
+<code></code>`
+ type Expr = 
+  | Val of string 
+  | Int of int
+  | Float of float
+  | Decr of Sxpr</p>
+
+<p>type Stmt = 
+  | Assign of string <em> Sxpr
+  | While of Expr </em> Stmt
+  | Seq of Stmt list
+  | IfThen of Expr <em> Stmt
+  | IfThenElse of Expr </em> Stmt * Stmt
+  | Print of Expr</p>
+
+<p>type Prog = Prog of Stmt list
+<code></code>`</p>
+
+<p>Given that, a typical parser specification is as follows:
+<code></code>`
+ %{
+ open Ast
+ %}</p>
+
+<p>%start start
+ %token <string> ID
+ %token <System.Int32> INT
+ %token <System.Double> FLOAT
+ %token DECR LPAREN RPAREN WHILE DO END BEGIN IF THEN ELSE PRINT SEMI ASSIGN EOF
+ %type < Ast.Prog > start</p>
+
+<p>%%</p>
+
+<p>start: Prog {  $1 }</p>
+
+<p>Prog: StmtList { Prog(List.rev($1)) }</p>
+
+<p>Expr: ID { Val(<span class="math">\(1) }
+     | INT {  Int(\)</span>1)  }
+     | FLOAT {  Float(<span class="math">\(1)  }
+     | DECR LPAREN Expr RPAREN {  Decr(\)</span>3)  }</p>
+
+<p>Stmt: ID ASSIGN Expr { Assign(<span class="math">\(1,\)</span>3) }
+     | WHILE Expr DO Stmt { While(<span class="math">\(2,\)</span>4) }
+     | BEGIN StmtList END { Seq(List.rev(<span class="math">\(2)) }
+     | IF Expr THEN Stmt { IfThen(\)</span>2,<span class="math">\(4) }
+     | IF Expr THEN Stmt ELSE Stmt { IfThenElse(\)</span>2,<span class="math">\(4,\)</span>6) }
+     | PRINT Expr { Print($2) }</p>
+
+<p>StmtList: Stmt { [$1] }
+        | StmtList SEMI Stmt { <span class="math">\(3 ::\)</span>1  }
+<code></code>`</p>
+
+<p>The above generates a datatype for tokens and a function for each 'start' production. Parsers are typically combined with a lexer generated using fslex.</p>
+
+<h2>MSBuild support</h2>
+
+<p>The nuget package includes MSBuild support for FsLex and FsYacc. You must add a FsLexYacc.targets reference 
+to your project file manually like this (adjust the nuget package number if needed):</p>
+
+<p><code>`
+ &lt;Import Project="..\packages\FsLexYacc.6.0.0\bin\FsLexYacc.targets" /&gt;</code>`</p>
+
+<p>You must also add [FsLex andd FsYacc entries] like this:</p>
+
+<p><code>`
+    &lt;FsYacc Include="..\LexAndYaccMiniProject\Parser.fsy"&gt;
+      &lt;OtherFlags&gt;--module Parser&lt;/OtherFlags&gt;
+    &lt;/FsYacc&gt;
+    &lt;FsLex Include="..\LexAndYaccMiniProject\Lexer.fsl"&gt;
+      &lt;OtherFlags&gt;--unicode&lt;/OtherFlags&gt;
+    &lt;/FsLex&gt;</code>`</p>
+
+<h2>Command line options</h2>
+
+<p><code></code>`
+fsyacc <filename> fsyacc <filename></p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+<span class="l">15: </span>
+<span class="l">16: </span>
+<span class="l">17: </span>
+<span class="l">18: </span>
+<span class="l">19: </span>
+<span class="l">20: </span>
+<span class="l">21: </span>
+<span class="l">22: </span>
+<span class="l">23: </span>
+<span class="l">24: </span>
+<span class="l">25: </span>
+<span class="l">26: </span>
+<span class="l">27: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="o">-</span><span class="i">o</span> <span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">string</span><span class="o">&gt;</span> <span class="i">Name</span> <span class="i">the</span> <span class="i">output</span> <span class="i">file</span><span class="o">.</span>
+
+<span class="o">-</span><span class="i">v</span><span class="o">:</span> <span class="i">Produce</span> <span class="i">a</span> <span class="i">listing</span> <span class="i">file</span><span class="o">.</span>
+
+<span class="o">--</span><span class="k">module</span> <span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="i">string</span><span class="o">&gt;</span> <span class="i">Define</span> <span class="i">the</span> <span class="i">F#</span> <span class="k">module</span> <span class="i">name</span> <span class="k">to</span> <span class="i">host</span> <span class="i">the</span> <span class="i">generated</span> <span class="i">parser</span><span class="o">.</span>
+
+<span class="o">--</span><span class="k">internal</span><span class="o">:</span> <span class="i">Generate</span> <span class="i">an</span> <span class="k">internal</span> <span class="k">module</span>
+
+<span class="o">--</span><span class="k">open</span> <span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs1', 3)" onmouseover="showTip(event, 'fs1', 3)" class="i">string</span><span class="o">&gt;</span> <span class="i">Add</span> <span class="i">the</span> <span class="i">given</span> <span class="k">module</span> <span class="k">to</span> <span class="i">the</span> <span onmouseout="hideTip(event, 'fs2', 4)" onmouseover="showTip(event, 'fs2', 4)" class="i">list</span> <span class="k">of</span> <span class="i">those</span> <span class="k">to</span> <span class="k">open</span> <span class="k">in</span> <span class="i">both</span> <span class="i">the</span> <span class="i">generated</span> <span class="i">signature</span> <span class="k">and</span> <span class="i">implementation</span><span class="o">.</span>
+
+<span class="o">--</span><span class="i">light</span><span class="o">:</span> (<span class="i">ignored</span>)
+
+<span class="o">--</span><span class="i">light</span><span class="o">-</span><span class="i">off</span><span class="o">:</span> <span class="i">Add</span> <span class="prep">#light &quot;off&quot;</span> <span class="k">to</span> <span class="i">the</span> <span class="i">top</span> <span class="k">of</span> <span class="i">the</span> <span class="i">generated</span> <span class="i">file</span>
+
+<span class="o">--</span><span class="i">ml</span><span class="o">-</span><span class="i">compatibility</span><span class="o">:</span> <span class="i">Support</span> <span class="i">the</span> <span class="k">use</span> <span class="k">of</span> <span class="i">the</span> <span class="k">global</span> <span class="i">state</span> <span class="i">from</span> <span class="i">the</span> <span class="o">&#39;</span><span class="i">Parsing&#39;</span> <span class="k">module</span> <span class="k">in</span> <span class="i">FSharp</span><span class="o">.</span><span class="i">PowerPack</span><span class="o">.</span><span class="i">dll</span><span class="o">.</span>
+
+<span class="o">--</span><span class="i">tokens</span><span class="o">:</span> <span class="i">Simply</span> <span class="i">tokenize</span> <span class="i">the</span> <span class="i">specification</span> <span class="i">file</span> <span class="i">itself</span><span class="o">.</span>
+
+<span class="o">--</span><span class="i">lexlib</span> <span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs1', 5)" onmouseover="showTip(event, 'fs1', 5)" class="i">string</span><span class="o">&gt;</span> <span class="i">Specify</span> <span class="i">the</span> <span class="k">namespace</span> <span class="k">for</span> <span class="i">the</span> <span class="i">implementation</span> <span class="k">of</span> <span class="i">the</span> <span class="i">parser</span> <span class="i">table</span> <span class="i">interperter</span> (<span class="k">default</span> <span onmouseout="hideTip(event, 'fs3', 6)" onmouseover="showTip(event, 'fs3', 6)" class="i">Microsoft</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs4', 7)" onmouseover="showTip(event, 'fs4', 7)" class="i">FSharp</span><span class="o">.</span><span class="i">Text</span><span class="o">.</span><span class="i">Parsing</span>)
+
+<span class="o">--</span><span class="i">parslib</span> <span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs1', 8)" onmouseover="showTip(event, 'fs1', 8)" class="i">string</span><span class="o">&gt;</span> <span class="i">Specify</span> <span class="i">the</span> <span class="k">namespace</span> <span class="k">for</span> <span class="i">the</span> <span class="i">implementation</span> <span class="k">of</span> <span class="i">the</span> <span class="i">parser</span> <span class="i">table</span> <span class="i">interperter</span> (<span class="k">default</span> <span onmouseout="hideTip(event, 'fs3', 9)" onmouseover="showTip(event, 'fs3', 9)" class="i">Microsoft</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs4', 10)" onmouseover="showTip(event, 'fs4', 10)" class="i">FSharp</span><span class="o">.</span><span class="i">Text</span><span class="o">.</span><span class="i">Parsing</span>)
+
+<span class="o">--</span><span class="i">codepage</span> <span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs5', 11)" onmouseover="showTip(event, 'fs5', 11)" class="i">int</span><span class="o">&gt;</span> <span class="i">Assume</span> <span class="i">input</span> <span class="i">lexer</span> <span class="i">specification</span> <span class="i">file</span> <span class="i">is</span> <span class="i">encoded</span> <span class="k">with</span> <span class="i">the</span> <span class="i">given</span> <span class="i">codepage</span><span class="o">.</span>
+
+<span class="o">--</span><span class="i">help</span><span class="o">:</span> <span class="i">display</span> <span class="i">this</span> <span onmouseout="hideTip(event, 'fs2', 12)" onmouseover="showTip(event, 'fs2', 12)" class="i">list</span> <span class="k">of</span> <span class="i">options</span>
+
+<span class="o">-</span><span class="i">help</span><span class="o">:</span> <span class="i">display</span> <span class="i">this</span> <span onmouseout="hideTip(event, 'fs2', 13)" onmouseover="showTip(event, 'fs2', 13)" class="i">list</span> <span class="k">of</span> <span class="i">options</span></pre>
+</td>
+</tr>
+</table>
+
+<p><code></code>`</p>
+
+<h2>Managing and using position markers</h2>
+
+<p>Each action in an fsyacc parser has access to a parseState value through which you can access position information.</p>
+
+<p><code>`
+  type IParseState = 
+          abstract InputStartPosition: int -&gt; Position
+          abstract InputEndPosition: int -&gt; Position
+          abstract InputRange: int -&gt; Position * Position
+          abstract ParserLocalStore: IDictionary&lt;string,obj&gt;
+          abstract ResultRange  : Position * Position
+          abstract RaiseError&lt;'b&gt; : unit -&gt; 'b</code>`</p>
+
+<p>"Input" relate to the indexes of the items on the right hand side of the current production, the Result relates to the entire range covered by the production. You shouldn't use "GetData" directly - these is called automatically by <span class="math">\(1,\)</span>2 etc. You can call RaiseError if you like.</p>
+
+<p>You must set the initial position when you create the lexbuf:
+<code>`
+  let setInitialPos (lexbuf:lexbuf) filename = 
+       lexbuf.EndPos &lt;- { pos_bol = 0;
+                          pos_fname=filename; 
+                          pos_cnum=0;
+                          pos_lnum=1 }</code>`</p>
+
+<p>You must also update the position recorded in the lex buffer each time you process what you consider to be a new line:</p>
+
+<p><code>`
+  let newline (lexbuf:lexbuf) =
+      lexbuf.EndPos &lt;- lexbuf.EndPos.AsNewLinePos()</code>`</p>
+
+<p>Likewise if your language includes the ability to mark source code locations, see custom essay (e.g. the #line directive in OCaml and F#) then you must similarly adjust the lexbuf.EndPos according to the information you grok from your input.</p>
+
+<h2>Notes on OCaml Compatibility</h2>
+
+<p>OCaml Yacc accepts the following:</p>
+
+<p><code>`
+  %type &lt; context -&gt; context &gt; toplevel</code>`</p>
+
+<p>For FsYacc you just add parentheses:</p>
+
+<p><code>`
+%type &lt; (context -&gt; context)) &gt; toplevel</code>`</p>
+
+<div class="tip" id="fs1">Multiple items<br />val string : value:&#39;T -&gt; string<br /><br />Full name: Microsoft.FSharp.Core.Operators.string<br /><br />--------------------<br />type string = System.String<br /><br />Full name: Microsoft.FSharp.Core.string</div>
+<div class="tip" id="fs2">type &#39;T list = List&lt;&#39;T&gt;<br /><br />Full name: Microsoft.FSharp.Collections.list&lt;_&gt;</div>
+<div class="tip" id="fs3">namespace Microsoft</div>
+<div class="tip" id="fs4">namespace Microsoft.FSharp</div>
+<div class="tip" id="fs5">Multiple items<br />val int : value:&#39;T -&gt; int (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.int<br /><br />--------------------<br />type int = int32<br /><br />Full name: Microsoft.FSharp.Core.int<br /><br />--------------------<br />type int&lt;&#39;Measure&gt; = int<br /><br />Full name: Microsoft.FSharp.Core.int&lt;_&gt;</div>
+
+        </div>
+        <div class="span3">
+          <img src="/FsLexYacc/img/logo.png" alt="F# Project" style="width:150px;margin:10px" />  
+          <ul class="nav nav-list" id="menu" style="margin-top: 20px;">
+            <li class="nav-header">FsLexYacc</li>
+            <li><a href="/FsLexYacc/index.html">Home page</a></li>
+            <li class="divider"></li>
+            <li><a href="http://nuget.com/packages/FsLexYacc">Get Library via NuGet</a></li>
+            <li><a href="http://github.com/fsprojects/FsLexYacc">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/fsprojects/FsLexYacc/blob/master/LICENSE.txt">License</a></li>
+            <li><a href="http://github.com/fsprojects/FsLexYacc/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
+            
+            <li class="nav-header">Getting started</li>
+            <li><a href="/FsLexYacc/fslex.html">Using FsLex</a></li>
+            <li><a href="/FsLexYacc/fsyacc.html">Using FsYacc</a></li>
+
+            <li class="nav-header">Documentation</li>
+            <li><a href="/FsLexYacc/reference/index.html">API Reference</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <a href="http://github.com/fsprojects/FsLexYacc"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+  </body>
+  </html>

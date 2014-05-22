@@ -50,7 +50,7 @@ let usage =
     ArgInfo ("--codepage", ArgType.Int (fun i -> inputCodePage := Some i), "Assume input lexer specification file is encoded with the given codepage."); 
     ArgInfo ("--light", ArgType.Unit (fun () ->  light := Some true), "(ignored)");
     ArgInfo ("--light-off", ArgType.Unit (fun () ->  light := Some false), "Add #light \"off\" to the top of the generated file");
-    ArgInfo ("--lexlib", ArgType.String (fun s ->  lexlib <- s), "Specify the namespace for the implementation of the lexer table interperter (default Microsoft.FSharp.Text.Lexing)");
+    ArgInfo ("--lexlib", ArgType.String (fun s ->  lexlib <- s), "Specify the namespace for the implementation of the lexer table interpreter (default Microsoft.FSharp.Text.Lexing)");
     ArgInfo ("--unicode", ArgType.Set unicode, "Produce a lexer for use with 16-bit unicode characters.");  
   ]
 

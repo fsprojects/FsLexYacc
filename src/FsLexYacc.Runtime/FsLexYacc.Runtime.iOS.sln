@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "FsLexYacc.Runtime.iOS", "FsLexYacc.Runtime.iOS.fsproj", "{0A6D0DB9-D738-4943-A549-40AC359D5B45}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0A6D0DB9-D738-4943-A549-40AC359D5B45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A6D0DB9-D738-4943-A549-40AC359D5B45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A6D0DB9-D738-4943-A549-40AC359D5B45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A6D0DB9-D738-4943-A549-40AC359D5B45}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = FsLexYacc.Runtime.iOS.fsproj
+	EndGlobalSection
+EndGlobal

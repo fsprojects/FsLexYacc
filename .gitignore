@@ -175,3 +175,13 @@ TestResults.xml
 
 # Nuget outputs
 nuget/*.nupkg
+
+# ===================================================
+# Exclude generated lexer/parser source files
+# ===================================================
+src/FsLex/fslexlex.fs
+src/FsLex/fslexpars.fs
+src/FsLex/fslexpars.fsi
+src/FsYacc/fsyacclex.fs
+src/FsYacc/fsyaccpars.fs
+src/FsYacc/fsyaccpars.fsi

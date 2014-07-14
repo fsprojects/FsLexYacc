@@ -7,7 +7,7 @@
     <owners>@authors@</owners>
     <licenseUrl>http://github.com/fsprojects/FsLexYacc/blob/master/LICENSE.txt</licenseUrl>
     <projectUrl>http://fsprojects.github.com/FsLexYacc</projectUrl>
-    <iconUrl>https://raw.github.com/fsharp/FsLexYacc/master/nuget/logo.png</iconUrl>
+    <iconUrl>https://raw.githubusercontent.com/fsprojects/FsLexYacc/master/docs/files/img/logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>@summary@</summary>
     <description>@description@</description>

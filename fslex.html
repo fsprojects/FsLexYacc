@@ -35,15 +35,15 @@
           
 <h1>Overview</h1>
 
-<p>The fslex.exe tool is a lexer generator for byte and Unicode character input. It follows a similar specification to the 'ocamllex' tool, though it is a reimplementation and supports some different features. See http://caml.inria.fr/pub/docs/manual-ocaml/manual026.html</p>
+<p>The <code>fslex.exe</code> tool is a lexer generator for byte and Unicode character input. It follows a similar specification to the <code>ocamllex</code> tool, though it is a reimplementation and supports some different features. See <a href="http://caml.inria.fr/pub/docs/manual-ocaml/lexyacc.html#sec268">OCaml Lex Manual</a>.</p>
 
 <h2>Getting Started</h2>
 
-<p>Install the FsLexYacc nuget package.</p>
+<p>Install the <code>FsLexYacc</code> nuget package.</p>
 
 <h2>MSBuild support</h2>
 
-<p>The nuget package includes MSBuild support for FsLex and FsYacc. You must add a FsLexYacc.targets reference 
+<p>The nuget package includes MSBuild support for <code>FsLex</code> and <code>FsYacc</code>. You must add a <code>FsLexYacc.targets</code> reference
 to your project file manually like this (adjust the nuget package number if needed):</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
@@ -51,12 +51,12 @@ to your project file manually like this (adjust the nuget package number if need
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="o">&lt;</span><span class="i">Import</span> <span class="i">Project</span><span class="o">=</span><span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">\</span><span class="s">packages</span><span class="s">\</span><span class="s">FsLexYacc</span><span class="s">.</span><span class="s">6</span><span class="s">.</span><span class="s">0</span><span class="s">.</span><span class="s">0</span><span class="s">\b</span><span class="s">in</span><span class="s">\</span><span class="s">FsLexYacc</span><span class="s">.</span><span class="s">targets</span><span class="s">&quot;</span> <span class="o">/&gt;</span></pre>
+<span class="o">&lt;</span><span class="i">Import</span> <span class="i">Project</span><span class="o">=</span><span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">\</span><span class="s">packages</span><span class="s">\</span><span class="s">FsLexYacc</span><span class="s">.</span><span class="s">6</span><span class="s">.</span><span class="s">0</span><span class="s">.</span><span class="s">1</span><span class="s">\b</span><span class="s">in</span><span class="s">\</span><span class="s">FsLexYacc</span><span class="s">.</span><span class="s">targets</span><span class="s">&quot;</span> <span class="o">/&gt;</span></pre>
 </td>
 </tr>
 </table>
 
-<p>You must also add [FsLex andd FsYacc entries] like this:</p>
+<p>You must also add <code>FsLex</code> and <code>FsYacc</code> entries like this:</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -80,10 +80,7 @@ to your project file manually like this (adjust the nuget package number if need
 
 <h2>Sample input</h2>
 
-<p>This is taken from the 'Parsing' sample previously in the F# distribution. See below for information on 'newline' and line counting.
-     let digit = ['0'-'9']
-     let whitespace = [' ' '\t' ]
-     let newline = ('\n' | '\r' '\n')</p>
+<p>This is taken from the <code>Parsing</code> sample previously in the F# distribution. See below for information on <code>newline</code> and line counting.</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l"> 1: </span>
@@ -106,29 +103,39 @@ to your project file manually like this (adjust the nuget package number if need
 <span class="l">18: </span>
 <span class="l">19: </span>
 <span class="l">20: </span>
+<span class="l">21: </span>
+<span class="l">22: </span>
+<span class="l">23: </span>
+<span class="l">24: </span>
+<span class="l">25: </span>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span class="i">digit</span> <span class="o">=</span> [<span class="s">&#39;0&#39;</span><span class="o">-</span><span class="s">&#39;9&#39;</span>]
+<span class="k">let</span> <span class="i">whitespace</span> <span class="o">=</span> [<span class="s">&#39; &#39;</span> <span class="s">&#39;\t&#39;</span> ]
+<span class="k">let</span> <span class="i">newline</span> <span class="o">=</span> (<span class="s">&#39;\n&#39;</span> | <span class="s">&#39;\r&#39;</span> <span class="s">&#39;\n&#39;</span>)
+
+
 <span class="i">rule</span> <span class="i">token</span> <span class="o">=</span> <span class="i">parse</span>
-| <span class="i">whitespace</span>        { <span class="i">token</span> <span class="i">lexbuf</span> }
+| <span class="i">whitespace</span>     { <span class="i">token</span> <span class="i">lexbuf</span> }
 | <span class="i">newline</span>        { <span class="i">newline</span> <span class="i">lexbuf</span>; <span class="i">token</span> <span class="i">lexbuf</span> }
 | <span class="s">&quot;</span><span class="s">while</span><span class="s">&quot;</span>        { <span class="i">WHILE</span> }
 | <span class="s">&quot;</span><span class="s">begin</span><span class="s">&quot;</span>        { <span class="i">BEGIN</span> }
-| <span class="s">&quot;</span><span class="s">end</span><span class="s">&quot;</span>                { <span class="i">END</span> }
-| <span class="s">&quot;</span><span class="s">do</span><span class="s">&quot;</span>                { <span class="i">DO</span> }
-| <span class="s">&quot;</span><span class="s">if</span><span class="s">&quot;</span>                { <span class="i">IF</span> }
-| <span class="s">&quot;</span><span class="s">then</span><span class="s">&quot;</span>                { <span class="i">THEN</span> }
-| <span class="s">&quot;</span><span class="s">else</span><span class="s">&quot;</span>                { <span class="i">ELSE</span> }
+| <span class="s">&quot;</span><span class="s">end</span><span class="s">&quot;</span>          { <span class="i">END</span> }
+| <span class="s">&quot;</span><span class="s">do</span><span class="s">&quot;</span>           { <span class="i">DO</span> }
+| <span class="s">&quot;</span><span class="s">if</span><span class="s">&quot;</span>           { <span class="i">IF</span> }
+| <span class="s">&quot;</span><span class="s">then</span><span class="s">&quot;</span>         { <span class="i">THEN</span> }
+| <span class="s">&quot;</span><span class="s">else</span><span class="s">&quot;</span>         { <span class="i">ELSE</span> }
 | <span class="s">&quot;</span><span class="s">print</span><span class="s">&quot;</span>        { <span class="i">PRINT</span> }
 | <span class="s">&quot;</span><span class="s">decr</span><span class="s">&quot;</span>         { <span class="i">DECR</span> }
 | <span class="s">&quot;</span><span class="s">(</span><span class="s">&quot;</span>            { <span class="i">LPAREN</span> }
 | <span class="s">&quot;</span><span class="s">)</span><span class="s">&quot;</span>            { <span class="i">RPAREN</span> }
-| <span class="s">&quot;</span><span class="s">;</span><span class="s">&quot;</span>                { <span class="i">SEMI</span> }
-| <span class="s">&quot;</span><span class="s">:</span><span class="s">=</span><span class="s">&quot;</span>                { <span class="i">ASSIGN</span> }
+| <span class="s">&quot;</span><span class="s">;</span><span class="s">&quot;</span>            { <span class="i">SEMI</span> }
+| <span class="s">&quot;</span><span class="s">:</span><span class="s">=</span><span class="s">&quot;</span>           { <span class="i">ASSIGN</span> }
 | [<span class="s">&#39;a&#39;</span><span class="o">-</span><span class="s">&#39;z&#39;</span>]<span class="o">+</span>     { <span class="i">ID</span>(<span class="i">lexeme</span> <span class="i">lexbuf</span>) }
-| [<span class="s">&#39;-&#39;</span>]<span class="o">?</span><span class="i">digit</span><span class="o">+</span>       { <span class="i">INT</span> (<span class="i">Int32</span><span class="o">.</span><span class="i">Parse</span>(<span class="i">lexeme</span> <span class="i">lexbuf</span>)) }
+| [<span class="s">&#39;-&#39;</span>]<span class="o">?</span><span class="i">digit</span><span class="o">+</span>   { <span class="i">INT</span> (<span class="i">Int32</span><span class="o">.</span><span class="i">Parse</span>(<span class="i">lexeme</span> <span class="i">lexbuf</span>)) }
 | [<span class="s">&#39;-&#39;</span>]<span class="o">?</span><span class="i">digit</span><span class="o">+</span>(<span class="s">&#39;.&#39;</span><span class="i">digit</span><span class="o">+</span>)<span class="o">?</span>([<span class="s">&#39;e&#39;</span><span class="s">&#39;E&#39;</span>]<span class="i">digit</span><span class="o">+</span>)<span class="o">?</span>   { <span class="i">FLOAT</span> (<span class="i">Double</span><span class="o">.</span><span class="i">Parse</span>(<span class="i">lexeme</span> <span class="i">lexbuf</span>)) }
-| <span class="i">eof</span>   { <span class="i">EOF</span> }</pre>
+| <span class="i">eof</span>            { <span class="i">EOF</span> }</pre>
 </td>
 </tr>
 </table>
@@ -145,10 +152,10 @@ to your project file manually like this (adjust the nuget package number if need
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="i">rule</span> <span class="i">state1</span> <span class="o">=</span> 
+<span class="i">rule</span> <span class="i">state1</span> <span class="o">=</span>
  | <span class="s">&quot;</span><span class="s">this</span><span class="s">&quot;</span>    { <span class="i">state2</span> <span class="i">lexbuf</span> }
  | <span class="o">..</span><span class="o">.</span>
-<span class="k">and</span> <span class="i">state2</span> <span class="o">=</span> 
+<span class="k">and</span> <span class="i">state2</span> <span class="o">=</span>
  | <span class="s">&quot;</span><span class="s">that</span><span class="s">&quot;</span>    { <span class="i">state1</span> <span class="i">lexbuf</span> }
  | <span class="o">..</span><span class="o">.</span></pre>
 </td>
@@ -175,9 +182,9 @@ to your project file manually like this (adjust the nuget package number if need
 </tr>
 </table>
 
-<p>Using a lexer</p>
+<p><strong>Using a lexer</strong></p>
 
-<p>If in the first example above the constructors 'INT' etc generate values of type 'tok' then the above generates a lexer with a function</p>
+<p>If in the first example above the constructors <code>INT</code> etc generate values of type <code>tok</code> then the above generates a lexer with a function</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -189,7 +196,8 @@ to your project file manually like this (adjust the nuget package number if need
 </tr>
 </table>
 
-<p>Once you have a lexbuffer you can call the above to generate new tokens. Typically you use some methods from Microsoft.FSharp.Text.Lexing to create lex buffers, either a LexBuffer<byte> for ASCII lexing, or LexBuffer<char> for Unicode lexing.</p>
+<p>Once you have a lexbuffer you can call the above to generate new tokens. Typically you use some methods from <code>Microsoft.FSharp.Text.Lexing</code> 
+to create lex buffers, either a <code>LexBuffer&lt;byte&gt;</code> for ASCII lexing, or <code>LexBuffer&lt;char&gt;</code> for Unicode lexing.</p>
 
 <p>Some ways of creating lex buffers are by using:</p>
 
@@ -211,16 +219,25 @@ to your project file manually like this (adjust the nuget package number if need
 </tr>
 </table>
 
-<p>Within lexing actions the variable "lexbuf" is in scope and you may use properties ono the LexBuffer type such as:</p>
+<p>Within lexing actions the variable <code>lexbuf</code> is in scope and you may use properties on the <code>LexBuffer</code> type such as:</p>
 
-<p>lexbuf.Lexeme  // get the lexeme as an array of characters or bytes
-   LexBuffer.LexemeString lexbuf // get the lexeme as a string, for Unicode lexing</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="i">lexbuf</span><span class="o">.</span><span class="i">Lexeme</span>  <span class="c">// get the lexeme as an array of characters or bytes</span>
+<span class="i">LexBuffer</span><span class="o">.</span><span class="i">LexemeString</span> <span class="i">lexbuf</span> <span class="c">// get the lexeme as a string, for Unicode lexing</span></pre>
+</td>
+</tr>
+</table>
 
-<p>Lexing positions give locations in source files (the relevant type is Microsoft.FSharp.Text.Lexing.Position).</p>
+<p>Lexing positions give locations in source files (the relevant type is <code>Microsoft.FSharp.Text.Lexing.Position</code>).</p>
 
-<p>Generated lexers are nearly always used in conjunction with parsers generarted by fsyacc (also documented on this site). See the Parsed Language starter template.</p>
+<p>Generated lexers are nearly always used in conjunction with parsers generarted by <code>FsYacc</code>(also documented on this site). See the Parsed Language starter template.</p>
 
-<h2>Command line options</h2>
+<p>Command line options</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l"> 1: </span>
@@ -262,7 +279,7 @@ to your project file manually like this (adjust the nuget package number if need
 </tr>
 </table>
 
-<h2>Positions and line counting in lexers</h2>
+<p>Positions and line counting in lexers</p>
 
 <p>Within a lexer lines can in theory be counted simply by incrementing a global variable or a passed line number count:</p>
 
@@ -282,7 +299,7 @@ to your project file manually like this (adjust the nuget package number if need
 
 <p>However for character positions this is tedious, as it means every action becomes polluted with character counting, as you have to manually attach line numbers to tokens. Also, for error reporting writing service it is useful to have to have position information associated held as part of the state in the lexbuffer itself.</p>
 
-<p>Thus F# follows the ocamllex model where the lexer and parser state carry 'position' values that record information for the current match (lex) and the l.h.s/r.h.s of the grammar productions (yacc).</p>
+<p>Thus F# follows the <code>OCamlLex</code> model where the lexer and parser state carry <code>position</code> values that record information for the current match (<code>lex</code>) and the <code>l.h.s</code>/<code>r.h.s</code> of the grammar productions (<code>yacc</code>).</p>
 
 <p>The information carried for each position is:</p>
 
@@ -363,7 +380,7 @@ to your project file manually like this (adjust the nuget package number if need
             <li class="nav-header">FsLexYacc</li>
             <li><a href="/FsLexYacc/index.html">Home page</a></li>
             <li class="divider"></li>
-            <li><a href="http://nuget.com/packages/FsLexYacc">Get Library via NuGet</a></li>
+            <li><a href="https://www.nuget.org/packages/FsLexYacc/">Get Library via NuGet</a></li>
             <li><a href="http://github.com/fsprojects/FsLexYacc">Source Code on GitHub</a></li>
             <li><a href="http://github.com/fsprojects/FsLexYacc/blob/master/LICENSE.txt">License</a></li>
             <li><a href="http://github.com/fsprojects/FsLexYacc/blob/master/RELEASE_NOTES.md">Release Notes</a></li>

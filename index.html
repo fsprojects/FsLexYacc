@@ -35,43 +35,44 @@
           
 <h1>FsLex, FsYacc</h1>
 
-<p>FsLex and FsYacc are lexer and parser generator tools for use with F#. They
-were originally part of the old "F# Power Pack".  They are now independent tools.</p>
+<p>Documentation</p>
 
 <div class="row">
   <div class="span1"></div>
   <div class="span6">
     <div class="well well-small" id="nuget">
-      The FsLex and FsYacc tools can be <a href="https://nuget.org/packages/FSharp.ProjectTemplate">installed from NuGet</a>:
+      The FsLexYacc tool can be <a href="https://nuget.org/packages/FSharp.ProjectTemplate">installed from NuGet</a>:
       <pre>PM> Install-Package FsLexYacc</pre>
     </div>
   </div>
   <div class="span1"></div>
 </div>
 
+<h2>Example</h2>
+
+<p>See Example:</p>
+
+<ul>
+<li><a href="https://github.com/fsprojects/FsLexYacc/blob/master/tests/LexAndYaccMiniProject/Lexer.fsl">Lexer</a></li>
+<li><a href="https://github.com/fsprojects/FsLexYacc/blob/master/tests/LexAndYaccMiniProject/Parser.fsy">Parser</a></li>
+<li><a href="https://github.com/fsprojects/FsLexYacc/blob/master/tests/LexAndYaccMiniProject/Program.fs">Program</a></li>
+</ul>
+
+<p>To use with an F# project file, you must manually:</p>
+
+<ul>
+<li>Add the <a href="https://github.com/fsprojects/FsLexYacc/blob/master/tests/TestProjectUsingNugetPackage/TestProjectUsingNugetPackage.fsproj#L86">F# project file targets reference</a></li>
+<li>Add the <a href="https://github.com/fsprojects/FsLexYacc/blob/master/tests/TestProjectUsingNugetPackage/TestProjectUsingNugetPackage.fsproj#L54">F# project file items</a></li>
+</ul>
+
 <h2>Documentation</h2>
 
 <ul>
 <li><a href="fslex.html">FsLex Documentation</a></li>
-<li><p><a href="fsyacc.html">FsYacc Documentation</a></p></li>
-<li><p><a href="reference/index.html">API Reference</a> contains automatically generated documentation for all types, modules
+<li><a href="fsyacc.html">FsYacc Documentation</a></li>
+<li><a href="reference/index.html">API Reference</a> contains automatically generated documentation for all types, modules
 and functions in the library. This includes additional brief samples on using most of the
-functions.</p></li>
-</ul>
-
-<h2>Examples</h2>
-
-<p>See an <a href="https://github.com/fsprojects/FsLexYacc/blob/master/tests/LexAndYaccMiniProject/Lexer.fsl">Example Lexer</a></p>
-
-<p>See an <a href="https://github.com/fsprojects/FsLexYacc/blob/master/tests/LexAndYaccMiniProject/Parser.fsy">Example Parser</a></p>
-
-<p>See an <a href="https://github.com/fsprojects/FsLexYacc/blob/master/tests/LexAndYaccMiniProject/Program.fs">Example Program</a></p>
-
-<p>To use with an F# project file (.fsproj), you must manually:</p>
-
-<ul>
-<li><p>Add the <a href="https://github.com/fsprojects/FsLexYacc/blob/master/tests/TestProjectUsingNugetPackage/TestProjectUsingNugetPackage.fsproj#L86">F# project file targets reference</a></p></li>
-<li><p>Add the <a href="https://github.com/fsprojects/FsLexYacc/blob/master/tests/TestProjectUsingNugetPackage/TestProjectUsingNugetPackage.fsproj#L54">F# project file items</a></p></li>
+functions.</li>
 </ul>
 
 <h2>Contributing and copyright</h2>
@@ -93,7 +94,7 @@ redistribution for both commercial and non-commercial purposes. For more informa
             <li class="nav-header">FsLexYacc</li>
             <li><a href="/FsLexYacc/index.html">Home page</a></li>
             <li class="divider"></li>
-            <li><a href="http://nuget.com/packages/FsLexYacc">Get Library via NuGet</a></li>
+            <li><a href="https://www.nuget.org/packages/FsLexYacc/">Get Library via NuGet</a></li>
             <li><a href="http://github.com/fsprojects/FsLexYacc">Source Code on GitHub</a></li>
             <li><a href="http://github.com/fsprojects/FsLexYacc/blob/master/LICENSE.txt">License</a></li>
             <li><a href="http://github.com/fsprojects/FsLexYacc/blob/master/RELEASE_NOTES.md">Release Notes</a></li>

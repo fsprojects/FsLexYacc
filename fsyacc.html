@@ -35,11 +35,11 @@
           
 <h1>Overview</h1>
 
-<p>fsyacc.exe is a LALR parser generator. It follows a similar specification to the OCamlYacc parser generator (especially when used with the ''ml compatibility' switch)</p>
+<p><code>fsyacc.exe</code> is a <code>LALR</code> parser generator. It follows a similar specification to the <code>OCamlYacc</code> parser generator (especially when used with the <code>ml compatibility</code> switch)</p>
 
 <h2>Getting Started</h2>
 
-<p>Install the FsLexYacc nuget package.</p>
+<p>Install the <code>FsLexYacc</code> nuget package.</p>
 
 <h2>Sample input</h2>
 
@@ -171,16 +171,24 @@
 </tr>
 </table>
 
-<p>The above generates a datatype for tokens and a function for each 'start' production. Parsers are typically combined with a lexer generated using fslex.</p>
+<p>The above generates a datatype for tokens and a function for each <code>start</code> production. Parsers are typically combined with a lexer generated using <code>FsLex</code>.</p>
 
 <h2>MSBuild support</h2>
 
-<p>The nuget package includes MSBuild support for FsLex and FsYacc. You must add a FsLexYacc.targets reference 
+<p>The nuget package includes MSBuild support for <code>FsLex</code> and <code>FsYacc</code>. You must add a <code>FsLexYacc.targets</code> reference
 to your project file manually like this (adjust the nuget package number if needed):</p>
 
-<p><Import Project="..\packages\FsLexYacc.6.0.0\bin\FsLexYacc.targets" /></p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="o">&lt;</span><span class="i">Import</span> <span class="i">Project</span><span class="o">=</span><span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">\</span><span class="s">packages</span><span class="s">\</span><span class="s">FsLexYacc</span><span class="s">.</span><span class="s">6</span><span class="s">.</span><span class="s">0</span><span class="s">.</span><span class="s">1</span><span class="s">\b</span><span class="s">in</span><span class="s">\</span><span class="s">FsLexYacc</span><span class="s">.</span><span class="s">targets</span><span class="s">&quot;</span> <span class="o">/&gt;</span></pre>
+</td>
+</tr>
+</table>
 
-<p>You must also add [FsLex andd FsYacc entries] like this:</p>
+<p>You must also add <code>FsLex</code> andd <code>FsYacc</code> entries like this:</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -285,18 +293,18 @@ to your project file manually like this (adjust the nuget package number if need
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="k">type</span> <span class="i">IParseState</span> <span class="o">=</span> 
-      <span class="k">abstract</span> <span class="i">InputStartPosition</span><span class="o">:</span> <span onmouseout="hideTip(event, 'fs5', 81)" onmouseover="showTip(event, 'fs5', 81)" class="i">int</span> <span class="k">-&gt;</span> <span class="i">Position</span>
-      <span class="k">abstract</span> <span class="i">InputEndPosition</span><span class="o">:</span> <span onmouseout="hideTip(event, 'fs5', 82)" onmouseover="showTip(event, 'fs5', 82)" class="i">int</span> <span class="k">-&gt;</span> <span class="i">Position</span>
-      <span class="k">abstract</span> <span class="i">InputRange</span><span class="o">:</span> <span onmouseout="hideTip(event, 'fs5', 83)" onmouseover="showTip(event, 'fs5', 83)" class="i">int</span> <span class="k">-&gt;</span> <span class="i">Position</span> <span class="o">*</span> <span class="i">Position</span>
-      <span class="k">abstract</span> <span class="i">ParserLocalStore</span><span class="o">:</span> <span class="i">IDictionary</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs3', 84)" onmouseover="showTip(event, 'fs3', 84)" class="i">string</span>,<span onmouseout="hideTip(event, 'fs25', 85)" onmouseover="showTip(event, 'fs25', 85)" class="i">obj</span><span class="o">&gt;</span>
-      <span class="k">abstract</span> <span class="i">ResultRange</span>  <span class="o">:</span> <span class="i">Position</span> <span class="o">*</span> <span class="i">Position</span>
-      <span class="k">abstract</span> <span class="i">RaiseError</span><span class="o">&lt;</span><span class="o">&#39;</span><span class="i">b</span><span class="o">&gt;</span> <span class="o">:</span> <span onmouseout="hideTip(event, 'fs26', 86)" onmouseover="showTip(event, 'fs26', 86)" class="i">unit</span> <span class="k">-&gt;</span> <span class="o">&#39;</span><span class="i">b</span> </pre>
+<span class="k">type</span> <span class="i">IParseState</span> <span class="o">=</span>
+    <span class="k">abstract</span> <span class="i">InputStartPosition</span><span class="o">:</span> <span onmouseout="hideTip(event, 'fs5', 81)" onmouseover="showTip(event, 'fs5', 81)" class="i">int</span> <span class="k">-&gt;</span> <span class="i">Position</span>
+    <span class="k">abstract</span> <span class="i">InputEndPosition</span><span class="o">:</span> <span onmouseout="hideTip(event, 'fs5', 82)" onmouseover="showTip(event, 'fs5', 82)" class="i">int</span> <span class="k">-&gt;</span> <span class="i">Position</span>
+    <span class="k">abstract</span> <span class="i">InputRange</span><span class="o">:</span> <span onmouseout="hideTip(event, 'fs5', 83)" onmouseover="showTip(event, 'fs5', 83)" class="i">int</span> <span class="k">-&gt;</span> <span class="i">Position</span> <span class="o">*</span> <span class="i">Position</span>
+    <span class="k">abstract</span> <span class="i">ParserLocalStore</span><span class="o">:</span> <span class="i">IDictionary</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs3', 84)" onmouseover="showTip(event, 'fs3', 84)" class="i">string</span>,<span onmouseout="hideTip(event, 'fs25', 85)" onmouseover="showTip(event, 'fs25', 85)" class="i">obj</span><span class="o">&gt;</span>
+    <span class="k">abstract</span> <span class="i">ResultRange</span>  <span class="o">:</span> <span class="i">Position</span> <span class="o">*</span> <span class="i">Position</span>
+    <span class="k">abstract</span> <span class="i">RaiseError</span><span class="o">&lt;</span><span class="o">&#39;</span><span class="i">b</span><span class="o">&gt;</span> <span class="o">:</span> <span onmouseout="hideTip(event, 'fs26', 86)" onmouseover="showTip(event, 'fs26', 86)" class="i">unit</span> <span class="k">-&gt;</span> <span class="o">&#39;</span><span class="i">b</span></pre>
 </td>
 </tr>
 </table>
 
-<p>"Input" relate to the indexes of the items on the right hand side of the current production, the Result relates to the entire range covered by the production. You shouldn't use "GetData" directly - these is called automatically by <span class="math">\(1,\)</span>2 etc. You can call RaiseError if you like.</p>
+<p><code>Input</code> relate to the indexes of the items on the right hand side of the current production, the <code>Result</code> relates to the entire range covered by the production. You shouldn't use <code>GetData</code> directly - these is called automatically by <code>$1</code>, <code>$2</code> etc. You can call <code>RaiseError</code> if you like.</p>
 
 <p>You must set the initial position when you create the lexbuf:</p>
 
@@ -309,11 +317,11 @@ to your project file manually like this (adjust the nuget package number if need
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span class="i">setInitialPos</span> (<span class="i">lexbuf</span><span class="o">:</span><span class="i">lexbuf</span>) <span class="i">filename</span> <span class="o">=</span> 
-   <span class="i">lexbuf</span><span class="o">.</span><span class="i">EndPos</span> <span class="o">&lt;-</span> { <span class="i">pos_bol</span> <span class="o">=</span> <span class="n">0</span>;
-                      <span class="i">pos_fname</span><span class="o">=</span><span class="i">filename</span>; 
-                      <span class="i">pos_cnum</span><span class="o">=</span><span class="n">0</span>;
-                      <span class="i">pos_lnum</span><span class="o">=</span><span class="n">1</span> }</pre>
+<span class="k">let</span> <span class="i">setInitialPos</span> (<span class="i">lexbuf</span><span class="o">:</span><span class="i">lexbuf</span>) <span class="i">filename</span> <span class="o">=</span>
+     <span class="i">lexbuf</span><span class="o">.</span><span class="i">EndPos</span> <span class="o">&lt;-</span> { <span class="i">pos_bol</span> <span class="o">=</span> <span class="n">0</span>;
+                        <span class="i">pos_fname</span><span class="o">=</span><span class="i">filename</span>;
+                        <span class="i">pos_cnum</span><span class="o">=</span><span class="n">0</span>;
+                        <span class="i">pos_lnum</span><span class="o">=</span><span class="n">1</span> }</pre>
 </td>
 </tr>
 </table>
@@ -327,16 +335,16 @@ to your project file manually like this (adjust the nuget package number if need
 </td>
 <td class="snippet"><pre class="fssnip">
 <span class="k">let</span> <span class="i">newline</span> (<span class="i">lexbuf</span><span class="o">:</span><span class="i">lexbuf</span>) <span class="o">=</span>
-  <span class="i">lexbuf</span><span class="o">.</span><span class="i">EndPos</span> <span class="o">&lt;-</span> <span class="i">lexbuf</span><span class="o">.</span><span class="i">EndPos</span><span class="o">.</span><span class="i">AsNewLinePos</span>()</pre>
+    <span class="i">lexbuf</span><span class="o">.</span><span class="i">EndPos</span> <span class="o">&lt;-</span> <span class="i">lexbuf</span><span class="o">.</span><span class="i">EndPos</span><span class="o">.</span><span class="i">AsNewLinePos</span>()</pre>
 </td>
 </tr>
 </table>
 
-<p>Likewise if your language includes the ability to mark source code locations, see custom essay (e.g. the #line directive in OCaml and F#) then you must similarly adjust the lexbuf.EndPos according to the information you grok from your input.</p>
+<p>Likewise if your language includes the ability to mark source code locations, see custom essay (e.g. the <code>#line</code> directive in OCaml and F#) then you must similarly adjust the <code>lexbuf.EndPos</code> according to the information your grok from your input.</p>
 
 <h2>Notes on OCaml Compatibility</h2>
 
-<p>OCaml Yacc accepts the following:</p>
+<p><code>OCamlYacc</code> accepts the following:</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -348,10 +356,17 @@ to your project file manually like this (adjust the nuget package number if need
 </tr>
 </table>
 
-<p>For FsYacc you just add parentheses:</p>
+<p>For <code>FsYacc</code> you just add parentheses:</p>
 
-<p><code>`
-%type &lt; (context -&gt; context)) &gt; toplevel</code>`</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="o">%</span><span class="k">type</span> <span class="o">&lt;</span> (<span class="i">context</span> <span class="k">-&gt;</span> <span class="i">context</span>)) <span class="o">&gt;</span> <span class="i">toplevel</span></pre>
+</td>
+</tr>
+</table>
 
 <div class="tip" id="fs1">type Expr =<br />&#160;&#160;| Val of string<br />&#160;&#160;| Int of int<br />&#160;&#160;| Float of float<br />&#160;&#160;| Decr of obj<br /><br />Full name: fsyacc.Expr</div>
 <div class="tip" id="fs2">union case Expr.Val: string -&gt; Expr</div>
@@ -387,7 +402,7 @@ to your project file manually like this (adjust the nuget package number if need
             <li class="nav-header">FsLexYacc</li>
             <li><a href="/FsLexYacc/index.html">Home page</a></li>
             <li class="divider"></li>
-            <li><a href="http://nuget.com/packages/FsLexYacc">Get Library via NuGet</a></li>
+            <li><a href="https://www.nuget.org/packages/FsLexYacc/">Get Library via NuGet</a></li>
             <li><a href="http://github.com/fsprojects/FsLexYacc">Source Code on GitHub</a></li>
             <li><a href="http://github.com/fsprojects/FsLexYacc/blob/master/LICENSE.txt">License</a></li>
             <li><a href="http://github.com/fsprojects/FsLexYacc/blob/master/RELEASE_NOTES.md">Release Notes</a></li>

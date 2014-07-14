@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Overview
+</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A short summary of your project">
+    <meta name="author" content="Your Name">
+
+    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+
+    <link type="text/css" rel="stylesheet" href="/FsLexYacc/content/style.css" />
+    <script type="text/javascript" src="/FsLexYacc/content/tips.js"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+          <li><a href="http://fsharp.org">fsharp.org</a></li>
+          <li><a href="http://github.com/fsprojects/FsLexYacc">github page</a></li>
+        </ul>
+        <h3 class="muted"><a href="/FsLexYacc/index.html">FsLexYacc</a></h3>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="span9" id="main">
+          
+<h1>Overview</h1>
+
+<p>The fslex.exe tool is a lexer generator for byte and Unicode character input. It follows a similar specification to the 'ocamllex' tool, though it is a reimplementation and supports some different features. See http://caml.inria.fr/pub/docs/manual-ocaml/manual026.html</p>
+
+<h2>Getting Started</h2>
+
+<p>Install the FsLexYacc nuget package.</p>
+
+<h2>MSBuild support</h2>
+
+<p>The nuget package includes MSBuild support for FsLex and FsYacc. You must add a FsLexYacc.targets reference 
+to your project file manually like this (adjust the nuget package number if needed):</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="o">&lt;</span><span class="i">Import</span> <span class="i">Project</span><span class="o">=</span><span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">\</span><span class="s">packages</span><span class="s">\</span><span class="s">FsLexYacc</span><span class="s">.</span><span class="s">6</span><span class="s">.</span><span class="s">0</span><span class="s">.</span><span class="s">0</span><span class="s">\b</span><span class="s">in</span><span class="s">\</span><span class="s">FsLexYacc</span><span class="s">.</span><span class="s">targets</span><span class="s">&quot;</span> <span class="o">/&gt;</span></pre>
+</td>
+</tr>
+</table>
+
+<p>You must also add [FsLex andd FsYacc entries] like this:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="o">&lt;</span><span class="i">FsYacc</span> <span class="i">Include</span><span class="o">=</span><span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">\</span><span class="s">LexAndYaccMiniProject</span><span class="s">\</span><span class="s">Parser</span><span class="s">.</span><span class="s">fsy</span><span class="s">&quot;</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="i">OtherFlags</span><span class="o">&gt;</span><span class="o">--</span><span class="k">module</span> <span class="i">Parser</span><span class="o">&lt;/</span><span class="i">OtherFlags</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="i">FsYacc</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="i">FsLex</span> <span class="i">Include</span><span class="o">=</span><span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">\</span><span class="s">LexAndYaccMiniProject</span><span class="s">\</span><span class="s">Lexer</span><span class="s">.</span><span class="s">fsl</span><span class="s">&quot;</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="i">OtherFlags</span><span class="o">&gt;</span><span class="o">--</span><span class="i">unicode</span><span class="o">&lt;/</span><span class="i">OtherFlags</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="i">FsLex</span><span class="o">&gt;</span></pre>
+</td>
+</tr>
+</table>
+
+<h2>Sample input</h2>
+
+<p>This is taken from the 'Parsing' sample previously in the F# distribution. See below for information on 'newline' and line counting.
+     let digit = ['0'-'9']
+     let whitespace = [' ' '\t' ]
+     let newline = ('\n' | '\r' '\n')</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+<span class="l">15: </span>
+<span class="l">16: </span>
+<span class="l">17: </span>
+<span class="l">18: </span>
+<span class="l">19: </span>
+<span class="l">20: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="i">rule</span> <span class="i">token</span> <span class="o">=</span> <span class="i">parse</span>
+| <span class="i">whitespace</span>        { <span class="i">token</span> <span class="i">lexbuf</span> }
+| <span class="i">newline</span>        { <span class="i">newline</span> <span class="i">lexbuf</span>; <span class="i">token</span> <span class="i">lexbuf</span> }
+| <span class="s">&quot;</span><span class="s">while</span><span class="s">&quot;</span>        { <span class="i">WHILE</span> }
+| <span class="s">&quot;</span><span class="s">begin</span><span class="s">&quot;</span>        { <span class="i">BEGIN</span> }
+| <span class="s">&quot;</span><span class="s">end</span><span class="s">&quot;</span>                { <span class="i">END</span> }
+| <span class="s">&quot;</span><span class="s">do</span><span class="s">&quot;</span>                { <span class="i">DO</span> }
+| <span class="s">&quot;</span><span class="s">if</span><span class="s">&quot;</span>                { <span class="i">IF</span> }
+| <span class="s">&quot;</span><span class="s">then</span><span class="s">&quot;</span>                { <span class="i">THEN</span> }
+| <span class="s">&quot;</span><span class="s">else</span><span class="s">&quot;</span>                { <span class="i">ELSE</span> }
+| <span class="s">&quot;</span><span class="s">print</span><span class="s">&quot;</span>        { <span class="i">PRINT</span> }
+| <span class="s">&quot;</span><span class="s">decr</span><span class="s">&quot;</span>         { <span class="i">DECR</span> }
+| <span class="s">&quot;</span><span class="s">(</span><span class="s">&quot;</span>            { <span class="i">LPAREN</span> }
+| <span class="s">&quot;</span><span class="s">)</span><span class="s">&quot;</span>            { <span class="i">RPAREN</span> }
+| <span class="s">&quot;</span><span class="s">;</span><span class="s">&quot;</span>                { <span class="i">SEMI</span> }
+| <span class="s">&quot;</span><span class="s">:</span><span class="s">=</span><span class="s">&quot;</span>                { <span class="i">ASSIGN</span> }
+| [<span class="s">&#39;a&#39;</span><span class="o">-</span><span class="s">&#39;z&#39;</span>]<span class="o">+</span>     { <span class="i">ID</span>(<span class="i">lexeme</span> <span class="i">lexbuf</span>) }
+| [<span class="s">&#39;-&#39;</span>]<span class="o">?</span><span class="i">digit</span><span class="o">+</span>       { <span class="i">INT</span> (<span class="i">Int32</span><span class="o">.</span><span class="i">Parse</span>(<span class="i">lexeme</span> <span class="i">lexbuf</span>)) }
+| [<span class="s">&#39;-&#39;</span>]<span class="o">?</span><span class="i">digit</span><span class="o">+</span>(<span class="s">&#39;.&#39;</span><span class="i">digit</span><span class="o">+</span>)<span class="o">?</span>([<span class="s">&#39;e&#39;</span><span class="s">&#39;E&#39;</span>]<span class="i">digit</span><span class="o">+</span>)<span class="o">?</span>   { <span class="i">FLOAT</span> (<span class="i">Double</span><span class="o">.</span><span class="i">Parse</span>(<span class="i">lexeme</span> <span class="i">lexbuf</span>)) }
+| <span class="i">eof</span>   { <span class="i">EOF</span> }</pre>
+</td>
+</tr>
+</table>
+
+<p>More than one lexer state is permitted - use</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="i">rule</span> <span class="i">state1</span> <span class="o">=</span> 
+ | <span class="s">&quot;</span><span class="s">this</span><span class="s">&quot;</span>    { <span class="i">state2</span> <span class="i">lexbuf</span> }
+ | <span class="o">..</span><span class="o">.</span>
+<span class="k">and</span> <span class="i">state2</span> <span class="o">=</span> 
+ | <span class="s">&quot;</span><span class="s">that</span><span class="s">&quot;</span>    { <span class="i">state1</span> <span class="i">lexbuf</span> }
+ | <span class="o">..</span><span class="o">.</span></pre>
+</td>
+</tr>
+</table>
+
+<p>States can be passed arguments:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="i">rule</span> <span class="i">state1</span> <span class="i">arg1</span> <span class="i">arg2</span> <span class="o">=</span> <span class="o">..</span><span class="o">.</span>
+ | <span class="s">&quot;</span><span class="s">this</span><span class="s">&quot;</span>    { <span class="i">state2</span> (<span class="i">arg1</span><span class="o">+</span><span class="n">1</span>) (<span class="i">arg2</span><span class="o">+</span><span class="n">2</span>) <span class="i">lexbuf</span> }
+ | <span class="o">..</span><span class="o">.</span>
+<span class="k">and</span> <span class="i">state2</span> <span class="i">arg1</span> <span class="i">arg2</span> <span class="o">=</span> <span class="o">..</span><span class="o">.</span>
+ | <span class="o">..</span><span class="o">.</span></pre>
+</td>
+</tr>
+</table>
+
+<p>Using a lexer</p>
+
+<p>If in the first example above the constructors 'INT' etc generate values of type 'tok' then the above generates a lexer with a function</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">val</span> <span class="i">token</span> <span class="o">:</span> <span class="i">LexBuffer</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">byte</span><span class="o">&gt;</span> <span class="k">-&gt;</span> <span class="i">tok</span></pre>
+</td>
+</tr>
+</table>
+
+<p>Once you have a lexbuffer you can call the above to generate new tokens. Typically you use some methods from Microsoft.FSharp.Text.Lexing to create lex buffers, either a LexBuffer<byte> for ASCII lexing, or LexBuffer<char> for Unicode lexing.</p>
+
+<p>Some ways of creating lex buffers are by using:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="i">LexBuffer</span><span class="o">&lt;</span>_<span class="o">&gt;</span><span class="o">.</span><span class="i">FromChars</span>  
+<span class="i">LexBuffer</span><span class="o">&lt;</span>_<span class="o">&gt;</span><span class="o">.</span><span class="i">FromFunction</span>
+<span class="i">LexBuffer</span><span class="o">&lt;</span>_<span class="o">&gt;</span><span class="o">.</span><span class="i">FromStream</span>
+<span class="i">LexBuffer</span><span class="o">&lt;</span>_<span class="o">&gt;</span><span class="o">.</span><span class="i">FromTextReader</span>
+<span class="i">LexBuffer</span><span class="o">&lt;</span>_<span class="o">&gt;</span><span class="o">.</span><span class="i">FromArray</span></pre>
+</td>
+</tr>
+</table>
+
+<p>Within lexing actions the variable "lexbuf" is in scope and you may use properties ono the LexBuffer type such as:</p>
+
+<p>lexbuf.Lexeme  // get the lexeme as an array of characters or bytes
+   LexBuffer.LexemeString lexbuf // get the lexeme as a string, for Unicode lexing</p>
+
+<p>Lexing positions give locations in source files (the relevant type is Microsoft.FSharp.Text.Lexing.Position).</p>
+
+<p>Generated lexers are nearly always used in conjunction with parsers generarted by fsyacc (also documented on this site). See the Parsed Language starter template.</p>
+
+<h2>Command line options</h2>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+<span class="l">15: </span>
+<span class="l">16: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="i">fslex</span> <span class="o">&lt;</span><span class="i">filename</span><span class="o">&gt;</span>
+    <span class="o">-</span><span class="i">o</span> <span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">string</span><span class="o">&gt;</span> <span class="i">Name</span> <span class="i">the</span> <span class="i">output</span> <span class="i">file</span><span class="o">.</span>
+
+    <span class="o">--</span><span class="i">codepage</span> <span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">int</span><span class="o">&gt;</span> <span class="i">Assume</span> <span class="i">input</span> <span class="i">lexer</span> <span class="i">specification</span> <span class="i">file</span> <span class="i">is</span> <span class="i">encoded</span> <span class="k">with</span> <span class="i">the</span> <span class="i">given</span> <span class="i">codepage</span><span class="o">.</span>
+
+    <span class="o">--</span><span class="i">light</span><span class="o">:</span> (<span class="i">ignored</span>)
+
+    <span class="o">--</span><span class="i">light</span><span class="o">-</span><span class="i">off</span><span class="o">:</span> <span class="i">Add</span> <span class="prep">#light &quot;off&quot;</span> <span class="k">to</span> <span class="i">the</span> <span class="i">top</span> <span class="k">of</span> <span class="i">the</span> <span class="i">generated</span> <span class="i">file</span>
+
+    <span class="o">--</span><span class="i">lexlib</span> <span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs2', 4)" onmouseover="showTip(event, 'fs2', 4)" class="i">string</span><span class="o">&gt;</span> <span class="i">Specify</span> <span class="i">the</span> <span class="k">namespace</span> <span class="k">for</span> <span class="i">the</span> <span class="i">implementation</span> <span class="k">of</span> <span class="i">the</span> <span class="i">lexer</span> <span class="i">table</span> <span class="i">interperter</span> (<span class="k">default</span> <span onmouseout="hideTip(event, 'fs4', 5)" onmouseover="showTip(event, 'fs4', 5)" class="i">Microsoft</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs5', 6)" onmouseover="showTip(event, 'fs5', 6)" class="i">FSharp</span><span class="o">.</span><span class="i">Text</span><span class="o">.</span><span class="i">Lexing</span>)
+
+    <span class="o">--</span><span class="i">unicode</span><span class="o">:</span> <span class="i">Produce</span> <span class="i">a</span> <span class="i">lexer</span> <span class="k">for</span> <span class="k">use</span> <span class="k">with</span> <span class="n">16</span><span class="o">-</span><span class="i">bit</span> <span class="i">unicode</span> <span class="i">characters</span><span class="o">.</span>
+
+    <span class="o">--</span><span class="i">help</span><span class="o">:</span> <span class="i">display</span> <span class="i">this</span> <span onmouseout="hideTip(event, 'fs6', 7)" onmouseover="showTip(event, 'fs6', 7)" class="i">list</span> <span class="k">of</span> <span class="i">options</span>
+
+    <span class="o">-</span><span class="i">help</span><span class="o">:</span> <span class="i">display</span> <span class="i">this</span> <span onmouseout="hideTip(event, 'fs6', 8)" onmouseover="showTip(event, 'fs6', 8)" class="i">list</span> <span class="k">of</span> <span class="i">options</span></pre>
+</td>
+</tr>
+</table>
+
+<h2>Positions and line counting in lexers</h2>
+
+<p>Within a lexer lines can in theory be counted simply by incrementing a global variable or a passed line number count:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="i">rule</span> <span class="i">token</span> <span class="i">line</span> <span class="o">=</span> <span class="o">..</span><span class="o">.</span>
+ | <span class="s">&quot;</span><span class="s">\n</span><span class="s">&quot;</span> | <span class="s">&#39;\r&#39;</span> <span class="s">&#39;\n&#39;</span>    { <span class="i">token</span> (<span class="i">line</span><span class="o">+</span><span class="n">1</span>) }
+ | <span class="o">..</span><span class="o">.</span></pre>
+</td>
+</tr>
+</table>
+
+<p>However for character positions this is tedious, as it means every action becomes polluted with character counting, as you have to manually attach line numbers to tokens. Also, for error reporting writing service it is useful to have to have position information associated held as part of the state in the lexbuffer itself.</p>
+
+<p>Thus F# follows the ocamllex model where the lexer and parser state carry 'position' values that record information for the current match (lex) and the l.h.s/r.h.s of the grammar productions (yacc).</p>
+
+<p>The information carried for each position is:</p>
+
+<ul>
+<li>a filename</li>
+<li>a current 'absolute' character number</li>
+<li>a placeholder for a user-tracked beginning-of-line marker</li>
+<li>a placeholder for a user-tracked line number count.</li>
+</ul>
+
+<h2>Passing state through lexers</h2>
+
+<p>It is sometimes under-appreciated that you can pass arguments around between lexer states. For example, in one example we used imperative state to track a line number.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span class="i">current_line</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs7', 9)" onmouseover="showTip(event, 'fs7', 9)" class="i">ref</span> <span class="n">0</span>
+<span class="k">let</span> <span class="i">current_char</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs7', 10)" onmouseover="showTip(event, 'fs7', 10)" class="i">ref</span> <span class="n">0</span>
+<span class="k">let</span> <span class="i">set_next_line</span> <span class="i">lexbuf</span> <span class="o">=</span> <span class="o">..</span>
+
+<span class="o">..</span><span class="o">.</span>
+<span class="i">rule</span> <span class="i">main</span> <span class="o">=</span> <span class="i">parse</span>
+  | <span class="o">..</span><span class="o">.</span>
+  | <span class="s">&quot;</span><span class="s">/</span><span class="s">/</span><span class="s">&quot;</span> [<span class="o">^</span> <span class="s">&#39;\n&#39;</span>]<span class="o">*</span> <span class="s">&#39;\n&#39;</span> {
+       <span class="i">set_next_line</span> <span class="i">lexbuf</span>; <span class="i">main</span> <span class="i">lexbuf</span>
+    }</pre>
+</td>
+</tr>
+</table>
+
+<p>This sort of imperative code is better replaced by passing arguments:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="i">rule</span> <span class="i">main</span> <span class="i">line</span> <span onmouseout="hideTip(event, 'fs8', 11)" onmouseover="showTip(event, 'fs8', 11)" class="i">char</span> <span class="o">=</span> <span class="i">parse</span>
+  | <span class="o">..</span><span class="o">.</span>
+  | <span class="s">&quot;</span><span class="s">/</span><span class="s">/</span><span class="s">&quot;</span> [<span class="o">^</span> <span class="s">&#39;\n&#39;</span>]<span class="o">*</span> <span class="s">&#39;\n&#39;</span> {
+       <span class="i">main</span> (<span class="i">line</span><span class="o">+</span><span class="n">1</span>) <span class="n">0</span> <span class="i">lexbuf</span>
+    }</pre>
+</td>
+</tr>
+</table>
+
+<p>A good example is that when lexing a comment you want to pass through the start-of-comment position so that you can give a good error message if no end-of-comment is found. Or likewise you may want to pass through the number of nested of comments.</p>
+
+<div class="tip" id="fs1">Multiple items<br />val byte : value:&#39;T -&gt; byte (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.byte<br /><br />--------------------<br />type byte = System.Byte<br /><br />Full name: Microsoft.FSharp.Core.byte</div>
+<div class="tip" id="fs2">Multiple items<br />val string : value:&#39;T -&gt; string<br /><br />Full name: Microsoft.FSharp.Core.Operators.string<br /><br />--------------------<br />type string = System.String<br /><br />Full name: Microsoft.FSharp.Core.string</div>
+<div class="tip" id="fs3">Multiple items<br />val int : value:&#39;T -&gt; int (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.int<br /><br />--------------------<br />type int = int32<br /><br />Full name: Microsoft.FSharp.Core.int<br /><br />--------------------<br />type int&lt;&#39;Measure&gt; = int<br /><br />Full name: Microsoft.FSharp.Core.int&lt;_&gt;</div>
+<div class="tip" id="fs4">namespace Microsoft</div>
+<div class="tip" id="fs5">namespace Microsoft.FSharp</div>
+<div class="tip" id="fs6">type &#39;T list = List&lt;&#39;T&gt;<br /><br />Full name: Microsoft.FSharp.Collections.list&lt;_&gt;</div>
+<div class="tip" id="fs7">Multiple items<br />val ref : value:&#39;T -&gt; &#39;T ref<br /><br />Full name: Microsoft.FSharp.Core.Operators.ref<br /><br />--------------------<br />type &#39;T ref = Ref&lt;&#39;T&gt;<br /><br />Full name: Microsoft.FSharp.Core.ref&lt;_&gt;</div>
+<div class="tip" id="fs8">Multiple items<br />val char : value:&#39;T -&gt; char (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.char<br /><br />--------------------<br />type char = System.Char<br /><br />Full name: Microsoft.FSharp.Core.char</div>
+
+        </div>
+        <div class="span3">
+          <img src="/FsLexYacc/img/logo.png" alt="F# Project" style="width:150px;margin:10px" />  
+          <ul class="nav nav-list" id="menu" style="margin-top: 20px;">
+            <li class="nav-header">FsLexYacc</li>
+            <li><a href="/FsLexYacc/index.html">Home page</a></li>
+            <li class="divider"></li>
+            <li><a href="http://nuget.com/packages/FsLexYacc">Get Library via NuGet</a></li>
+            <li><a href="http://github.com/fsprojects/FsLexYacc">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/fsprojects/FsLexYacc/blob/master/LICENSE.txt">License</a></li>
+            <li><a href="http://github.com/fsprojects/FsLexYacc/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
+            
+            <li class="nav-header">Getting started</li>
+            <li><a href="/FsLexYacc/fslex.html">Using FsLex</a></li>
+            <li><a href="/FsLexYacc/fsyacc.html">Using FsYacc</a></li>
+
+            <li class="nav-header">Documentation</li>
+            <li><a href="/FsLexYacc/reference/index.html">API Reference</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <a href="http://github.com/fsprojects/FsLexYacc"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+  </body>
+  </html>

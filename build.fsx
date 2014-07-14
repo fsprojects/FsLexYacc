@@ -28,13 +28,8 @@ let project = "FsLexYacc"
 // (used as description in AssemblyInfo and as a short summary for NuGet package)
 let summary = "FsLex/FsYacc lexer/parser generation tools"
 
-// Longer description of the project
-// (used as a description for NuGet package; line breaks are automatically cleaned up)
-let description = """FsLex/FsYacc lexer/parser generation tools"""
 // List of author names (for NuGet package)
 let authors = [ "Microsoft Research"; "The F# Software Foundation" ]
-// Tags for your project (for NuGet package)
-let tags = "F# fsharp programming fslex fsyacc parser generator"
 
 // File system information 
 // (<solutionFile>.sln is built during the building process)
@@ -105,21 +100,36 @@ Target "RunTests" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Build a NuGet package
 
-Target "NuGet" (fun _ ->
-    NuGet (fun p -> 
-        { p with   
+Target "NuGet-FsLexYacc.Runtime" (fun _ ->
+    NuGet (fun p ->
+        { p with
             Authors = authors
-            Project = project
             Summary = summary
-            Description = description
+            Description = """Runtime for FsLex/FsYacc lexer/parser generation tools"""
             Version = release.NugetVersion
             ReleaseNotes = String.Join(Environment.NewLine, release.Notes)
-            Tags = tags
+            Tags = "F# fsharp programming fslex fsyacc parser runtime"
             OutputPath = "bin"
             AccessKey = getBuildParamOrDefault "nugetkey" ""
             Publish = hasBuildParam "nugetkey"
             Dependencies = [] })
-        ("nuget/" + project + ".nuspec")
+        ("nuget/FsLexYacc.Runtime.nuspec")
+)
+
+Target "NuGet-FsLexYacc" (fun _ ->
+    NuGet (fun p ->
+        { p with
+            Authors = authors
+            Summary = summary
+            Description = """FsLex/FsYacc lexer/parser generation tools"""
+            Version = release.NugetVersion
+            ReleaseNotes = String.Join(Environment.NewLine, release.Notes)
+            Tags = "F# fsharp programming fslex fsyacc parser generator"
+            OutputPath = "bin"
+            AccessKey = getBuildParamOrDefault "nugetkey" ""
+            Publish = hasBuildParam "nugetkey"
+            Dependencies = ["FsLexYacc.Runtime",release.NugetVersion] })
+        ("nuget/FsLexYacc.nuspec")
 )
 
 // --------------------------------------------------------------------------------------
@@ -163,8 +173,9 @@ Target "All" DoNothing
   ==> "GenerateDocs"
   ==> "ReleaseDocs"
 
-"All" 
-  ==> "NuGet"
+"All"
+  ==> "NuGet-FsLexYacc.Runtime"
+  ==> "NuGet-FsLexYacc"
   ==> "Release"
 
 RunTargetOrDefault "All"

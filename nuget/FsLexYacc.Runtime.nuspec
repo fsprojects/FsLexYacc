@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
-    <id>FsLexYacc</id>
+    <id>FsLexYacc.Runtime</id>
     <version>@build.number@</version>
     <authors>@authors@</authors>
     <owners>@authors@</owners>
@@ -14,13 +14,10 @@
     <releaseNotes>@releaseNotes@</releaseNotes>
     <copyright>Copyright 2014</copyright>
     <tags>@tags@</tags>
-    @dependencies@
+    <dependencies />
   </metadata>
   <files>
-    <file src="..\bin\FSharp.Core.dll" target="bin" />
-    <file src="..\bin\FsLex.exe" target="bin" />
-    <file src="..\bin\FsYacc.exe" target="bin" />
-    <file src="..\bin\FsLexYacc.targets" target="bin" />
-    <file src="..\bin\FsLexYacc.Build.Tasks.dll" target="bin" />
+    <file src="..\bin\FsLexYacc.Runtime.dll" target="lib/net40" />
+    <file src="..\bin\FsLexYacc.Runtime.xml" target="lib/net40" />
   </files>
 </package>

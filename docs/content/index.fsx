@@ -4,8 +4,8 @@
 #I "../../bin"
 
 (**
-FsLex, FsYacc 
-===================
+FsLex, FsYacc
+=============
 
 Documentation
 
@@ -20,19 +20,18 @@ Documentation
   <div class="span1"></div>
 </div>
 
-Example 
+Example
 -------
 
-See [Example Lexer](https://github.com/fsprojects/FsLexYacc/blob/master/tests/LexAndYaccMiniProject/Lexer.fsl)
+See Example:
 
-See [Example Parser](https://github.com/fsprojects/FsLexYacc/blob/master/tests/LexAndYaccMiniProject/Parser.fsy)
-
-See [Example Program](https://github.com/fsprojects/FsLexYacc/blob/master/tests/LexAndYaccMiniProject/Program.fs)
+ * [Lexer](https://github.com/fsprojects/FsLexYacc/blob/master/tests/LexAndYaccMiniProject/Lexer.fsl)
+ * [Parser](https://github.com/fsprojects/FsLexYacc/blob/master/tests/LexAndYaccMiniProject/Parser.fsy)
+ * [Program](https://github.com/fsprojects/FsLexYacc/blob/master/tests/LexAndYaccMiniProject/Program.fs)
 
 To use with an F# project file, you must manually:
 
  * Add the [F# project file targets reference](https://github.com/fsprojects/FsLexYacc/blob/master/tests/TestProjectUsingNugetPackage/TestProjectUsingNugetPackage.fsproj#L86)
-
  * Add the [F# project file items](https://github.com/fsprojects/FsLexYacc/blob/master/tests/TestProjectUsingNugetPackage/TestProjectUsingNugetPackage.fsproj#L54)
 
 *)
@@ -45,7 +44,6 @@ Documentation
 
  * [FsLex Documentation](fslex.html) 
  * [FsYacc Documentation](fsyacc.html) 
-
  * [API Reference](reference/index.html) contains automatically generated documentation for all types, modules
    and functions in the library. This includes additional brief samples on using most of the
    functions.

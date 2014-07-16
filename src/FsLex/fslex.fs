@@ -78,7 +78,7 @@ let main() =
       try 
           Parser.spec Lexer.token lexbuf 
       with e -> 
-          printf "%s(%d,%d): error: %s" filename lexbuf.StartPos.Line lexbuf.StartPos.Column 
+          eprintf "%s(%d,%d): error: %s" filename lexbuf.StartPos.Line lexbuf.StartPos.Column 
               (match e with 
                | Failure s -> s 
                | _ -> e.Message);
@@ -218,7 +218,7 @@ let main() =
     cfprintfn os "# 3000000 \"%s\"" output;
     
   with e -> 
-    printf "FSLEX: error FSL000: %s" (match e with Failure s -> s | e -> e.ToString());
+    eprintf "FSLEX: error FSL000: %s" (match e with Failure s -> s | e -> e.ToString());
     exit 1
 
 

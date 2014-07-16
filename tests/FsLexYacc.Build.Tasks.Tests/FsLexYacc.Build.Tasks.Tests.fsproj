@@ -11,7 +11,7 @@
     <AssemblyName>FsLexYacc.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
-    <Name>FsLexYacc.Tests</Name>
+    <Name>FsLexYacc.Build.Tasks.Tests</Name>
     <TargetFrameworkProfile />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
@@ -46,7 +46,7 @@
   <PropertyGroup Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets')">
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(VisualStudioVersion)' > '11.0' And '$(FSharpTargetsPath)' == ''">
+  <PropertyGroup Condition="'$(VisualStudioVersion)' &gt; '11.0' And '$(FSharpTargetsPath)' == ''">
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(VisualStudioVersion)' == '11.0' Or $(OS) != 'Windows_NT'">
@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="Tests.fs" />
     <None Include="packages.config" />
+    <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
@@ -72,24 +73,9 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\FsLex\FsLex.fsproj">
-      <Name>FsLex</Name>
-      <Project>{3b566646-652d-41ed-95a9-c0da626150c6}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\FsYacc\FsYacc.fsproj">
-      <Name>FsYacc</Name>
-      <Project>{3b566646-652d-41ed-95a9-c0da626150c7}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\FsLexYacc.Runtime\FsLexYacc.Runtime.fsproj">
-      <Name>FsLexYacc.Runtime</Name>
-      <Project>{3b566646-652d-41ed-95a9-c0da626150c8}</Project>
-      <Private>True</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\src\FsLexYacc.Build.Tasks\FsLexYacc.Build.Tasks.fsproj">
       <Name>FsLexYacc.Build.Tasks</Name>
-      <Project>{3b566646-652d-41ed-95a9-c0da626150c9}</Project>
+      <Project>{a9566921-4193-4ec8-83fb-f5a0dc257678}</Project>
       <Private>True</Private>
     </ProjectReference>
   </ItemGroup>

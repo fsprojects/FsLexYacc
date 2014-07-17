@@ -26,3 +26,8 @@ let [<Test>]``unterminated string in code`` () =
   match "Lexer.fsl(35,0): error: unterminated string in code" with
   | FsLexYaccError ("Lexer.fsl", 35, 0, "unterminated string in code") -> ignore()
   | _ -> failwith "Expected: unterminated string in code"
+
+let [<Test>]``parse error`` () =
+  match "Lexer.fsl(37,15): error: parse error" with
+  | FsLexYaccError ("Lexer.fsl", 37, 15, "parse error") -> ignore()
+  | _ -> failwith "Expected: parse error"

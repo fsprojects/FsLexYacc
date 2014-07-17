@@ -7,14 +7,10 @@ open Microsoft.Build.Utilities
 
 // Error formats used in FsLex and FsYacc
 
-// eprintf "%s(%d,%d): error: %s"
-let fsLexYaccErrorPattern = Regex(@"^(?<ORIGIN>.*)\((?<LINE>\d+),(?<COLUMN>\d+)\)\: error\: (?<MESSAGE>.*)$", RegexOptions.Compiled)
-// eprintf "FSLEX: error FSL000: %s"
-let fsLexCrashPattern  = Regex(@"^FSLEX: error FSL000: (?<MESSAGE>.*)$", RegexOptions.Compiled)
-// eprintf "FSYACC: error FSY000: %s"
-let fsYaccCrashPattern = Regex(@"^FSYACC: error FSY000: (?<MESSAGE>.*)$", RegexOptions.Compiled)
-
-let (|FsLexYaccError|_|) s =
+let (|FsLexYaccError|_|) =
+  // eprintf "%s(%d,%d): error: %s"
+  let fsLexYaccErrorPattern = Regex(@"^(?<ORIGIN>.*)\((?<LINE>\d+),(?<COLUMN>\d+)\)\: error\: (?<MESSAGE>.*)$", RegexOptions.Compiled)
+  (fun s ->
     let x = fsLexYaccErrorPattern.Match(s)
     match x.Success with
     | true ->
@@ -23,19 +19,25 @@ let (|FsLexYaccError|_|) s =
         let column  = x.Groups.["COLUMN"].Value.Trim() |> Int32.Parse
         let message = x.Groups.["MESSAGE"].Value.Trim()
         Some(origin, line, column, message)
-    | _ -> None
+    | _ -> None)
 
-let (|FsLexCrash|_|) s =
+let (|FsLexCrash|_|) =
+  // eprintf "FSLEX: error FSL000: %s"
+  let fsLexCrashPattern  = Regex(@"^FSLEX: error FSL000: (?<MESSAGE>.*)$", RegexOptions.Compiled)
+  (fun s ->
     let x = fsLexCrashPattern.Match(s)
     match x.Success with
     | true -> Some(x.Groups.["MESSAGE"].Value.Trim())
-    | _ -> None
+    | _ -> None)
 
-let (|FsYaccCrash|_|) s =
+let (|FsYaccCrash|_|) =
+  // eprintf "FSYACC: error FSY000: %s"
+  let fsYaccCrashPattern = Regex(@"^FSYACC: error FSY000: (?<MESSAGE>.*)$", RegexOptions.Compiled)
+  (fun s ->
     let x = fsYaccCrashPattern.Match(s)
     match x.Success with
     | true -> Some(x.Groups.["MESSAGE"].Value.Trim())
-    | _ -> None
+    | _ -> None)
 
 let logFsLexYaccOutput s (log:TaskLoggingHelper) =
     match s with

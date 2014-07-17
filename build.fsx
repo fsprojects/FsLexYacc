@@ -22,7 +22,7 @@ open System
 
 // The name of the project 
 // (used by attributes in AssemblyInfo, name of a NuGet package and directory in 'src')
-let projects = [ "FsLex"; "FsYacc"; "FsLexYacc.Build.Tasks"; "FsLexYacc.Runtime" ]
+let projects = [ "FsLex"; "FsYacc"; "FsLexYacc.Build.Tasks"]
 let project = "FsLexYacc"
 // Short summary of the project
 // (used as description in AssemblyInfo and as a short summary for NuGet package)
@@ -50,9 +50,16 @@ let gitName = "FsLexYacc"
 // Read additional information from the release notes document
 Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
 let release = parseReleaseNotes (IO.File.ReadAllLines "RELEASE_NOTES.md")
+let releaseRuntime = parseReleaseNotes (IO.File.ReadAllLines "RELEASE_NOTES_Runtime.md")
 
 // Generate assembly info files with the right version & up-to-date information
 Target "AssemblyInfo" (fun _ ->
+  CreateFSharpAssemblyInfo "src/FsLexYacc.Runtime/AssemblyInfo.fs"
+      [ Attribute.Title "FsLexYacc.Runtime"
+        Attribute.Product "FsLexYacc.Runtime"
+        Attribute.Description summary
+        Attribute.Version releaseRuntime.AssemblyVersion
+        Attribute.FileVersion releaseRuntime.AssemblyVersion ]   
   for project in projects do 
       let fileName = "src/" + project + "/AssemblyInfo.fs"
       CreateFSharpAssemblyInfo fileName
@@ -106,8 +113,8 @@ Target "NuGet-FsLexYacc.Runtime" (fun _ ->
             Authors = authors
             Summary = summary
             Description = """Runtime for FsLex/FsYacc lexer/parser generation tools"""
-            Version = release.NugetVersion
-            ReleaseNotes = String.Join(Environment.NewLine, release.Notes)
+            Version = releaseRuntime.NugetVersion
+            ReleaseNotes = String.Join(Environment.NewLine, releaseRuntime.Notes)
             Tags = "F# fsharp programming fslex fsyacc parser runtime"
             OutputPath = "bin"
             AccessKey = getBuildParamOrDefault "nugetkey" ""
@@ -128,7 +135,7 @@ Target "NuGet-FsLexYacc" (fun _ ->
             OutputPath = "bin"
             AccessKey = getBuildParamOrDefault "nugetkey" ""
             Publish = hasBuildParam "nugetkey"
-            Dependencies = ["FsLexYacc.Runtime",release.NugetVersion] })
+            Dependencies = ["FsLexYacc.Runtime",releaseRuntime.NugetVersion] })
         ("nuget/FsLexYacc.nuspec")
 )
 

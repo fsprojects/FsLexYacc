@@ -101,6 +101,6 @@ type FsLex() =
         this.GenerateCommandLineCommands()
 
     // Log errors and warnings
-    override this.LogEventsFromTextOutput(singleLine, messageImportance) =
+    override this.LogEventsFromTextOutput(singleLine, _) =
         if not <| Logging.logFsLexYaccOutput singleLine this.Log
-        then base.LogEventsFromTextOutput(singleLine, messageImportance)
+        then base.LogEventsFromTextOutput(singleLine, MessageImportance.High)

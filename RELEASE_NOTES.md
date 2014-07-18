@@ -5,5 +5,6 @@
 * Logo was added
 * FsLexYacc.Runtime published as a separate NuGet package
 
-#### 6.0.3-beta - June 17 2014
+#### 6.0.3 - June 18 2014
 * FsLex/FsYacc output redirected to VS Output window
+* FsYacc verbose output added to MSBuild log (and VS Output window)

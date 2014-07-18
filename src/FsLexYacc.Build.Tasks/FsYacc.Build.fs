@@ -15,6 +15,7 @@ type FsYacc() =
 
     let mutable inputFile  : string = null
     let mutable outputFile : string = null
+    let mutable verboseFile: string = null
     
     let mutable codePage   : string = null
     let mutable otherFlags : string = null
@@ -35,6 +36,10 @@ type FsYacc() =
     member this.OutputFile
         with get ()  = outputFile
         and  set (x) = outputFile <- x
+
+    member this.VerboseFile
+        with get ()  = verboseFile
+        and  set (x) = verboseFile <- x
     
     member this.OtherFlags
         with get() = otherFlags
@@ -114,6 +119,17 @@ type FsYacc() =
         this.GenerateCommandLineCommands()
 
     // Log errors and warnings
-    override this.LogEventsFromTextOutput(singleLine, messageImportance) =
+    override this.LogEventsFromTextOutput(singleLine, _) =
         if not <| Logging.logFsLexYaccOutput singleLine this.Log
-        then base.LogEventsFromTextOutput(singleLine, messageImportance)
+        then base.LogEventsFromTextOutput(singleLine, MessageImportance.High)
+
+    override this.Execute () =
+        let result =  base.Execute()
+        if IO.File.Exists verboseFile then
+            let message = sprintf "Log from verbose output file '%s':" verboseFile
+            this.Log.LogMessageFromText("------------------------", MessageImportance.High) |> ignore
+            this.Log.LogMessageFromText(message, MessageImportance.High) |> ignore
+            for lineOfText in IO.File.ReadAllLines verboseFile do
+                this.Log.LogMessageFromText(lineOfText, MessageImportance.High) |> ignore
+            this.DeleteTempFile(verboseFile)
+        result

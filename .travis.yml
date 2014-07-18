@@ -1,6 +1,8 @@
 language: objective-c
 
 env:
+  global:
+    - EnableNuGetPackageRestore=true 
   matrix:
     - MONO_VERSION="3.4.0"
 
@@ -9,5 +11,5 @@ install:
   - sudo installer -pkg "MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.pkg" -target /
 
 script: 
-  - ./build.sh 
+  - ./build.sh Release
 

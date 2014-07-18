@@ -58,6 +58,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 		<FsYacc
 			InputFile="%(FsYacc.Identity)"
 			OutputFile="$(FsYaccOutputFolder)%(FsYacc.Filename).fs"
+			VerboseFile="$(FsYaccOutputFolder)%(FsYacc.Filename).fsyacc.output"
 			Open="%(FsYacc.Open)"
 			Module="%(FsYacc.Module)"
 			OtherFlags="%(FsYacc.OtherFlags)"

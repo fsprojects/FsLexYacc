@@ -79,7 +79,7 @@ MSBuild support
 The nuget package includes MSBuild support for `FsLex` and `FsYacc`. You must add a `FsLexYacc.targets` reference
 to your project file manually like this (adjust the nuget package number if needed):
 
-    <Import Project="..\packages\FsLexYacc.6.0.1\bin\FsLexYacc.targets" />
+    <Import Project="..\packages\FsLexYacc.6.0.3\bin\FsLexYacc.targets" />
 
 You must also add `FsLex` andd `FsYacc` entries like this:
 
@@ -89,6 +89,12 @@ You must also add `FsLex` andd `FsYacc` entries like this:
     <FsLex Include="..\LexAndYaccMiniProject\Lexer.fsl">
       <OtherFlags>--unicode</OtherFlags>
     </FsLex>
+    
+If you want to see `verbose` output from `FsYacc` you need to add `-v` in `OtherFlags` section like this:
+
+    <FsYacc Include="..\LexAndYaccMiniProject\Parser.fsy">
+      <OtherFlags>--module Parser -v</OtherFlags>
+    </FsYacc>
 
 Command line options
 --------------------

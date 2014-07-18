@@ -99,3 +99,8 @@ type FsLex() =
     // Expose this to internal components (for unit testing)
     member internal this.InternalGenerateCommandLineCommands() =
         this.GenerateCommandLineCommands()
+
+    // Log errors and warnings
+    override this.LogEventsFromTextOutput(singleLine, _) =
+        if not <| Logging.logFsLexYaccOutput singleLine this.Log
+        then base.LogEventsFromTextOutput(singleLine, MessageImportance.High)

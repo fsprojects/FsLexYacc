@@ -106,7 +106,7 @@ let main() =
     
         Parser.spec Lexer.token lexbuf 
       with e -> 
-         printf "%s(%d,%d): error: %s" filename lexbuf.StartPos.Line lexbuf.StartPos.Column e.Message;
+         eprintf "%s(%d,%d): error: %s" filename lexbuf.StartPos.Line lexbuf.StartPos.Column e.Message;
          exit 1  in
 
   let has_extension (s:string) = 
@@ -526,6 +526,6 @@ let main() =
 let _ = 
     try main()
     with e -> 
-      printf "FSYACC: error FSY000: %s" (match e with Failure s -> s | e -> e.Message);
+      eprintf "FSYACC: error FSY000: %s" (match e with Failure s -> s | e -> e.Message);
       exit 1
 

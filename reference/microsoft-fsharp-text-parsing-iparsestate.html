@@ -48,10 +48,10 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '60', 60)" onmouseover="showTip(event, '60', 60)">
+          <code onmouseout="hideTip(event, '61', 61)" onmouseover="showTip(event, '61', 61)">
             GetInput(arg1)
           </code>
-          <div class="tip" id="60">
+          <div class="tip" id="61">
             <strong>Signature:</strong> int -&gt; obj<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
@@ -68,10 +68,10 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '61', 61)" onmouseover="showTip(event, '61', 61)">
+          <code onmouseout="hideTip(event, '62', 62)" onmouseover="showTip(event, '62', 62)">
             InputEndPosition(arg1)
           </code>
-          <div class="tip" id="61">
+          <div class="tip" id="62">
             <strong>Signature:</strong> int -&gt; Position<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
@@ -88,10 +88,10 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '62', 62)" onmouseover="showTip(event, '62', 62)">
+          <code onmouseout="hideTip(event, '63', 63)" onmouseover="showTip(event, '63', 63)">
             InputRange(index)
           </code>
-          <div class="tip" id="62">
+          <div class="tip" id="63">
             <strong>Signature:</strong> index:int -&gt; Position * Position<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
@@ -108,10 +108,10 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '63', 63)" onmouseover="showTip(event, '63', 63)">
+          <code onmouseout="hideTip(event, '64', 64)" onmouseover="showTip(event, '64', 64)">
             InputStartPosition(arg1)
           </code>
-          <div class="tip" id="63">
+          <div class="tip" id="64">
             <strong>Signature:</strong> int -&gt; Position<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
@@ -122,26 +122,6 @@
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Get the start position for the terminal or non-terminal at a given index matched by the production</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '64', 64)" onmouseover="showTip(event, '64', 64)">
-            ParserLocalStore
-          </code>
-          <div class="tip" id="64">
-            <strong>Signature:</strong> IDictionary&lt;string,obj&gt;<br />
-              <strong>Modifiers:</strong> abstract<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="http://github.com/fsprojects/FsLexYacc/tree/master/src/FsLexYacc.Runtime/Parsing.fs#L29-29" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Get the store of local values associated with this parser</p>
 
         </td>
       </tr>
@@ -169,9 +149,29 @@
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '66', 66)" onmouseover="showTip(event, '66', 66)">
-            RaiseError()
+            ParserLocalStore
           </code>
           <div class="tip" id="66">
+            <strong>Signature:</strong> IDictionary&lt;string,obj&gt;<br />
+              <strong>Modifiers:</strong> abstract<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/fsprojects/FsLexYacc/tree/master/src/FsLexYacc.Runtime/Parsing.fs#L29-29" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Get the store of local values associated with this parser</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '67', 67)" onmouseover="showTip(event, '67', 67)">
+            RaiseError()
+          </code>
+          <div class="tip" id="67">
             <strong>Signature:</strong> unit -&gt; &#39;b<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'b          </div>
@@ -182,26 +182,6 @@
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Raise an error in this parse context</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '67', 67)" onmouseover="showTip(event, '67', 67)">
-            ResultRange
-          </code>
-          <div class="tip" id="67">
-            <strong>Signature:</strong> Position * Position<br />
-              <strong>Modifiers:</strong> abstract<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="http://github.com/fsprojects/FsLexYacc/tree/master/src/FsLexYacc.Runtime/Parsing.fs#L27-27" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Get the full range of positions matched by the production</p>
 
         </td>
       </tr>
@@ -225,14 +205,37 @@
 
         </td>
       </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '69', 69)" onmouseover="showTip(event, '69', 69)">
+            ResultRange
+          </code>
+          <div class="tip" id="69">
+            <strong>Signature:</strong> Position * Position<br />
+              <strong>Modifiers:</strong> abstract<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/fsprojects/FsLexYacc/tree/master/src/FsLexYacc.Runtime/Parsing.fs#L27-27" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Get the full range of positions matched by the production</p>
+
+        </td>
+      </tr>
     </tbody>
   </table>
 
         </div>
         <div class="span3">
           <img src="/FsLexYacc/img/logo.png" alt="F# Project" style="width:150px;margin:10px" />
-          <a href="https://travis-ci.org/fsprojects/FsLexYacc" style="margin-left: 20px;">
+          <a href="https://travis-ci.org/fsprojects/FsLexYacc" style="margin-left: 20px;padding-right: 150px;">
             <img src="https://travis-ci.org/fsprojects/FsLexYacc.svg" alt="travis-ci" />
+          </a>
+          <a href="https://ci.appveyor.com/project/sergey-tihon/fslexyacc" style="margin-left: 20px;">
+            <img src="https://ci.appveyor.com/api/projects/status/m5oxrlbn84wvkvpn" alt="appveyor-ci" />
           </a>
           <ul class="nav nav-list" id="menu" style="margin-top: 20px;">
             <li class="nav-header">FsLexYacc</li>

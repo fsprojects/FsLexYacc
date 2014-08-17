@@ -95,6 +95,10 @@ Target "Build" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Run the unit tests using test runner
 
+Target "RunOldFsYaccTests" (fun _ ->
+    executeFSIWithArgs @"tests\fsyacc" "OldFsYaccTests.fsx" ["--define:RELEASE"] [] |> ignore
+)
+
 Target "RunTests" (fun _ ->
     !! testAssemblies 
     |> NUnit (fun p ->
@@ -173,6 +177,7 @@ Target "All" DoNothing
   ==> "AssemblyInfo"
   ==> "Build"
   ==> "RunTests"
+  ==> "RunOldFsYaccTests"
   ==> "All"
 
 "All" 

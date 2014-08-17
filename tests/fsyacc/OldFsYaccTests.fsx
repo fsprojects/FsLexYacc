@@ -23,7 +23,7 @@ let fsc output files =
     "lexing.fs"::"parsing.fs"::@"..\..\src\Common\Arg.fs"::"arg.fs"::"tree.ml"::files
     |> Fsc (fun p ->
         { p with References = [@"FsLexYacc.Runtime.dll"
-                               @"C:\Program Files (x86)\Reference Assemblies\Microsoft\FSharp\.NETFramework\v4.0\4.3.0.0\FSharp.Core.dll"]
+                               @"FSharp.Core.dll"]
                  Output = output; Debug = true; FscTarget = Exe})
     let wrongExe = (files |> List.rev |> List.head) |> FileHelper.changeExt ".exe"
     if FileInfo(output).LastWriteTime < FileInfo(wrongExe).LastWriteTime

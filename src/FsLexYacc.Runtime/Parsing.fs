@@ -117,8 +117,11 @@ type internal Stack<'a>(n)  =
     member buf.IsEmpty = (count = 0)
     member buf.PrintStack() = 
         for i = 0 to (count - 1) do 
+#if FX_NO_CONSOLE
+            ()
+#else
             System.Console.Write("{0}{1}",(contents.[i]),if i=count-1 then ":" else "-") 
-          
+#endif         
 exception RecoverableParseError
 exception Accept of obj
 

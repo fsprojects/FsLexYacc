@@ -3,3 +3,6 @@
 
 #### 6.0.3 - September 15, 2014
 * Add profiles 7, 259 to runtime
+
+#### 6.0.4 - September 15, 2014
+* Bump version to match FsLexYacc package

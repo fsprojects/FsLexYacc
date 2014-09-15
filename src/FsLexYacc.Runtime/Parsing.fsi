@@ -112,7 +112,7 @@ exception Accept of obj
 exception RecoverableParseError
 #endif
 
-#if DEBUG
+#if __DEBUG
 module internal Flags =
   val mutable debug : bool
 #endif

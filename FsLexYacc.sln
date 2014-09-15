@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{1F1B4F0F-2998-4D74-865B-9122611C2B14}"
 	ProjectSection(SolutionItems) = preProject
@@ -47,6 +47,8 @@ EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsLexYacc.Runtime", "src\FsLexYacc.Runtime\FsLexYacc.Runtime.fsproj", "{7E90D6CE-A10B-4858-A5BC-41DF7250CBCC}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsLexYacc.Profile7", "src\FsLexYacc.Profile7\FsLexYacc.Profile7.fsproj", "{A8E7694B-4B09-4998-94ED-35FC537DE296}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsLexYacc.Profile259", "src\FsLexYacc.Profile259\FsLexYacc.Profile259.fsproj", "{D9B99CED-AD13-442B-AA9A-94913CD1FB54}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -118,6 +120,16 @@ Global
 		{A8E7694B-4B09-4998-94ED-35FC537DE296}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{A8E7694B-4B09-4998-94ED-35FC537DE296}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{A8E7694B-4B09-4998-94ED-35FC537DE296}.Release|x86.ActiveCfg = Release|Any CPU
+		{D9B99CED-AD13-442B-AA9A-94913CD1FB54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9B99CED-AD13-442B-AA9A-94913CD1FB54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9B99CED-AD13-442B-AA9A-94913CD1FB54}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{D9B99CED-AD13-442B-AA9A-94913CD1FB54}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{D9B99CED-AD13-442B-AA9A-94913CD1FB54}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D9B99CED-AD13-442B-AA9A-94913CD1FB54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9B99CED-AD13-442B-AA9A-94913CD1FB54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9B99CED-AD13-442B-AA9A-94913CD1FB54}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{D9B99CED-AD13-442B-AA9A-94913CD1FB54}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{D9B99CED-AD13-442B-AA9A-94913CD1FB54}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

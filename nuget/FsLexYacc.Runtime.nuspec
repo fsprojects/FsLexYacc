@@ -21,5 +21,7 @@
     <file src="..\bin\FsLexYacc.Runtime.xml" target="lib/net40" />
     <file src="..\bin\lib\net45+win\FsLexYacc.Runtime.dll" target="lib/portable-net45+win+MonoAndroid10+MonoTouch10" />
     <file src="..\bin\lib\net45+win\FsLexYacc.Runtime.xml" target="lib/portable-net45+win+MonoAndroid10+MonoTouch10" />
+    <file src="..\bin\lib\net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\FsLexYacc.Runtime.dll" target="lib/portable-net45+netcore45+wpa81+wp8+MonoAndroid10+MonoTouch10" />
+    <file src="..\bin\lib\net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\FsLexYacc.Runtime.xml" target="lib/portable-net45+netcore45+wpa81+wp8+MonoAndroid10+MonoTouch10" />
   </files>
 </package>

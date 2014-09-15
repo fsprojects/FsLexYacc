@@ -125,7 +125,7 @@ type internal Stack<'a>(n)  =
 exception RecoverableParseError
 exception Accept of obj
 
-#if DEBUG
+#if __DEBUG
 module Flags = 
     let mutable debug = false
 #endif
@@ -220,7 +220,7 @@ module Implementation =
     let interpret (tables: Tables<'tok>) lexer (lexbuf : LexBuffer<_>) initialState =                                                                      
         let localStore = new Dictionary<string,obj>() in
         localStore.["LexBuffer"] <- lexbuf;
-#if DEBUG
+#if __DEBUG
         if Flags.debug then System.Console.WriteLine("\nParser: interpret tables");
 #endif
         let stateStack : Stack<int> = new Stack<_>(100)
@@ -264,7 +264,7 @@ module Implementation =
                 member p.RaiseError()  = raise RecoverableParseError  (* NOTE: this binding tests the fairly complex logic associated with an object expression implementing a generic abstract method *)
             }       
 
-#if DEBUG
+#if __DEBUG
         let report haveLookahead lookaheadToken = 
             if haveLookahead then sprintf "%A" lookaheadToken 
             else "[TBC]"
@@ -275,18 +275,18 @@ module Implementation =
         // This is used at end-of-file to make sure we can shift both the 'error' token and the 'EOF' token.
         let rec popStackUntilErrorShifted(tokenOpt) =
             // Keep popping the stack until the "error" terminal is shifted
-#if DEBUG
+#if __DEBUG
             if Flags.debug then System.Console.WriteLine("popStackUntilErrorShifted");
 #endif
             if stateStack.IsEmpty then 
-#if DEBUG
+#if __DEBUG
                 if Flags.debug then 
                     System.Console.WriteLine("state stack empty during error recovery - generating parse error");
 #endif
                 failwith "parse error";
             
             let currState = stateStack.Peep()
-#if DEBUG
+#if __DEBUG
             if Flags.debug then 
                 System.Console.WriteLine("In state {0} during error recovery", currState);
 #endif
@@ -300,7 +300,7 @@ module Implementation =
                     let nextState = actionValue action 
                     actionKind (actionTable.Read(nextState, tables.tagOfToken(token))) = shiftFlag) then
 
-#if DEBUG
+#if __DEBUG
                 if Flags.debug then System.Console.WriteLine("shifting error, continuing with error recovery");
 #endif
                 let nextState = actionValue action 
@@ -311,7 +311,7 @@ module Implementation =
             else
                 if valueStack.IsEmpty then 
                     failwith "parse error";
-#if DEBUG
+#if __DEBUG
                 if Flags.debug then 
                     System.Console.WriteLine("popping stack during error recovery");
 #endif
@@ -324,7 +324,7 @@ module Implementation =
                 finished <- true
             else
                 let state = stateStack.Peep()
-#if DEBUG
+#if __DEBUG
                 if Flags.debug then (Console.Write("{0} value(state), state ",valueStack.Count); stateStack.PrintStack())
 #endif
                 let action = 
@@ -361,7 +361,7 @@ module Implementation =
                 if kind = shiftFlag then (
                     if errorSuppressionCountDown > 0 then 
                         errorSuppressionCountDown <- errorSuppressionCountDown - 1;
-#if DEBUG
+#if __DEBUG
                         if Flags.debug then Console.WriteLine("shifting, reduced errorRecoverylevel to {0}\n", errorSuppressionCountDown);
 #endif
                     let nextState = actionValue action                                     
@@ -369,7 +369,7 @@ module Implementation =
                     let data = tables.dataOfToken lookaheadToken
                     valueStack.Push(ValueInfo(data, lookaheadStartPos, lookaheadEndPos));
                     stateStack.Push(nextState);                                                                
-#if DEBUG
+#if __DEBUG
                     if Flags.debug then Console.WriteLine("shift/consume input {0}, shift to state {1}", report haveLookahead lookaheadToken, nextState);
 #endif
                     haveLookahead <- false
@@ -379,7 +379,7 @@ module Implementation =
                     let reduction = reductions.[prod]                                                             
                     let n = int tables.reductionSymbolCounts.[prod]
                        // pop the symbols, populate the values and populate the locations                              
-#if DEBUG
+#if __DEBUG
                     if Flags.debug then Console.Write("reduce popping {0} values/states, lookahead {1}", n, report haveLookahead lookaheadToken);
 #endif
                     
@@ -404,7 +404,7 @@ module Implementation =
                         let currState = stateStack.Peep()
                         let newGotoState = gotoTable.Read(int tables.productionToNonTerminalTable.[prod], currState)
                         stateStack.Push(newGotoState)
-#if DEBUG
+#if __DEBUG
                         if Flags.debug then Console.WriteLine(" goto state {0}", newGotoState)
 #endif
                     with                                                                                              
@@ -412,19 +412,19 @@ module Implementation =
                           finished <- true;                                                                             
                           valueStack.Push(ValueInfo(res, lhsPos.[0], lhsPos.[1])) 
                     | RecoverableParseError ->
-#if DEBUG
+#if __DEBUG
                           if Flags.debug then Console.WriteLine("RecoverableParseErrorException...\n");
 #endif
                           popStackUntilErrorShifted(None);
                           // User code raised a Parse_error. Don't report errors again until three tokens have been shifted 
                           errorSuppressionCountDown <- 3
                 elif kind = errorFlag then (
-#if DEBUG
+#if __DEBUG
                     if Flags.debug then Console.Write("ErrorFlag... ");
 #endif
                     // Silently discard inputs and don't report errors 
                     // until three tokens in a row have been shifted 
-#if DEBUG
+#if __DEBUG
                     if Flags.debug then printfn "error on token '%A' " (if haveLookahead then Some(lookaheadToken) else None);
 #endif
                     if errorSuppressionCountDown > 0 then 
@@ -432,7 +432,7 @@ module Implementation =
                         // We can only do this by repeatedly popping the stack until we can shift both an 'error' token
                         // and an EOF token. 
                         if inEofCountDown && eofCountDown < 10 then 
-#if DEBUG
+#if __DEBUG
                             if Flags.debug then printfn "poppin stack, lokking to shift both 'error' and that token, during end-of-file error recovery" ;
 #endif
                             popStackUntilErrorShifted(if haveLookahead then Some(lookaheadToken) else None);
@@ -441,7 +441,7 @@ module Implementation =
                         if not haveLookahead then 
                             failwith "parse error: unexpected end of file"
                             
-#if DEBUG
+#if __DEBUG
                         if Flags.debug then printfn "discarding token '%A' during error suppression" (if haveLookahead then Some(lookaheadToken) else None);
 #endif
                         // Discard the token
@@ -481,13 +481,13 @@ module Implementation =
                         tables.parseError(errorContext);
                         popStackUntilErrorShifted(None);
                         errorSuppressionCountDown <- 3;
-#if DEBUG
+#if __DEBUG
                         if Flags.debug then System.Console.WriteLine("generated syntax error and shifted error token, haveLookahead = {0}\n", haveLookahead);
 #endif
                     )
                 ) elif kind = acceptFlag then 
                     finished <- true
-#if DEBUG
+#if __DEBUG
                 else
                   if Flags.debug then System.Console.WriteLine("ALARM!!! drop through case in parser");  
 #endif

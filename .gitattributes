@@ -69,4 +69,6 @@
 ###############################################################################
 *.input1 eol=crlf
 *.badInput eol=crlf
+*.variation1 eol=crlf
+*.variation2 eol=crlf
 *.bsl eol=crlf

@@ -67,5 +67,5 @@
 ###############################################################################
 # diff behavior for input/output/baseline files for Old FsLexYacc tests
 ###############################################################################
-*.input1 eol=lf
+*.input1 eol=crlf
 *.bsl eol=lf

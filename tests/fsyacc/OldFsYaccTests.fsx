@@ -51,10 +51,12 @@ let test exe (args, baseLineOutput) =
     if output.Length <> expectedLines.Length ||
        Seq.map2 (fun a b -> a=b) output expectedLines |> Seq.exists not
        then
-         if output.Length = expectedLines.Length then
-            Seq.map2 (fun a b -> a,b) output expectedLines
-            |> Seq.iteri (fun i (a,b) ->
-                if a<>b then printfn "Line #%d\n\tExpected:%s\n\tOutput  :%s" i b a)
+         printfn "Expected:"
+         for line in expectedLines do
+            printfn "\t%s" line
+         printfn "Output:"
+         for line in output do
+            printfn "\t%s" line
          File.WriteAllLines(baseLineOutput+".err", output)
          failwithf "Output is not equal to expected base line '%s'" baseLineOutput
        else

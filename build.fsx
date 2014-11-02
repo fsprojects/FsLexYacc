@@ -87,7 +87,15 @@ Target "CleanDocs" (fun _ ->
 // Build library & test project
 
 Target "Build" (fun _ ->
-    !! (solutionFile + "*.sln")
+    let projects =
+        (if not isLinux then
+            !! "src/**/*.fsproj"
+         else
+            !! "src/**/*.fsproj"
+              -- "src/FsLexYacc.Profile259/*.fsproj")
+          ++ "tests/FsLexYacc.Build.Tasks.Tests/*.fsproj"
+
+    projects
     |> MSBuildRelease "" "Rebuild"
     |> ignore
 )

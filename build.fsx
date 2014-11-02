@@ -104,7 +104,7 @@ Target "Build" (fun _ ->
 // Run the unit tests using test runner
 
 Target "RunOldFsYaccTests" (fun _ ->
-    let result = executeFSIWithArgs @"tests\fsyacc" "OldFsYaccTests.fsx" ["--define:RELEASE"] []
+    let result = executeFSIWithArgs "tests/fsyacc" "OldFsYaccTests.fsx" ["--define:RELEASE"] []
     if not result then
         failwith "Old FsLexYacc tests were failed"
 )

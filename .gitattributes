@@ -63,3 +63,13 @@
 #*.RTF   diff=astextplain
 
 *.sh text eol=lf
+
+###############################################################################
+# diff behavior for input/output/baseline files for Old FsLexYacc tests
+###############################################################################
+*.input1 eol=crlf
+*.badInput eol=crlf
+*.variation1 eol=crlf
+*.variation2 eol=crlf
+*.bsl eol=crlf
+*.utf8 eol=crlf

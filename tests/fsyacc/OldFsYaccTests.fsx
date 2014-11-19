@@ -23,7 +23,7 @@ let fsc output files =
     "lexing.fs"::"parsing.fs"::@"..\..\src\Common\Arg.fs"::"arg.fs"::"tree.ml"::files
     |> Fsc (fun p ->
         { p with References = [@"FsLexYacc.Runtime.dll"
-                               @"FSharp.Core.dll"]
+                               @"FSharp.Core\FSharp.Core.dll"]
                  Output = output; Debug = true; FscTarget = Exe})
     let wrongExe = (files |> List.rev |> List.head) |> FileHelper.changeExt ".exe"
     if FileInfo(output).LastWriteTime < FileInfo(wrongExe).LastWriteTime
@@ -51,6 +51,12 @@ let test exe (args, baseLineOutput) =
     if output.Length <> expectedLines.Length ||
        Seq.map2 (fun a b -> a=b) output expectedLines |> Seq.exists not
        then
+         printfn "Expected:"
+         for line in expectedLines do
+            printfn "\t%s" line
+         printfn "Output:"
+         for line in output do
+            printfn "\t%s" line
          File.WriteAllLines(baseLineOutput+".err", output)
          failwithf "Output is not equal to expected base line '%s'" baseLineOutput
        else

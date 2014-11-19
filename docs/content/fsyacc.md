@@ -115,7 +115,7 @@ Command line options
 
         --light-off: Add #light "off" to the top of the generated file
 
-        --ml-compatibility: Support the use of the global state from the 'Parsing' module in FSharp.PowerPack.dll.
+        --ml-compatibility: Support the use of the global state from the 'Parsing' module in FsLexYacc.dll.
 
         --tokens: Simply tokenize the specification file itself.
 

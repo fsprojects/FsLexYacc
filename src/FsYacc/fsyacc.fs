@@ -1,6 +1,6 @@
 (* (c) Microsoft Corporation 2005-2008.  *)
 
-module internal FSharp.PowerPack.FsYacc.Driver 
+module internal FsLexYacc.FsYacc.Driver 
 
 open System.IO 
 open System.Collections.Generic
@@ -8,8 +8,8 @@ open Printf
 open Internal.Utilities
 open Internal.Utilities.Text.Lexing
 
-open FSharp.PowerPack.FsYacc
-open FSharp.PowerPack.FsYacc.AST
+open FsLexYacc.FsYacc
+open FsLexYacc.FsYacc.AST
 
 //------------------------------------------------------------------
 // This code is duplicated from Microsoft.FSharp.Compiler.UnicodeLexing
@@ -58,7 +58,7 @@ let usage =
     ArgInfo("--open", ArgType.String (fun s -> opens := !opens @ [s]), "Add the given module to the list of those to open in both the generated signature and implementation."); 
     ArgInfo("--light", ArgType.Unit (fun () ->  light := Some true), "(ignored)");
     ArgInfo("--light-off", ArgType.Unit (fun () ->  light := Some false), "Add #light \"off\" to the top of the generated file");
-    ArgInfo("--ml-compatibility", ArgType.Set compat, "Support the use of the global state from the 'Parsing' module in FSharp.PowerPack.dll."); 
+    ArgInfo("--ml-compatibility", ArgType.Set compat, "Support the use of the global state from the 'Parsing' module in FsLexYacc.dll."); 
     ArgInfo("--tokens", ArgType.Set tokenize, "Simply tokenize the specification file itself."); 
     ArgInfo("--lexlib", ArgType.String (fun s ->  lexlib <- s), "Specify the namespace for the implementation of the parser table interperter (default Microsoft.FSharp.Text.Parsing)");
     ArgInfo("--parslib", ArgType.String (fun s ->  parslib <- s), "Specify the namespace for the implementation of the parser table interperter (default Microsoft.FSharp.Text.Parsing)");

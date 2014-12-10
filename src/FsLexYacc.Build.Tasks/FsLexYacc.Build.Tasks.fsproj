@@ -8,9 +8,10 @@
     <OutputType>Library</OutputType>
     <AssemblyName>FsLexYacc.Build.Tasks</AssemblyName>
     <AllowCrossTargeting>true</AllowCrossTargeting>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
     <DocumentationFile>FsLexYacc.Build.Tasks.xml</DocumentationFile>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <!-- These dummy entries are needed for F# Beta2 -->
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -39,11 +40,12 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Build.Tasks.v4.0" />
+    <Reference Include="Microsoft.Build.Utilities.v4.0" />
     <Reference Include="mscorlib" />
     <Reference Include="System" />
     <Reference Include="Microsoft.Build.Engine" />
     <Reference Include="Microsoft.Build.Framework" />
-    <Reference Include="Microsoft.Build.Utilities" />
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Private>True</Private>
     </Reference>

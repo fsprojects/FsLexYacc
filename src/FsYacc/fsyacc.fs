@@ -1,6 +1,6 @@
 (* (c) Microsoft Corporation 2005-2008.  *)
 
-module internal FSharp.PowerPack.FsYacc.Driver 
+module internal FsLexYacc.FsYacc.Driver 
 
 open System.IO 
 open System.Collections.Generic
@@ -8,8 +8,8 @@ open Printf
 open Internal.Utilities
 open Internal.Utilities.Text.Lexing
 
-open FSharp.PowerPack.FsYacc
-open FSharp.PowerPack.FsYacc.AST
+open FsLexYacc.FsYacc
+open FsLexYacc.FsYacc.AST
 
 //------------------------------------------------------------------
 // This code is duplicated from Microsoft.FSharp.Compiler.UnicodeLexing

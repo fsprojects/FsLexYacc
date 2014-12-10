@@ -1,10 +1,10 @@
 %{
 (* (c) Microsoft Corporation 2005-2008.  *)
 
-// FSharp.PowerPack.FsYacc.Parser
+// FsLexYacc.FsYacc.Parser
 
-open FSharp.PowerPack.FsYacc
-open FSharp.PowerPack.FsYacc.AST
+open FsLexYacc.FsYacc
+open FsLexYacc.FsYacc.AST
 
 #nowarn "62" // This construct is for ML compatibility
 

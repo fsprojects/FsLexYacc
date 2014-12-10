@@ -11,13 +11,13 @@
     <!-- 5310 tracks reenabling -->
     <DefineConstants>INTERNALIZED_FSLEXYACC_RUNTIME;$(DefineConstants)</DefineConstants>
     <AllowCrossTargeting>true</AllowCrossTargeting>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
     <FsLexToolPath>..\..\lkg\FSharp.PowerPack-1.9.7.7\bin</FsLexToolPath>
     <FsLexToolExe>FsLex.exe</FsLexToolExe>
     <FsYaccToolPath>..\..\lkg\FSharp.PowerPack-1.9.7.7\bin</FsYaccToolPath>
     <FsYaccToolExe>FsYacc.exe</FsYaccToolExe>
-
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -40,7 +40,7 @@
       <OtherFlags>--unicode --lexlib Internal.Utilities.Text.Lexing</OtherFlags>
     </FsLex>
     <FsYacc Include="fsyaccpars.fsy">
-      <OtherFlags>--internal --module FSharp.PowerPack.FsYacc.Parser --lexlib Internal.Utilities.Text.Lexing --parslib Internal.Utilities.Text.Parsing</OtherFlags>
+      <OtherFlags>--internal --module FsLexYacc.FsYacc.Parser --lexlib Internal.Utilities.Text.Lexing --parslib Internal.Utilities.Text.Parsing</OtherFlags>
     </FsYacc>
     <Compile Include="AssemblyInfo.fs">
       <Link>AssemblyInfo.fs</Link>
@@ -75,6 +75,11 @@
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Private>True</Private>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <PropertyGroup Condition="Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')">
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>

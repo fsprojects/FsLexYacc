@@ -1,6 +1,6 @@
 // (c) Microsoft Corporation 2005-2007.
 
-module internal FSharp.PowerPack.FsYacc.AST
+module internal FsLexYacc.FsYacc.AST
 
 #nowarn "62" // This construct is for ML compatibility.
 

@@ -1,10 +1,10 @@
 // (c) Microsoft Corporation 2005-2009.  
 
-module internal FSharp.PowerPack.FsLex.Driver 
+module internal FsLexYacc.FsLex.Driver 
 
-open FSharp.PowerPack.FsLex
-open FSharp.PowerPack.FsLex.AST
-open FSharp.PowerPack.FsLex.Parser
+open FsLexYacc.FsLex
+open FsLexYacc.FsLex.AST
+open FsLexYacc.FsLex.Parser
 open Printf
 open Internal.Utilities
 open Internal.Utilities.Text.Lexing

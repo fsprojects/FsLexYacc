@@ -131,7 +131,7 @@ Within a lexer lines can in theory be counted simply by incrementing a global va
      | "\n" | '\r' '\n'    { token (line+1) }
      | ...
 
-However for character positions this is tedious, as it means every action becomes polluted with character counting, as you have to manually attach line numbers to tokens. Also, for error reporting writing service it is useful to have to have position information associated held as part of the state in the lexbuffer itself.
+However for character positions this is tedious, as it means every action becomes polluted with character counting, as you have to manually attach line numbers to tokens. Also, for error reporting writing service it is useful to have position information associated held as part of the state in the lexbuffer itself.
 
 Thus F# follows the `OCamlLex` model where the lexer and parser state carry `position` values that record information for the current match (`lex`) and the `l.h.s`/`r.h.s` of the grammar productions (`yacc`).
 

@@ -220,16 +220,16 @@ let main() =
           cprintfn out "    | NONTERM_%s" nt;
 
   cprintfn cos "";
-  cprintfn cos "// This function maps tokens to integers indexes";
+  cprintfn cos "// This function maps tokens to integer indexes";
   cprintfn cos "let tagOfToken (t:token) = ";
   cprintfn cos "  match t with";
   spec.Tokens |> List.iteri (fun i (id,typ) -> 
       cprintfn cos "  | %s %s -> %d " id (match typ with Some _ -> "_" | None -> "") i);
-  cprintfn cosi "/// This function maps integers indexes to symbolic token ids";
+  cprintfn cosi "/// This function maps integer indexes to symbolic token ids";
   cprintfn cosi "val tagOfToken: token -> int";
 
   cprintfn cos "";
-  cprintfn cos "// This function maps integers indexes to symbolic token ids";
+  cprintfn cos "// This function maps integer indexes to symbolic token ids";
   cprintfn cos "let tokenTagToTokenId (tokenIdx:int) = ";
   cprintfn cos "  match tokenIdx with";
   spec.Tokens |> List.iteri (fun i (id,typ) -> 
@@ -239,7 +239,7 @@ let main() =
   cprintfn cos "  | _ -> failwith \"tokenTagToTokenId: bad token\""
 
   cprintfn cosi "";
-  cprintfn cosi "/// This function maps integers indexes to symbolic token ids";
+  cprintfn cosi "/// This function maps integer indexes to symbolic token ids";
   cprintfn cosi "val tokenTagToTokenId: int -> tokenId";
 
   cprintfn cos "";

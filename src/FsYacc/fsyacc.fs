@@ -225,7 +225,7 @@ let main() =
   cprintfn cos "  match t with";
   spec.Tokens |> List.iteri (fun i (id,typ) -> 
       cprintfn cos "  | %s %s -> %d " id (match typ with Some _ -> "_" | None -> "") i);
-  cprintfn cosi "/// This function maps integer indexes to symbolic token ids";
+  cprintfn cosi "// This function maps tokens to integer indexes";
   cprintfn cosi "val tagOfToken: token -> int";
 
   cprintfn cos "";

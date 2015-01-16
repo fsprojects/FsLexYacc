@@ -1,3 +1,5 @@
+[![Issue Stats](http://issuestats.com/github/fsprojects/FsLexYacc/badge/pr?style=flat)](http://issuestats.com/github/fsprojects/FsLexYacc)
+[![Issue Stats](http://issuestats.com/github/fsprojects/FsLexYacc/badge/issue?style=flat)](http://issuestats.com/github/fsprojects/FsLexYacc)
 FsLexYacc
 =======================
 

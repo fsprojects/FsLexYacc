@@ -13,6 +13,9 @@ Build the project
 * Mono: Run *build.sh*  [![Travis build status](https://travis-ci.org/fsprojects/FsLexYacc.svg)](https://travis-ci.org/fsprojects/FsLexYacc)
 * Windows: Run *build.cmd* [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/061nqkynrysnyiv7)](https://ci.appveyor.com/project/fsgit/fslexyacc)
 
+* [![NuGet Status](http://img.shields.io/nuget/v/FsLexYacc.Runtime.svg?style=flat)](https://www.nuget.org/packages/FsLexYacc.Runtime/) - FsLexYacc.Runtime
+* [![NuGet Status](http://img.shields.io/nuget/v/FsLexYacc.svg?style=flat)](https://www.nuget.org/packages/FsLexYacc/) - FsLexYacc
+
 ### Maintainer(s)
 
 - We are seeking a primary active maintainer for this stable repo. Please record your interest by [adding an admin issue](https://github.com/fsprojects/FsProjectsAdmin/issues)

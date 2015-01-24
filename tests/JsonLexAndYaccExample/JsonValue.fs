@@ -21,9 +21,9 @@ type JsonValue =
             | Null ->  "Null()"
             | Assoc props ->  props 
                                |> List.map (fun (name,value) -> sprintf "\"%s\" : %s" name (JsonValue.print(value))) 
-                               |> List.fold (fun acc str  -> acc+(if acc="" then "" else ",")+str) "" 
+                               |> String.concat ","
                                |> sprintf "Assoc(%s)"
             | List values ->  values
                                |> List.map (fun value -> JsonValue.print(value)) 
-                               |> List.fold (fun acc str  -> acc+","+str) "" 
+                               |> String.concat ","
                                |> sprintf "List(%s)"

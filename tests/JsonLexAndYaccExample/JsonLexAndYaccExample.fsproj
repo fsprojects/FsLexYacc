@@ -60,6 +60,7 @@
     <Compile Include="Parser.fs" />
     <Compile Include="Lexer.fs" />
     <Compile Include="Program.fs" />
+    <None Include="Script.fsx" />
     <None Include="randomComplexTestsJson.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

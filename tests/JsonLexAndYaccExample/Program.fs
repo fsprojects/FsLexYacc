@@ -9,9 +9,11 @@ let main argv =
         let lexbuf = LexBuffer<char>.FromString json
         let res = Parser.start Lexer.read lexbuf
         res
+
+
     let simpleJson = "{\"f\" : 1, \"x\" : 1}"
-    let (Some praseResult) = simpleJson |> parse 
-    printfn "%s" (JsonValue.print praseResult)
+    let (Some parseResult) = simpleJson |> parse 
+    printfn "%s" (JsonValue.print parseResult)
 
 
     let simpleJson2 = @"{
@@ -21,8 +23,8 @@ let main argv =
                 { ""name"": ""New York"", ""zips"": [10001] } 
               ]
             }"
-    let (Some praseResult2) = simpleJson2 |> parse 
-    printfn "%s" (JsonValue.print praseResult2)
+    let (Some parseResult2) = simpleJson2 |> parse 
+    printfn "%s" (JsonValue.print parseResult2)
 
 
     let complexJson = System.IO.File.ReadAllText "randomComplexTestsJson.json"

@@ -1,4 +1,5 @@
-﻿%{
+﻿//This parser has been writen with help of "Real world OCaml" book By Yaron Minsky, Anil Madhavapeddy, Jason Hickey (chapter 15)
+%{
 open JsonParsing
 %}
 
@@ -22,29 +23,28 @@ open JsonParsing
 
 %%
 
-start: prog {  $1 }
+start: prog { $1 }
 
 prog:
   | EOF       { None }
   | value { Some $1 }
 
 value:
-  | LEFT_BRACE object_fields RIGHT_BRACE {Assoc $2 }
-  | LEFT_BRACK array_values RIGHT_BRACK {List $2 }
-  | STRING {String $1 }
-  | INT {Int $1 }
-  | FLOAT {Float $1 }
-  | TRUE {Bool true }
-  | FALSE {Bool false }
-  | NULL {Null }
+  | LEFT_BRACE object_fields RIGHT_BRACE { Assoc $2 }
+  | LEFT_BRACK array_values RIGHT_BRACK { List $2 }
+  | STRING { String $1 }
+  | INT { Int $1 }
+  | FLOAT { Float $1 }
+  | TRUE { Bool true }
+  | FALSE { Bool false }
+  | NULL { Null }
 
 object_fields: rev_object_fields { List.rev $1 };
 
 rev_object_fields:
   | { [] }
-  | STRING COLON value {[($1,$3)]}
-  | rev_object_fields COMMA STRING COLON value
-    { ($3, $5) :: $1 }
+  | STRING COLON value { [($1,$3)] }
+  | rev_object_fields COMMA STRING COLON value { ($3, $5) :: $1 }
 
 array_values:
   | { [] }

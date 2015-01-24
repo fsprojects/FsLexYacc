@@ -1,10 +1,8 @@
+//This lexer has been writen with help of "Real world OCaml" book By Yaron Minsky, Anil Madhavapeddy, Jason Hickey (chapter 15)
 {
-
-//This lexer has been writen with help of "Real world OCaml" book By Yaron Minsky, Anil Madhavapeddy, Jason Hickey (chepter 15)
 
 module Lexer
 
-// Opens methods related to fslex.exe
 open Microsoft.FSharp.Text.Lexing
 open System
 open Parser
@@ -15,29 +13,22 @@ let lexeme = LexBuffer.LexemeString
 
 let newline (lexbuf: LexBuffer<_>) = 
   lexbuf.StartPos <- lexbuf.StartPos.NextLine
-
 }
 
-(* part 1 *)
-let int = '-'? ['0'-'9'] ['0'-'9']*
-
-(* part 2 *)
+let int = ['-' '+']? ['0'-'9']+
 let digit = ['0'-'9']
 let frac = '.' digit*
 let exp = ['e' 'E'] ['-' '+']? digit+
 let float = '-'? digit* frac? exp?
 
-(* part 3 *)
 let white = [' ' '\t']+
 let newline = '\r' | '\n' | "\r\n"
-let id = ['a'-'z' 'A'-'Z' '_'] ['a'-'z' 'A'-'Z' '0'-'9' '_']*
 
-(* part 4 *)
 rule read =
   parse
   | white    { read lexbuf }
   | newline  { newline lexbuf; read lexbuf }
-  | int      { INT (Int32.Parse(lexeme lexbuf)) }
+  | int      { INT (int (lexeme lexbuf)) }
   | float    { FLOAT (float (lexeme lexbuf)) }
   | "true"   { TRUE }
   | "false"  { FALSE }

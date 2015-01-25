@@ -40,13 +40,13 @@ rule read =
   | ']'      { RIGHT_BRACK }
   | ':'      { COLON }
   | ','      { COMMA }
-  | _ { raise (SyntaxError ("Unexpected char: " ^ lexeme lexbuf)) }
   | eof      { EOF }
+  | _ { raise (Exception (sprintf "SyntaxError: Unexpected char: '%s' Line: %d Column: %d" (lexeme lexbuf) (lexbuf.StartPos.Line+1) lexbuf.StartPos.Column)) }
 
-(* part 5 *)
+
 and read_string str ignorequote =
   parse
   | '"'           { if ignorequote  then (read_string (str+"\\\"") false lexbuf) else STRING (str) }
   | '\\'          { read_string str true lexbuf }
   | [^ '"' '\\']+ { read_string (str+(lexeme lexbuf)) false lexbuf }
-  | eof           { raise (SyntaxError ("String is not terminated")) }
+  | eof           { raise (Exception ("String is not terminated")) }

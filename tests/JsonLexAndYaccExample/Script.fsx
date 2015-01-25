@@ -10,10 +10,11 @@ let parse json =
     let res = Parser.start Lexer.read lexbuf
     res
 
-
+//a few parsing tests with simple and complex json
 let simpleJson = "{\"f\" : 1, \"x\" : 1}"
 let (Some parseResult) = simpleJson |> parse 
 printfn "%s" (JsonValue.print parseResult)
+
 
 let simpleJson2 = @"{
           ""title"": ""Cities"",
@@ -28,3 +29,12 @@ printfn "%s" (JsonValue.print parseResult2)
 
 let complexJson = File.ReadAllText (Path.Combine(__SOURCE_DIRECTORY__,"randomComplexTestsJson.json"))
 complexJson |> parse |> ignore
+
+
+//test lexing error 
+try
+    let simpleJson = "{\"f\" ;"
+    let (Some parseResult) = simpleJson |> parse 
+    printfn "%s" (JsonValue.print parseResult)
+with 
+    | e ->  printfn "Error is expected here: \n %s" (e.Message)

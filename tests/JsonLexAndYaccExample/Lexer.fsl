@@ -49,5 +49,4 @@ and read_string str ignorequote =
   | '"'           { if ignorequote  then (read_string (str+"\\\"") false lexbuf) else STRING (str) }
   | '\\'          { read_string str true lexbuf }
   | [^ '"' '\\']+ { read_string (str+(lexeme lexbuf)) false lexbuf }
-  | _             { raise (SyntaxError ("Illegal string character: " ^ (lexeme lexbuf))) }
   | eof           { raise (SyntaxError ("String is not terminated")) }

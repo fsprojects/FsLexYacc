@@ -33,7 +33,7 @@ rule read =
   | "true"   { TRUE }
   | "false"  { FALSE }
   | "null"   { NULL }
-  | '"'      { read_string "" false lexbuf} 
+  | '"'      { read_string "" false lexbuf } 
   | '{'      { LEFT_BRACE }
   | '}'      { RIGHT_BRACE }
   | '['      { LEFT_BRACK }
@@ -46,9 +46,8 @@ rule read =
 (* part 5 *)
 and read_string str ignorequote =
   parse
-  | '"' { if ignorequote  then (read_string (str+"\\\"") false lexbuf) else STRING (str) }
-  | '\\'  { read_string str true lexbuf}
-  | [^ '"' '\\']+
-    { read_string (str+(lexeme lexbuf)) false lexbuf}
-  | _ { raise (SyntaxError ("Illegal string character: " ^ (lexeme lexbuf))) }
-  | eof { raise (SyntaxError ("String is not terminated")) }
+  | '"'           { if ignorequote  then (read_string (str+"\\\"") false lexbuf) else STRING (str) }
+  | '\\'          { read_string str true lexbuf }
+  | [^ '"' '\\']+ { read_string (str+(lexeme lexbuf)) false lexbuf }
+  | _             { raise (SyntaxError ("Illegal string character: " ^ (lexeme lexbuf))) }
+  | eof           { raise (SyntaxError ("String is not terminated")) }

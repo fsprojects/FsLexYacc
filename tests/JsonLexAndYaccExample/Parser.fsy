@@ -26,7 +26,7 @@ open JsonParsing
 start: prog { $1 }
 
 prog:
-  | EOF       { None }
+  | EOF { None }
   | value { Some $1 }
 
 value:

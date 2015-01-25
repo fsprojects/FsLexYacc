@@ -1,0 +1,52 @@
+//This lexer has been writen with help of "Real world OCaml" book By Yaron Minsky, Anil Madhavapeddy, Jason Hickey (chapter 15)
+{
+
+module Lexer
+
+open Microsoft.FSharp.Text.Lexing
+open System
+open Parser
+
+exception SyntaxError of string
+
+let lexeme = LexBuffer.LexemeString
+
+let newline (lexbuf: LexBuffer<_>) = 
+  lexbuf.StartPos <- lexbuf.StartPos.NextLine
+}
+
+let int = ['-' '+']? ['0'-'9']+
+let digit = ['0'-'9']
+let frac = '.' digit*
+let exp = ['e' 'E'] ['-' '+']? digit+
+let float = '-'? digit* frac? exp?
+
+let white = [' ' '\t']+
+let newline = '\r' | '\n' | "\r\n"
+
+rule read =
+  parse
+  | white    { read lexbuf }
+  | newline  { newline lexbuf; read lexbuf }
+  | int      { INT (int (lexeme lexbuf)) }
+  | float    { FLOAT (float (lexeme lexbuf)) }
+  | "true"   { TRUE }
+  | "false"  { FALSE }
+  | "null"   { NULL }
+  | '"'      { read_string "" false lexbuf } 
+  | '{'      { LEFT_BRACE }
+  | '}'      { RIGHT_BRACE }
+  | '['      { LEFT_BRACK }
+  | ']'      { RIGHT_BRACK }
+  | ':'      { COLON }
+  | ','      { COMMA }
+  | eof      { EOF }
+  | _ { raise (Exception (sprintf "SyntaxError: Unexpected char: '%s' Line: %d Column: %d" (lexeme lexbuf) (lexbuf.StartPos.Line+1) lexbuf.StartPos.Column)) }
+
+
+and read_string str ignorequote =
+  parse
+  | '"'           { if ignorequote  then (read_string (str+"\\\"") false lexbuf) else STRING (str) }
+  | '\\'          { read_string str true lexbuf }
+  | [^ '"' '\\']+ { read_string (str+(lexeme lexbuf)) false lexbuf }
+  | eof           { raise (Exception ("String is not terminated")) }

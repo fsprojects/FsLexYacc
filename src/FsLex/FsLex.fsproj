@@ -14,9 +14,9 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
     <WarningLevel>3</WarningLevel>
-    <FsLexToolPath>..\..\lkg\FSharp.PowerPack-1.9.7.7\bin</FsLexToolPath>
+    <FsLexToolPath>..\..\lkg\bin</FsLexToolPath>
     <FsLexToolExe>FsLex.exe</FsLexToolExe>
-    <FsYaccToolPath>..\..\lkg\FSharp.PowerPack-1.9.7.7\bin</FsYaccToolPath>
+    <FsYaccToolPath>..\..\lkg\bin</FsYaccToolPath>
     <FsYaccToolExe>FsYacc.exe</FsYaccToolExe>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -93,5 +93,5 @@
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
   </PropertyGroup>
   <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
-  <Import Project="..\..\lkg\FSharp.PowerPack-1.9.7.7\bin\FSharp.PowerPack.targets" />
+  <Import Project="..\..\lkg\bin\FsLexYacc.targets" />
 </Project>

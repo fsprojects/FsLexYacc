@@ -92,7 +92,8 @@ Target "Build" (fun _ ->
             !! "src/**/*.fsproj"
          else
             !! "src/**/*.fsproj"
-              -- "src/FsLexYacc.Profile259/*.fsproj")
+              -- "src/FsLexYacc.Profile259/*.fsproj"
+              -- "src/FsLexYacc.Profile7/*.fsproj")
           ++ "tests/FsLexYacc.Build.Tasks.Tests/*.fsproj"
 
     projects

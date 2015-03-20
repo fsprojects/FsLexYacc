@@ -22,7 +22,8 @@ open System
 
 // The name of the project 
 // (used by attributes in AssemblyInfo, name of a NuGet package and directory in 'src')
-let projects = [ "FsLex"; "FsYacc"; "FsLexYacc.Build.Tasks"]
+let projects = [ "FsLex"; "FsYacc"; "FsLexYacc.Build.Tasks" ]
+let runtimeProjects = [ "FsLexYacc.Runtime"; "FsLexYacc.Profile7"; "FsLexYacc.Profile259" ]
 let project = "FsLexYacc"
 // Short summary of the project
 // (used as description in AssemblyInfo and as a short summary for NuGet package)
@@ -54,17 +55,19 @@ let releaseRuntime = parseReleaseNotes (IO.File.ReadAllLines "RELEASE_NOTES_Runt
 
 // Generate assembly info files with the right version & up-to-date information
 Target "AssemblyInfo" (fun _ ->
-  CreateFSharpAssemblyInfo "src/FsLexYacc.Runtime/AssemblyInfo.fs"
-      [ Attribute.Title "FsLexYacc.Runtime"
-        Attribute.Product "FsLexYacc.Runtime"
-        Attribute.Description summary
-        Attribute.Version releaseRuntime.AssemblyVersion
-        Attribute.FileVersion releaseRuntime.AssemblyVersion ]   
+  for project in runtimeProjects do
+      let fileName = "src/" + project + "/AssemblyInfo.fs"
+      CreateFSharpAssemblyInfo fileName
+          [ Attribute.Title project
+            Attribute.Product "FsLexYacc.Runtime"
+            Attribute.Description summary
+            Attribute.Version releaseRuntime.AssemblyVersion
+            Attribute.FileVersion releaseRuntime.AssemblyVersion ]
   for project in projects do 
       let fileName = "src/" + project + "/AssemblyInfo.fs"
       CreateFSharpAssemblyInfo fileName
           [ Attribute.Title project
-            Attribute.Product project
+            Attribute.Product "FsLexYacc"
             Attribute.Description summary
             Attribute.Version release.AssemblyVersion
             Attribute.FileVersion release.AssemblyVersion ] 

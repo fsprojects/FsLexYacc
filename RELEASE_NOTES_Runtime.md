@@ -6,3 +6,7 @@
 
 #### 6.0.4 - September 15, 2014
 * Bump version to match FsLexYacc package
+
+#### 6.1.0 - March 20, 2015
+* Build system upgraded to MSBuild 4.0
+* Fixed Mono/Linux compilation issues with PCL

@@ -143,6 +143,9 @@ GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
 
+# dotnet cli
+project.lock.json
+
 # =========================
 # Windows detritus
 # =========================

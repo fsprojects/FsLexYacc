@@ -338,7 +338,7 @@ namespace Microsoft.FSharp.Text.Lexing
                         // which covers all Unicode characters not covered in other
                         // ways
                         let baseForUnicodeCategories = numLowUnicodeChars+numSpecificUnicodeChars*2
-#if FX_WINRT
+#if FX_WINRT || DNXCORE50
                         let unicodeCategory = System.Globalization.CharUnicodeInfo.GetUnicodeCategory(inp)
 #else
                         let unicodeCategory = System.Char.GetUnicodeCategory(inp)

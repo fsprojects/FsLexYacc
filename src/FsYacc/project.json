@@ -1,0 +1,32 @@
+{
+    "compilerName": "fsc",
+
+    "compilationOptions": {
+        "define": [ "INTERNALIZED_FSLEXYACC_RUNTIME" ],
+        "xmlDoc": true,
+        "emitEntryPoint": true
+    },
+
+    "compileFiles": [
+        "AssemblyInfo.fs",
+        "../FsLexYacc.Runtime/Lexing.fsi",
+        "../FsLexYacc.Runtime/Lexing.fs",
+        "../FsLexYacc.Runtime/Parsing.fsi",
+        "../FsLexYacc.Runtime/Parsing.fs",
+        "../Common/Arg.fsi",
+        "../Common/Arg.fs",
+        "fsyaccast.fs",
+        "fsyaccpars.fs",
+        "fsyacclex.fs",
+        "fsyacc.fs"
+    ],
+
+    "dependencies": {
+        "Microsoft.FSharp.Core.netcore": "1.0.0-alpha-151221",
+        "NETStandard.Library": "1.0.0-rc2-23728"
+    },
+
+    "frameworks": {
+        "dnxcore50": { }
+    }
+}

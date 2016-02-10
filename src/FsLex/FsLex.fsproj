@@ -16,8 +16,8 @@
     <WarningLevel>3</WarningLevel>
     <FsLexToolPath>..\..\lkg\bin</FsLexToolPath>
     <FsLexToolExe>fslex.exe</FsLexToolExe>
-    <FsYaccToolPath>$(MSBuildProjectDirectory)\..\..\lkg\bin</FsYaccToolPath>
-    <FsYaccToolExe>FsYacc.exe</FsYaccToolExe>
+    <FsYaccToolPath>..\..\lkg\bin</FsYaccToolPath>
+    <FsYaccToolExe>fsyacc.exe</FsYaccToolExe>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">

@@ -24,7 +24,7 @@ let fsc output files =
     |> Fsc (fun p ->
         { p with References = [@"FsLexYacc.Runtime.dll"
                                @"FSharp.Core\FSharp.Core.dll"]
-                 Output = output; Debug = true; FscTarget = Exe})
+                 Output = output; Debug = true; FscTarget = FscTarget.Exe})
     let wrongExe = (files |> List.rev |> List.head) |> FileHelper.changeExt ".exe"
     if FileInfo(output).LastWriteTime < FileInfo(wrongExe).LastWriteTime
         then File.Delete(output)

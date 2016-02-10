@@ -14,9 +14,9 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
     <WarningLevel>3</WarningLevel>
-    <FsLexToolPath>..\..\lkg\bin</FsLexToolPath>
+    <FsLexToolPath>$(MSBuildProjectDirectory)\..\..\lkg\bin</FsLexToolPath>
     <FsLexToolExe>FsLex.exe</FsLexToolExe>
-    <FsYaccToolPath>..\..\lkg\bin</FsYaccToolPath>
+    <FsYaccToolPath>$(MSBuildProjectDirectory)\..\..\lkg\bin</FsYaccToolPath>
     <FsYaccToolExe>FsYacc.exe</FsYaccToolExe>
     <TargetFrameworkProfile />
   </PropertyGroup>

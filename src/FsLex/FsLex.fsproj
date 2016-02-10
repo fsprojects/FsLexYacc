@@ -15,9 +15,9 @@
     <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
     <WarningLevel>3</WarningLevel>
     <FsLexToolPath>..\..\lkg\bin</FsLexToolPath>
-    <FsLexToolExe>FsLex.exe</FsLexToolExe>
+    <FsLexToolExe>fslex.exe</FsLexToolExe>
     <FsYaccToolPath>..\..\lkg\bin</FsYaccToolPath>
-    <FsYaccToolExe>FsYacc.exe</FsYaccToolExe>
+    <FsYaccToolExe>fsyacc.exe</FsYaccToolExe>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">

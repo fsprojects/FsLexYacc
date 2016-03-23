@@ -731,33 +731,33 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec) =
             let itemNew = (precNew, actionNew) 
             let winner = 
                 match itemSoFar,itemNew with 
-                | (_,Shift _),(_, Shift _) -> 
+                | (_,Shift s1),(_, Shift s2) -> 
                    if actionSoFar <> actionNew then 
-                      printf "internal error in fsyacc: shift/shift conflict";
+                      printf "internal error in fsyacc: shift(%d)/shift(%d) conflict - assuming shift(%d)\n" s1 s2 s1;
                    itemSoFar
 
-                | (((precShift,Shift _) as shiftItem), 
-                   ((precReduce,Reduce _) as reduceItem))
-                | (((precReduce,Reduce _) as reduceItem), 
-                   ((precShift,Shift _) as shiftItem)) -> 
+                | (((precShift,Shift sIdx) as shiftItem), 
+                   ((precReduce,Reduce prodIdx) as reduceItem))
+                | (((precReduce,Reduce prodIdx) as reduceItem), 
+                   ((precShift,Shift sIdx) as shiftItem)) -> 
                     match precReduce, precShift with 
                     | (ExplicitPrec (_,p1), ExplicitPrec(assocNew,p2)) -> 
                       if p1 < p2 then shiftItem
                       elif p1 > p2 then reduceItem
                       else
-                        match precShift with 
-                        | ExplicitPrec(LeftAssoc,_) ->  reduceItem
-                        | ExplicitPrec(RightAssoc,_) -> shiftItem
-                        | _ ->
-                           printf "state %d: shift/reduce error on %s\n" kernelIdx (termTab.OfIndex termIdx); 
+                        match assocNew with 
+                        | LeftAssoc ->  reduceItem
+                        | RightAssoc -> shiftItem
+                        | NonAssoc ->
+                           printf "state %d: shift(%d)/reduce(%d) error on nonassoc %s - assuming shift(%d)\n" kernelIdx sIdx prodIdx (termTab.OfIndex termIdx) sIdx; 
                            incr shiftReduceConflicts;
                            shiftItem
                     | _ ->
-                       printf "state %d: shift/reduce error on %s\n" kernelIdx (termTab.OfIndex termIdx); 
+                       printf "state %d: shift(%d)/reduce(%d) error on %s - assuming shift(%d)\n" kernelIdx sIdx prodIdx (termTab.OfIndex termIdx) sIdx; 
                        incr shiftReduceConflicts;
                        shiftItem
                 | ((_,Reduce prodIdx1),(_, Reduce prodIdx2)) -> 
-                   printf "state %d: reduce/reduce error on %s\n" kernelIdx (termTab.OfIndex termIdx); 
+                   printf "state %d: reduce(%d)/reduce(%d) error on %s - assuming reduce(%d)\n" kernelIdx prodIdx1 prodIdx2 (termTab.OfIndex termIdx) (if prodIdx1 < prodIdx2 then prodIdx1 else prodIdx2); 
                    incr reduceReduceConflicts;
                    if prodIdx1 < prodIdx2 then itemSoFar else itemNew
                 | _ -> itemNew 

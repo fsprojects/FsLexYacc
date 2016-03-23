@@ -347,7 +347,7 @@ type PropagateTable() =
 
 
 /// Compile a pre-processed LALR parser spec to tables following the Dragon book algorithm
-let CompilerLalrParserSpec logf (spec : ProcessedParserSpec) =
+let CompilerLalrParserSpec logf (oldprec:bool) (spec : ProcessedParserSpec) =
     let stopWatch = new System.Diagnostics.Stopwatch()
     let reportTime() = printfn "time: %A" stopWatch.Elapsed; stopWatch.Reset(); stopWatch.Start()
     stopWatch.Start()
@@ -768,26 +768,39 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec) =
                 | (((precReduce,Reduce prodIdx) as reduceItem), 
                    ((precShift,Shift sIdx) as shiftItem)) -> 
                     match precReduce, precShift with 
-                    | (ExplicitPrec (_,p1), ExplicitPrec(assocNew,p2)) -> 
+                    | (ExplicitPrec (_,p1) as pp, ExplicitPrec(assocNew,p2)) -> 
                       if p1 < p2 then shiftItem
                       elif p1 > p2 then reduceItem
                       else
                         match assocNew with 
                         | LeftAssoc ->  reduceItem
                         | RightAssoc -> shiftItem
-                        | NonAssoc ->
-                           reportConflict shiftItem reduceItem "we preffer shift on equal precedences"
-                           incr shiftReduceConflicts;
-                           shiftItem
+                        | NonAssoc -> 
+                            if oldprec then
+                               reportConflict shiftItem reduceItem "we preffer shift on equal precedences"
+                               incr shiftReduceConflicts;
+                               shiftItem
+                            else 
+                                pp, Error
                     | _ ->
                        reportConflict shiftItem reduceItem "we preffer shift when unable to compare precedences"
                        incr shiftReduceConflicts;
                        shiftItem
-                | ((_,Reduce prodIdx1),(_, Reduce prodIdx2)) -> 
-                   "we prefer the rule earlier in the file"
-                   |> if prodIdx1 < prodIdx2 then reportConflict itemSoFar itemNew else reportConflict itemNew itemSoFar
-                   incr reduceReduceConflicts;
-                   if prodIdx1 < prodIdx2 then itemSoFar else itemNew
+                | ((prec1,Reduce prodIdx1),(prec2, Reduce prodIdx2)) -> 
+                    match prec1, prec2 with 
+                    | (ExplicitPrec (_,p1), ExplicitPrec(assocNew,p2)) when not(oldprec) -> 
+                        if p1 < p2 then itemNew
+                        elif p1 > p2 then itemSoFar
+                        else
+                            "we prefer the rule earlier in the file on equal precedences"
+                            |> if prodIdx1 < prodIdx2 then reportConflict itemSoFar itemNew else reportConflict itemNew itemSoFar
+                            incr reduceReduceConflicts;
+                            if prodIdx1 < prodIdx2 then itemSoFar else itemNew
+                    | _ ->
+                       "we prefer the rule earlier in the file when unable to compare precedences"
+                       |> if prodIdx1 < prodIdx2 then reportConflict itemSoFar itemNew else reportConflict itemNew itemSoFar
+                       incr reduceReduceConflicts;
+                       if prodIdx1 < prodIdx2 then itemSoFar else itemNew
                 | _ -> itemNew 
             arr.[termIdx] <- winner
 
@@ -840,29 +853,29 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec) =
             let immediateAction =
                 match Set.toList closure with
                 | [item0] ->
+                    let pItem0 = prodIdx_of_item0 item0
                     match (rsym_of_item0 item0) with 
-                    | None when (let reduceOrErrorAction = function Error | Reduce _ -> true | Shift _ | Accept -> false
-                                 termTab.Indexes |> List.forall(fun terminalIdx -> reduceOrErrorAction (snd(arr.[terminalIdx]))))
-                        -> Some (Reduce (prodIdx_of_item0 item0))
+                    | None when (termTab.Indexes |> List.forall(fun terminalIdx -> arr.[terminalIdx] |> function (_, Reduce pItem0) -> true | (_, Error) when oldprec -> true | _ -> false))
+                        -> Some (Reduce pItem0)
 
-                    | None when (let acceptOrErrorAction = function Error | Accept -> true | Shift _ | Reduce _ -> false
-                                 List.forall (fun terminalIdx -> acceptOrErrorAction (snd(arr.[terminalIdx]))) termTab.Indexes)
+                    | None when (termTab.Indexes |> List.forall(fun terminalIdx -> arr.[terminalIdx] |> function (_, Accept) -> true | (_, Error) when oldprec -> true | _ -> false))
                         -> Some Accept
 
                     | _ -> None
                 | _ -> None
 
             // A -> B C . rules give rise to reductions in favour of errors 
-            for item0 in ComputeClosure0 kernel do
-                let prec = prec_of_item0 item0
-                match rsym_of_item0 item0 with 
-                | None ->
-                    for terminalIdx in termTab.Indexes do 
-                        if snd(arr.[terminalIdx]) = Error then 
-                            let prodIdx = prodIdx_of_item0 item0
-                            let action = (prec, (if IsStartItem(item0) then Accept else Reduce prodIdx))
-                            addResolvingPrecedence arr kernelIdx terminalIdx action
-                | _  -> ()
+            if oldprec then
+                for item0 in ComputeClosure0 kernel do
+                    let prec = prec_of_item0 item0
+                    match rsym_of_item0 item0 with 
+                    | None ->
+                        for terminalIdx in termTab.Indexes do 
+                            if snd(arr.[terminalIdx]) = Error then 
+                                let prodIdx = prodIdx_of_item0 item0
+                                let action = (prec, (if IsStartItem(item0) then Accept else Reduce prodIdx))
+                                addResolvingPrecedence arr kernelIdx terminalIdx action
+                    | _  -> ()
 
             arr,immediateAction
 

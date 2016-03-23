@@ -749,15 +749,15 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec) =
                         | LeftAssoc ->  reduceItem
                         | RightAssoc -> shiftItem
                         | NonAssoc ->
-                           printf "state %d: shift(%d)/reduce(%d) error on nonassoc %s - assuming shift(%d)\n" kernelIdx sIdx prodIdx (termTab.OfIndex termIdx) sIdx; 
+                           printf "state %d: shift(%d)/reduce(%s) error on nonassoc %s - assuming shift(%d)\n" kernelIdx sIdx (ntTab.OfIndex (prodTab.NonTerminal prodIdx)) (termTab.OfIndex termIdx) sIdx; 
                            incr shiftReduceConflicts;
                            shiftItem
                     | _ ->
-                       printf "state %d: shift(%d)/reduce(%d) error on %s - assuming shift(%d)\n" kernelIdx sIdx prodIdx (termTab.OfIndex termIdx) sIdx; 
+                       printf "state %d: shift(%d)/reduce(%s) error on %s - assuming shift(%d)\n" kernelIdx sIdx (ntTab.OfIndex (prodTab.NonTerminal prodIdx)) (termTab.OfIndex termIdx) sIdx; 
                        incr shiftReduceConflicts;
                        shiftItem
                 | ((_,Reduce prodIdx1),(_, Reduce prodIdx2)) -> 
-                   printf "state %d: reduce(%d)/reduce(%d) error on %s - assuming reduce(%d)\n" kernelIdx prodIdx1 prodIdx2 (termTab.OfIndex termIdx) (if prodIdx1 < prodIdx2 then prodIdx1 else prodIdx2); 
+                   printf "state %d: reduce(%s)/reduce(%s) error on %s - assuming reduce(%s)\n" kernelIdx (ntTab.OfIndex (prodTab.NonTerminal prodIdx1)) (ntTab.OfIndex (prodTab.NonTerminal prodIdx2)) (termTab.OfIndex termIdx) (ntTab.OfIndex (prodTab.NonTerminal (if prodIdx1 < prodIdx2 then prodIdx1 else prodIdx2))); 
                    incr reduceReduceConflicts;
                    if prodIdx1 < prodIdx2 then itemSoFar else itemNew
                 | _ -> itemNew 

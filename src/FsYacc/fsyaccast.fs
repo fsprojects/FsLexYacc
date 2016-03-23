@@ -19,6 +19,7 @@ let (|KeyValue|) (kvp:KeyValuePair<_,_>) = kvp.Key,kvp.Value
 type Identifier = string
 type Code = string * Position
 
+type EmptyAction = | Disallow | First | Throw
 type ParserSpec= 
     { Header         : Code;
       Tokens         : (Identifier * string option) list;
@@ -72,7 +73,7 @@ type ProcessedParserSpec =
       StartSymbols: NonTerminal list }
 
 
-let ProcessParserSpecAst (spec: ParserSpec) = 
+let ProcessParserSpecAst (spec: ParserSpec) (empact:EmptyAction) = 
     let explicitPrecInfo = 
         spec.Associativities 
         |> List.mapi (fun n precSpecs -> precSpecs |> List.map (fun (precSym, assoc) -> precSym,ExplicitPrec (assoc, 10000 - n)))
@@ -102,6 +103,16 @@ let ProcessParserSpecAst (spec: ParserSpec) =
                     match precsym with 
                     | None -> implicitPrecInfo 
                     | Some sym -> if explicitPrecInfo.ContainsKey(sym) then explicitPrecInfo.[sym] else implicitPrecInfo
+                let code =
+                    match code with
+                    | Some x -> code
+                    | None ->
+                        match empact with 
+                        | Disallow -> failwith "no action provided"
+                        | First ->
+                            if syms.Length > 0 then Some("$1", Position.Empty)
+                            else failwith "no action provided for an empty rule"
+                        | Throw -> None
                 Production(nonterm, precInfo, List.map mkSym syms, code)))
          |> List.concat
     let nonTerminals = List.map fst spec.Rules

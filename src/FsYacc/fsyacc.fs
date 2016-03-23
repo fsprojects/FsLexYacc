@@ -49,6 +49,7 @@ let light = ref None
 let inputCodePage = ref None
 let mutable lexlib = "Microsoft.FSharp.Text.Lexing"
 let mutable parslib = "Microsoft.FSharp.Text.Parsing"
+let mutable empact = Disallow
 
 let usage =
   [ ArgInfo("-o", ArgType.String (fun s -> out := Some s), "Name the output file.");
@@ -62,7 +63,8 @@ let usage =
     ArgInfo("--tokens", ArgType.Set tokenize, "Simply tokenize the specification file itself."); 
     ArgInfo("--lexlib", ArgType.String (fun s ->  lexlib <- s), "Specify the namespace for the implementation of the lexer (default: Microsoft.FSharp.Text.Lexing)");
     ArgInfo("--parslib", ArgType.String (fun s ->  parslib <- s), "Specify the namespace for the implementation of the parser table interpreter (default: Microsoft.FSharp.Text.Parsing)");
-    ArgInfo("--codepage", ArgType.Int (fun i -> inputCodePage := Some i), "Assume input lexer specification file is encoded with the given codepage.");  ]
+    ArgInfo("--codepage", ArgType.Int (fun i -> inputCodePage := Some i), "Assume input lexer specification file is encoded with the given codepage.");  
+    ArgInfo("--empty-action", ArgType.String (fun s -> empact <- match s with | "disallow" -> Disallow | "first" -> First | "throw" -> Throw | _ -> failwith "Unknown --empty-action parameter"), "Allow for empty actions. Possible values: disallow (fail at compile time), first (yacc default {$1}), throw (fail at runtime)") ]
 
 let _ = ArgParser.Parse(usage,(fun x -> match !input with Some _ -> failwith "more than one input given" | None -> input := Some x),"fsyacc <filename>")
 
@@ -145,7 +147,7 @@ let main() =
   logf (fun oso -> fprintfn oso "Output file describing compiled parser placed in %s and %s" output outputi);
 
   printfn "building tables"; 
-  let spec1 = ProcessParserSpecAst spec 
+  let spec1 = ProcessParserSpecAst spec empact
   let (prods,states, startStates,actionTable,immediateActionTable,gotoTable,endOfInputTerminalIdx,errorTerminalIdx,nonTerminals) = 
       CompilerLalrParserSpec logf spec1 
 

@@ -48,8 +48,9 @@ rule: IDENT COLON optbar clauses optsemi { ($1,$4) }
 optbar: { } | BAR { }
 optsemi: { } | SEMI { }
 clauses: clause BAR clauses {$1 :: $3 } | clause { [$1] }
-clause: syms optprec CODE { Rule($1,$2,Some $3) }
+clause: syms optprec code { Rule($1,$2, $3) }
 syms: IDENT syms { $1 :: $2 } | ERROR syms { "error" :: $2 } | { [] }
 optprec: { None } | PREC IDENT { Some $2 }
+code: { None } | CODE { Some $1 }
 
 

@@ -730,10 +730,37 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec) =
 
             let itemNew = (precNew, actionNew) 
             let winner = 
+                let reportConflict x1 x2 reason =
+                    let reportAction (p, a) =
+                        let an, astr = 
+                            match a with
+                            | Shift x -> "shift", sprintf "shift(%d)" x
+                            | Reduce x ->
+                                let nt = prodTab.NonTerminal x
+                                "reduce", prodTab.Symbols x
+                                |> Array.map StringOfSym
+                                |> String.concat " "
+                                |> sprintf "reduce(%s:%s)" (ntTab.OfIndex nt)
+                            | _ -> "", ""
+                        let pstr = 
+                            match p with 
+                            | ExplicitPrec (assoc,n) -> 
+                                let astr = 
+                                    match assoc with 
+                                    | LeftAssoc -> "left"
+                                    | RightAssoc -> "right"
+                                    | NonAssoc -> "nonassoc"
+                                sprintf "[explicit %s %d]" astr n
+                            | NoPrecedence  -> 
+                                "noprec"
+                        an, "{" + pstr + " " + astr + "}"
+                    let a1n, astr1 = reportAction x1
+                    let a2n, astr2 = reportAction x2
+                    printf "%s/%s error at state %d on terminal %s between %s and %s - assuming the former because %s\n" a1n a2n kernelIdx (termTab.OfIndex termIdx) astr1 astr2 reason
                 match itemSoFar,itemNew with 
                 | (_,Shift s1),(_, Shift s2) -> 
                    if actionSoFar <> actionNew then 
-                      printf "internal error in fsyacc: shift(%d)/shift(%d) conflict - assuming shift(%d)\n" s1 s2 s1;
+                      reportConflict itemSoFar itemNew "internal error"
                    itemSoFar
 
                 | (((precShift,Shift sIdx) as shiftItem), 
@@ -749,15 +776,16 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec) =
                         | LeftAssoc ->  reduceItem
                         | RightAssoc -> shiftItem
                         | NonAssoc ->
-                           printf "state %d: shift(%d)/reduce(%s) error on nonassoc %s - assuming shift(%d)\n" kernelIdx sIdx (ntTab.OfIndex (prodTab.NonTerminal prodIdx)) (termTab.OfIndex termIdx) sIdx; 
+                           reportConflict shiftItem reduceItem "we preffer shift on equal precedences"
                            incr shiftReduceConflicts;
                            shiftItem
                     | _ ->
-                       printf "state %d: shift(%d)/reduce(%s) error on %s - assuming shift(%d)\n" kernelIdx sIdx (ntTab.OfIndex (prodTab.NonTerminal prodIdx)) (termTab.OfIndex termIdx) sIdx; 
+                       reportConflict shiftItem reduceItem "we preffer shift when unable to compare precedences"
                        incr shiftReduceConflicts;
                        shiftItem
                 | ((_,Reduce prodIdx1),(_, Reduce prodIdx2)) -> 
-                   printf "state %d: reduce(%s)/reduce(%s) error on %s - assuming reduce(%s)\n" kernelIdx (ntTab.OfIndex (prodTab.NonTerminal prodIdx1)) (ntTab.OfIndex (prodTab.NonTerminal prodIdx2)) (termTab.OfIndex termIdx) (ntTab.OfIndex (prodTab.NonTerminal (if prodIdx1 < prodIdx2 then prodIdx1 else prodIdx2))); 
+                   "we prefer the rule earlier in the file"
+                   |> if prodIdx1 < prodIdx2 then reportConflict itemSoFar itemNew else reportConflict itemNew itemSoFar
                    incr reduceReduceConflicts;
                    if prodIdx1 < prodIdx2 then itemSoFar else itemNew
                 | _ -> itemNew 
@@ -852,6 +880,7 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec) =
     reportTime(); printfn  "returning tables."; stdout.Flush();
     if !shiftReduceConflicts > 0 then printfn  "%d shift/reduce conflicts" !shiftReduceConflicts; stdout.Flush();
     if !reduceReduceConflicts > 0 then printfn  "%d reduce/reduce conflicts" !reduceReduceConflicts; stdout.Flush();
+    if !shiftReduceConflicts > 0 || !reduceReduceConflicts > 0 then printfn  "consider setting precedences explicitly using %%left %%right and %%nonassoc on terminals and/or setting explicit precedence on rules using %%prec"
 
     /// The final results
     let states = kernels |> Array.ofList 

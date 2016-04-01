@@ -1,7 +1,7 @@
 Overview
 ========
 
-The `fslex.exe` tool is a lexer generator for byte and Unicode character input. It follows a similar specification to the `ocamllex` tool, though it is a reimplementation and supports some different features. See [OCaml Lex Manual](http://caml.inria.fr/pub/docs/manual-ocaml/lexyacc.html#sec268).
+The `fslex.exe` tool is a lexer generator for byte and Unicode character input.
 
 Getting Started
 ---------------
@@ -24,6 +24,170 @@ You must also add `FsLex` and `FsYacc` entries like this:
     <FsLex Include="..\LexAndYaccMiniProject\Lexer.fsl">
       <OtherFlags>--unicode</OtherFlags>
     </FsLex>
+
+Lexer syntax
+------------
+
+Define your lexer in the Lexer.fsl file.
+
+    { header }
+    let ident = regexp ...
+    rule entrypoint [arg1... argn] =
+      parse regexp { action }
+          | ...
+          | regexp { action }
+    and entrypoint [arg1… argn] =
+      parse ...
+    and ...
+    { trailer }
+
+Comments are delimited by (* and *) and line comments // are also supported, as in F#. 
+
+The rule and parse keywords are required.
+
+The header and trailer sections are arbitrary F# code, which will write to the beginning and end of the output file (Lexer.fs). 
+Either or both can be omitted. Headers typically include values and functions used in the rule body actions.
+
+Following the header and before the rules are named regular expressions for use in the rules.
+
+    let ident = regexp …
+
+Following this declaration, the identifier ident can be used as shorthand for regexp.
+
+Entry points
+------------
+
+Entry points are valid F# identifiers. Similarly, the arguments 
+
+    arg1... argn 
+	
+must be valid identifiers. 
+Each entry point becomes a function that takes n+1 arguments, the implicit last argument being of type LexBuffer<'a>.
+Characters are read from the LexBuffer<'a> argument and matched against the regular expressions provided in the rule, until a prefix of the input matches one of the rules. 
+The Lexer then evaluates the action and returns it as the result of the function. Rule entry points can be entered recursively.
+
+If several regular expressions match a prefix of the input the regular expression that matches the longest prefix of the input is selected. 
+In case of tie, the regular expression that occurs earlier in the rule is selected.
+
+Rule regular expressions
+------------------------
+
+    ' regular-char | escape-sequence '
+
+A character constant, with the same syntax as F# character constants. Match the denoted character.
+
+    _
+
+(underscore) Match any character.
+
+    eof
+
+Match the end of the lexer input.
+
+Note: Fslex will not correctly handle regular expressions that contain eof followed by something else.
+
+    "string"
+
+A string constant, with the same syntax as F# string constants. Match the corresponding sequence of characters.
+
+    [ character-set ]
+
+Match any single character belonging to the given character set. Valid character sets are: single character constants ' c '; ranges of characters ' c1 ' - ' c2 ' (all characters between c1 and c2, inclusive); and the union of two or more character sets, denoted by concatenation.
+
+    [ ^ character-set ]
+
+Match any single character not belonging to the given character set.
+
+    regexp1 # regexp2
+
+(difference of character sets) Regular expressions regexp1 and regexp2 must be character sets defined with [… ] (or a a single character expression or underscore _). Match the difference of the two specified character sets.
+
+    regexp *
+
+(repetition) Match the concatenation of zero or more strings that match regexp.
+
+    regexp +
+
+(strict repetition) Match the concatenation of one or more strings that match regexp.
+
+    regexp ?
+
+(option) Match the empty string, or a string matching regexp.
+
+    regexp1 | regexp2
+
+(alternative) Match any string that matches regexp1 or regexp2
+
+    regexp1 regexp2
+
+(concatenation) Match the concatenation of two strings, the first matching regexp1, the second matching regexp2.
+
+    ( regexp )
+
+Match the same strings as regexp.
+
+    ident
+
+Reference the regular expression bound to ident by an earlier let ident =  regexp definition.
+
+Concerning the precedences of operators, # has the highest precedence, followed by *, + and ?, then concatenation, then | (alternation).
+
+Rule actions
+------------
+
+The actions are arbitrary F# expressions. Additionally, `lexbuf` is bound to the current lexer buffer.
+
+Some typical uses for `lexbuf`, in conjunction with the operations on lexer buffers provided by the Microsoft.FSharp.Text.Lexing standard library module, are listed below.
+
+    lexeme lexbuf
+
+Return the matched string.
+
+    lexbuf.LexemeChar n
+
+Return the nth character in the matched string. The first character corresponds to n = 0.
+
+    lexbuf.StartPos
+
+Return the data on the absolute position in the input text of the beginning of the matched string (i.e. the offset of the first character of the matched string) in an object of type Position. The first character read from the input text has offset 0.
+
+    lexbuf.EndPos
+
+Return the data on absolute position in the input text of the end of the matched string (i.e. the offset of the first character after the matched string) in an object of type Position. The first character read from the input text has offset 0.
+
+    entrypoint [exp1… expn] lexbuf
+
+(Where entrypoint is the name of another entry point in the same lexer definition.) Recursively call the lexer on the given entry point. Notice that lexbuf is the last argument. Useful for lexing nested comments, for example.
+
+The Position type
+-----------------
+
+	type Position = 
+    { /// The file name for the position
+      pos_fname: string
+      /// The line number for the position
+      pos_lnum: int
+      /// The absolute offset of the beginning of the line
+      pos_bol: int
+      /// The absolute offset of the column for the position
+      pos_cnum: int }
+	 /// The file name associated with the input stream.
+     member FileName : string
+     /// The line number in the input stream, assuming fresh positions have been updated 
+     /// using AsNewLinePos() and by modifying the EndPos property of the LexBuffer.
+     member Line : int
+     /// The character number in the input stream
+     member AbsoluteOffset : int
+     /// Return absolute offset of the start of the line marked by the position
+     member StartOfLineAbsoluteOffset : int
+     /// Return the column number marked by the position, i.e. the difference between the AbsoluteOffset and the StartOfLineAbsoluteOffset
+     member Column : int
+     // Given a position just beyond the end of a line, return a position at the start of the next line
+     member NextLine : Position     
+     /// Given a position at the start of a token of length n, return a position just beyond the end of the token
+     member EndOfToken: n:int -> Position
+     /// Gives a position shifted by specified number of characters
+     member ShiftColumnBy: by:int -> Position
 
 Sample input
 ------------

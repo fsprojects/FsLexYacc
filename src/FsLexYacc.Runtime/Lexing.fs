@@ -341,7 +341,11 @@ namespace Microsoft.FSharp.Text.Lexing
 #if FX_WINRT
                         let unicodeCategory = System.Globalization.CharUnicodeInfo.GetUnicodeCategory(inp)
 #else
+    #if DNXCORE50
+                        let unicodeCategory = System.Globalization.CharUnicodeInfo.GetUnicodeCategory(inp)
+    #else
                         let unicodeCategory = System.Char.GetUnicodeCategory(inp)
+    #endif
 #endif
                         //System.Console.WriteLine("inp = {0}, unicodeCategory = {1}", [| box inp; box unicodeCategory |]);
                         int trans.[state].[baseForUnicodeCategories + int32 unicodeCategory]

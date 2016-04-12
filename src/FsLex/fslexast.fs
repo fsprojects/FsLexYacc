@@ -214,7 +214,11 @@ let LexerStateToNfa (macros: Map<string,_>) (clauses: Clause list) =
             let re = Alt([ yield Inp(Alphabet(EncodeUnicodeCategory uc))
                            // Also include any specific characters in this category
                            for c in GetSingleCharAlphabet() do 
+#if DNXCORE50
+                               if System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) = unicodeCategories.[uc] then 
+#else
                                if System.Char.GetUnicodeCategory(c) = unicodeCategories.[uc] then 
+#endif
                                     yield Inp(Alphabet(EncodeChar(c))) ])
             CompileRegexp re dest
 
@@ -233,7 +237,11 @@ let LexerStateToNfa (macros: Map<string,_>) (clauses: Clause list) =
                            // That is, negations _only_ exclude precisely the given set of characters. You can't
                            // exclude whole classes of characters as yet
                            if !unicode then 
+#if DNXCORE50
+                               let ucs = chars |> Set.map(DecodeChar >> System.Globalization.CharUnicodeInfo.GetUnicodeCategory)  
+#else
                                let ucs = chars |> Set.map(DecodeChar >> System.Char.GetUnicodeCategory)  
+#endif
                                for KeyValue(nm,uc) in unicodeCategories do
                                    //if ucs.Contains(uc) then 
                                    //    do printfn "warning: the unicode category '\\%s' ('%s') is automatically excluded by this character set negation. Consider adding this to the negation." nm  (uc.ToString())

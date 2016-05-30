@@ -347,7 +347,7 @@ type PropagateTable() =
 
 
 /// Compile a pre-processed LALR parser spec to tables following the Dragon book algorithm
-let CompilerLalrParserSpec logf (oldprec:bool) (spec : ProcessedParserSpec) =
+let CompilerLalrParserSpec logf (newprec:bool) (norec:bool) (spec : ProcessedParserSpec) =
     let stopWatch = new System.Diagnostics.Stopwatch()
     let reportTime() = printfn "time: %A" stopWatch.Elapsed; stopWatch.Reset(); stopWatch.Start()
     stopWatch.Start()
@@ -776,19 +776,19 @@ let CompilerLalrParserSpec logf (oldprec:bool) (spec : ProcessedParserSpec) =
                         | LeftAssoc ->  reduceItem
                         | RightAssoc -> shiftItem
                         | NonAssoc -> 
-                            if oldprec then
-                               reportConflict shiftItem reduceItem "we preffer shift on equal precedences"
-                               incr shiftReduceConflicts;
-                               shiftItem
-                            else 
+                            if newprec then
                                 pp, Error
+                            else
+                                reportConflict shiftItem reduceItem "we preffer shift on equal precedences"
+                                incr shiftReduceConflicts;
+                                shiftItem
                     | _ ->
                        reportConflict shiftItem reduceItem "we preffer shift when unable to compare precedences"
                        incr shiftReduceConflicts;
                        shiftItem
                 | ((prec1,Reduce prodIdx1),(prec2, Reduce prodIdx2)) -> 
                     match prec1, prec2 with 
-                    | (ExplicitPrec (_,p1), ExplicitPrec(assocNew,p2)) when not(oldprec) -> 
+                    | (ExplicitPrec (_,p1), ExplicitPrec(assocNew,p2)) when newprec -> 
                         if p1 < p2 then itemNew
                         elif p1 > p2 then itemSoFar
                         else
@@ -855,17 +855,17 @@ let CompilerLalrParserSpec logf (oldprec:bool) (spec : ProcessedParserSpec) =
                 | [item0] ->
                     let pItem0 = prodIdx_of_item0 item0
                     match (rsym_of_item0 item0) with 
-                    | None when (termTab.Indexes |> List.forall(fun terminalIdx -> arr.[terminalIdx] |> function (_, Reduce pItem0) -> true | (_, Error) when oldprec -> true | _ -> false))
+                    | None when (termTab.Indexes |> List.forall(fun terminalIdx -> arr.[terminalIdx] |> function (_, Reduce pItem0) -> true | (_, Error) when not <| norec -> true | _ -> false))
                         -> Some (Reduce pItem0)
 
-                    | None when (termTab.Indexes |> List.forall(fun terminalIdx -> arr.[terminalIdx] |> function (_, Accept) -> true | (_, Error) when oldprec -> true | _ -> false))
+                    | None when (termTab.Indexes |> List.forall(fun terminalIdx -> arr.[terminalIdx] |> function (_, Accept) -> true | (_, Error) when not <| norec -> true | _ -> false))
                         -> Some Accept
 
                     | _ -> None
                 | _ -> None
 
             // A -> B C . rules give rise to reductions in favour of errors 
-            if oldprec then
+            if not <| norec then
                 for item0 in ComputeClosure0 kernel do
                     let prec = prec_of_item0 item0
                     match rsym_of_item0 item0 with 

@@ -22,7 +22,9 @@ let fsc output files =
     traceImportant <| sprintf "Building '%s' with from %A" output files
     "lexing.fs"::"parsing.fs"::@"..\..\src\Common\Arg.fs"::"arg.fs"::"tree.ml"::files
     |> Fsc (fun p ->
-        { p with References = [@"FsLexYacc.Runtime.dll"
+        { p with References = [@"System.Runtime"
+                               @"System.IO"
+                               @"FsLexYacc.Runtime.dll"
                                @"FSharp.Core\FSharp.Core.dll"]
                  Output = output; Debug = true; FscTarget = FscTarget.Exe})
     let wrongExe = (files |> List.rev |> List.head) |> FileHelper.changeExt ".exe"
@@ -30,6 +32,7 @@ let fsc output files =
         then File.Delete(output)
              File.Move(wrongExe, output)
              traceImportant <| sprintf "File '%s' renamed to '%s'" wrongExe output
+    File.Copy("app.config", output+".config", true)
 
 let test exe (args, baseLineOutput) =
     let messages = ref []

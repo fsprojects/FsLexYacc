@@ -23,7 +23,7 @@ open System
 // The name of the project 
 // (used by attributes in AssemblyInfo, name of a NuGet package and directory in 'src')
 let projects = [ "FsLex"; "FsYacc"; "FsLexYacc.Build.Tasks" ]
-let runtimeProjects = [ "FsLexYacc.Runtime"; "FsLexYacc.Profile7"; "FsLexYacc.Profile259" ]
+let runtimeProjects = [ "FsLexYacc.Runtime" ]
 let project = "FsLexYacc"
 // Short summary of the project
 // (used as description in AssemblyInfo and as a short summary for NuGet package)
@@ -90,15 +90,7 @@ Target "CleanDocs" (fun _ ->
 // Build library & test project
 
 Target "Build" (fun _ ->
-    let projects =
-        (if not isLinux then
-            !! "src/**/*.fsproj"
-         else
-            !! "src/**/*.fsproj"
-              -- "src/FsLexYacc.Profile259/*.fsproj"
-              -- "src/FsLexYacc.Profile7/*.fsproj")
-          ++ "tests/FsLexYacc.Build.Tasks.Tests/*.fsproj"
-
+    let projects = !!"src/**/*.fsproj" ++ "tests/FsLexYacc.Build.Tasks.Tests/*.fsproj"
     projects
     |> MSBuildRelease "" "Rebuild"
     |> ignore

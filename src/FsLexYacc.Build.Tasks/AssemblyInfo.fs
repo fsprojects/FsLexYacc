@@ -10,3 +10,4 @@ do ()
 
 module internal AssemblyVersionInformation =
     let [<Literal>] Version = "6.1.0"
+    let [<Literal>] InformationalVersion = "6.1.0"

@@ -119,6 +119,7 @@ Target "RunTests" (fun _ ->
     !! testAssemblies 
     |> NUnit3 (fun p ->
         { p with
+            Labels = LabelsLevel.All
             ShadowCopy = false
             TimeOut = TimeSpan.FromMinutes 20.
             OutputDir = "TestResults.xml" 

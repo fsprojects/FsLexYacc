@@ -108,18 +108,23 @@ Target "Build" (fun _ ->
 // Run the unit tests using test runner
 
 Target "RunOldFsYaccTests" (fun _ ->
-    let result = executeFSIWithArgs @"tests\fsyacc" "OldFsYaccTests.fsx" ["--define:RELEASE"] []
+    let result = executeFSIWithArgs @"tests/fsyacc" "OldFsYaccTests.fsx" ["--define:RELEASE"] []
     if not result then
         failwith "Old FsLexYacc tests were failed"
 )
 
+open Fake.Testing 
+
 Target "RunTests" (fun _ ->
     !! testAssemblies 
-    |> NUnit (fun p ->
+    |> NUnit3 (fun p ->
         { p with
-            DisableShadowCopy = true
+            Labels = LabelsLevel.All
+            ShadowCopy = false
             TimeOut = TimeSpan.FromMinutes 20.
-            OutputFile = "TestResults.xml" })
+            OutputDir = "TestResults.xml" 
+            ToolPath = "packages/NUnit.ConsoleRunner/tools/nunit3-console.exe"    
+        })
 )
 
 // --------------------------------------------------------------------------------------

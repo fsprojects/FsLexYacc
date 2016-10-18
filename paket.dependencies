@@ -1,0 +1,14 @@
+source https://dotnet.myget.org/F/roslyn/api/v3/index.json
+source https://dotnet.myget.org/F/dotnet-buildtools/api/v3/index.json
+source https://dotnet.myget.org/F/dotnet-core/api/v3/index.json
+source https://api.nuget.org/v3/index.json
+source https://dotnet.myget.org/F/roslyn-master-nightly/api/v3/index.json
+source https://dotnet.myget.org/F/roslyn-tools/api/v3/index.json
+source https://vcppdogfooding.azurewebsites.net/nuget/
+
+framework: >= net40
+
+nuget Fake
+nuget NuGet.CommandLine
+nuget NUnit  
+nuget NUnit.Console

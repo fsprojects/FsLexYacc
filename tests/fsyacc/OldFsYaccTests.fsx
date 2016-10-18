@@ -5,9 +5,9 @@ open System
 open Fake.FscHelper
 open System.IO
 
-[@"..\..\bin\FsLexYacc.Runtime.dll"
- @"..\..\bin\FSharp.Core.dll"]
-|> FileHelper.CopyTo @".\"
+[@"../../bin/FsLexYacc.Runtime.dll"
+ @"../../bin/FSharp.Core.dll"]
+|> FileHelper.CopyTo @"./"
 
 let run exe args =
     traceImportant <| sprintf "Running '%s' with args '%s'" exe args
@@ -15,15 +15,15 @@ let run exe args =
         x.FileName <- exe
         x.Arguments <- args)
     then failwithf "'%s' failed '%s'" exe args
-let fsLex  = run @"..\..\bin\fslex.exe"
-let fsYacc = run @"..\..\bin\fsyacc.exe"
+let fsLex  = run @"../../bin/fslex.exe"
+let fsYacc = run @"../../bin/fsyacc.exe"
 
 let fsc output files =
     traceImportant <| sprintf "Building '%s' with from %A" output files
-    "lexing.fs"::"parsing.fs"::@"..\..\src\Common\Arg.fs"::"arg.fs"::"tree.ml"::files
+    "lexing.fs"::"parsing.fs"::@"../../src/Common/Arg.fs"::"arg.fs"::"tree.ml"::files
     |> Fsc (fun p ->
         { p with References = [@"FsLexYacc.Runtime.dll"
-                               @"FSharp.Core\FSharp.Core.dll"]
+                               @"FSharp.Core/FSharp.Core.dll"]
                  Output = output; Debug = true; FscTarget = FscTarget.Exe})
     let wrongExe = (files |> List.rev |> List.head) |> FileHelper.changeExt ".exe"
     if FileInfo(output).LastWriteTime < FileInfo(wrongExe).LastWriteTime
@@ -73,9 +73,9 @@ fsYacc "--light-off --module TestParser -o test1.fs test1.mly"
 fsc "test1.exe" ["test1.fsi"; "test1.fs"; "test1lex.fs"; "main.ml"]
 
 let runTest1Tests() =
-    [@"--tokens .\test1.input1", "test1.input1.tokens.bsl"
-     @".\test1.input1", "test1.input1.bsl"
-     @".\test1.input2.variation1  .\test1.input2.variation2", "test1.input2.bsl"]
+    [@"--tokens ./test1.input1", "test1.input1.tokens.bsl"
+     @"./test1.input1", "test1.input1.bsl"
+     @"./test1.input2.variation1  ./test1.input2.variation2", "test1.input2.bsl"]
     |> List.iter (test "test1.exe")
 
 runTest1Tests()
@@ -86,8 +86,8 @@ fsYacc "--light-off --module TestParser -o test2.fs test2.mly"
 fsc "test2.exe" ["test2.fsi"; "test2.fs"; "test1lex.fs"; "main.ml"]
 
 let runTest2Tests() =
-    [@"--tokens .\test2.input1", "test2.input1.tokens.bsl"
-     @"--tokens .\test2.badInput", "test1.badInput.tokens.bsl"
+    [@"--tokens ./test2.input1", "test2.input1.tokens.bsl"
+     @"--tokens ./test2.badInput", "test1.badInput.tokens.bsl"
      //@".\test2.input1", "test2.input1.bsl" TODO: Test fails
      //@".\test2.badInput", "test1.badInput.bsl"
      ]
@@ -102,9 +102,9 @@ fsYacc "--light-off --module TestParser -o test1-unicode.fs test1-unicode.mly"
 fsc "test1-unicode.exe" ["test1-unicode.fsi"; "test1-unicode.fs"; "test1-unicode-lex.fs"; "main-unicode.ml"]
 
 let runTest1UnicodeTests() =
-    [@"--tokens .\test1.input1", "test1-unicode.input1.tokens.bsl"
-     @".\test1.input1", "test1-unicode.input1.bsl"
-     @".\test1.input2.variation1  .\test1.input2.variation2", "test1-unicode.input2.bsl"
+    [@"--tokens ./test1.input1", "test1-unicode.input1.tokens.bsl"
+     @"./test1.input1", "test1-unicode.input1.bsl"
+     @"./test1.input2.variation1  ./test1.input2.variation2", "test1-unicode.input2.bsl"
      //@"--tokens .\test1-unicode.input3.utf8", "test1-unicode.input3.tokens.bsl"  TODO: Test fails
      ]
     |> List.iter (test "test1-unicode.exe")
@@ -124,9 +124,9 @@ runTest1Tests()
 fsYacc "--module TestParser -o test1compat.ml --ml-compatibility test1.mly"
 fsc "test1compat.exe" ["test1compat.mli"; "test1compat.ml"; "test1lex.ml"; "main.ml"]
 
-[@"--tokens .\test1.input1", "test1compat.input1.tokens.bsl"
- @".\test1.input1", "test1comapt.input1.bsl"
- @".\test1.input2.variation1  .\test1.input2.variation2", "test1compat.input2.bsl"]
+[@"--tokens ./test1.input1", "test1compat.input1.tokens.bsl"
+ @"./test1.input1", "test1comapt.input1.bsl"
+ @"./test1.input2.variation1  ./test1.input2.variation2", "test1compat.input2.bsl"]
 |> List.iter (test "test1compat.exe")
 
 

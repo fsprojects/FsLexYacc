@@ -3,6 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{2EFE213D-01F7-4588-8A4F-2B1A4C98C99F}"
+	ProjectSection(SolutionItems) = preProject
+		..\paket.dependencies = ..\paket.dependencies
+	EndProjectSection
+EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "LexAndYaccMiniProject", "LexAndYaccMiniProject\LexAndYaccMiniProject.fsproj", "{3B566646-652D-41ED-95A9-C0DA626150C8}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "JsonLexAndYaccExample", "JsonLexAndYaccExample\JsonLexAndYaccExample.fsproj", "{7D3109F2-498D-415A-A572-18547EAE7083}"

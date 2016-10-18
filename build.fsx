@@ -113,13 +113,17 @@ Target "RunOldFsYaccTests" (fun _ ->
         failwith "Old FsLexYacc tests were failed"
 )
 
+open Fake.Testing 
+
 Target "RunTests" (fun _ ->
     !! testAssemblies 
-    |> NUnit (fun p ->
+    |> NUnit3 (fun p ->
         { p with
-            DisableShadowCopy = true
+            ShadowCopy = false
             TimeOut = TimeSpan.FromMinutes 20.
-            OutputFile = "TestResults.xml" })
+            OutputDir = "TestResults.xml" 
+            ToolPath = "packages/NUnit.ConsoleRunner/tools/nunit3-console.exe"    
+        })
 )
 
 // --------------------------------------------------------------------------------------

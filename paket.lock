@@ -1,0 +1,19 @@
+FRAMEWORK: >= NET40
+NUGET
+  remote: http://api.nuget.org/v3/index.json
+    FAKE (4.41.6)
+    NuGet.CommandLine (3.4.3)
+    NUnit (3.5)
+    NUnit.Console (3.5)
+      NUnit.ConsoleRunner (>= 3.5)
+      NUnit.Extension.NUnitProjectLoader (>= 3.5)
+      NUnit.Extension.NUnitV2Driver (>= 3.5)
+      NUnit.Extension.NUnitV2ResultWriter (>= 3.5)
+      NUnit.Extension.TeamCityEventListener (>= 1.0.2)
+      NUnit.Extension.VSProjectLoader (>= 3.5)
+    NUnit.ConsoleRunner (3.5)
+    NUnit.Extension.NUnitProjectLoader (3.5)
+    NUnit.Extension.NUnitV2Driver (3.5)
+    NUnit.Extension.NUnitV2ResultWriter (3.5)
+    NUnit.Extension.TeamCityEventListener (1.0.2)
+    NUnit.Extension.VSProjectLoader (3.5)

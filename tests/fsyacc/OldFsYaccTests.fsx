@@ -23,8 +23,21 @@ let fsc output files =
     "lexing.fs"::"parsing.fs"::@"..\..\src\Common\Arg.fs"::"arg.fs"::"tree.ml"::files
     |> Fsc (fun p ->
         { p with References = [@"FsLexYacc.Runtime.dll"
-                               @"FSharp.Core\FSharp.Core.dll"]
-                 Output = output; Debug = true; FscTarget = Exe})
+                               @"System.Runtime"
+                               @"System.IO"
+                               @"..\..\packages\FSharp.Core\lib\net40\FSharp.Core.dll"]
+                 Output = output; Debug = true; FscTarget = FscTarget.Exe })
+    File.WriteAllText(output |> FileHelper.changeExt ".exe.config","""<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <runtime>
+    <assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1">
+      <dependentAssembly>
+        <assemblyIdentity name="FSharp.Core" publicKeyToken="b03f5f7f11d50a3a" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-4.3.1.0" newVersion="4.3.1.0" />
+      </dependentAssembly>
+    </assemblyBinding>
+  </runtime>
+</configuration>""")
     let wrongExe = (files |> List.rev |> List.head) |> FileHelper.changeExt ".exe"
     if FileInfo(output).LastWriteTime < FileInfo(wrongExe).LastWriteTime
         then File.Delete(output)

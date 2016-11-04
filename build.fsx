@@ -73,8 +73,6 @@ Target "AssemblyInfo" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Clean build results & restore NuGet packages
 
-Target "RestorePackages" RestorePackages
-
 Target "Clean" (fun _ ->
     CleanDirs ["bin"; "temp"]
 )
@@ -88,11 +86,7 @@ Target "CleanDocs" (fun _ ->
 
 Target "Build" (fun _ ->
     let projects =
-        (if not isLinux then
-            !! "src/**/*.fsproj"
-         else
-            !! "src/**/*.fsproj"
-              -- "src/FsLexYacc.Profile259/*.fsproj")
+        (!! "src/**/*.fsproj")
           ++ "tests/FsLexYacc.Build.Tasks.Tests/*.fsproj"
 
     projects
@@ -183,7 +177,6 @@ Target "Release" DoNothing
 Target "All" DoNothing
 
 "Clean"
-  ==> "RestorePackages"
   ==> "AssemblyInfo"
   ==> "Build"
   ==> "RunTests"

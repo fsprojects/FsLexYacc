@@ -1,6 +1,6 @@
 (* (c) Microsoft Corporation 2005-2008.  *)
 
-module internal FSharp.PowerPack.FsYacc.Driver 
+module internal FsLexYacc.FsYacc.Driver 
 
 open System.IO 
 open System.Collections.Generic
@@ -8,8 +8,8 @@ open Printf
 open Internal.Utilities
 open Internal.Utilities.Text.Lexing
 
-open FSharp.PowerPack.FsYacc
-open FSharp.PowerPack.FsYacc.AST
+open FsLexYacc.FsYacc
+open FsLexYacc.FsYacc.AST
 
 //------------------------------------------------------------------
 // This code is duplicated from Microsoft.FSharp.Compiler.UnicodeLexing
@@ -60,8 +60,8 @@ let usage =
     ArgInfo("--light-off", ArgType.Unit (fun () ->  light := Some false), "Add #light \"off\" to the top of the generated file");
     ArgInfo("--ml-compatibility", ArgType.Set compat, "Support the use of the global state from the 'Parsing' module in FSharp.PowerPack.dll."); 
     ArgInfo("--tokens", ArgType.Set tokenize, "Simply tokenize the specification file itself."); 
-    ArgInfo("--lexlib", ArgType.String (fun s ->  lexlib <- s), "Specify the namespace for the implementation of the parser table interperter (default Microsoft.FSharp.Text.Parsing)");
-    ArgInfo("--parslib", ArgType.String (fun s ->  parslib <- s), "Specify the namespace for the implementation of the parser table interperter (default Microsoft.FSharp.Text.Parsing)");
+    ArgInfo("--lexlib", ArgType.String (fun s ->  lexlib <- s), "Specify the namespace for the implementation of the lexer (default: Microsoft.FSharp.Text.Lexing)");
+    ArgInfo("--parslib", ArgType.String (fun s ->  parslib <- s), "Specify the namespace for the implementation of the parser table interpreter (default: Microsoft.FSharp.Text.Parsing)");
     ArgInfo("--codepage", ArgType.Int (fun i -> inputCodePage := Some i), "Assume input lexer specification file is encoded with the given codepage.");  ]
 
 let _ = ArgParser.Parse(usage,(fun x -> match !input with Some _ -> failwith "more than one input given" | None -> input := Some x),"fsyacc <filename>")
@@ -220,16 +220,16 @@ let main() =
           cprintfn out "    | NONTERM_%s" nt;
 
   cprintfn cos "";
-  cprintfn cos "// This function maps tokens to integers indexes";
+  cprintfn cos "// This function maps tokens to integer indexes";
   cprintfn cos "let tagOfToken (t:token) = ";
   cprintfn cos "  match t with";
   spec.Tokens |> List.iteri (fun i (id,typ) -> 
       cprintfn cos "  | %s %s -> %d " id (match typ with Some _ -> "_" | None -> "") i);
-  cprintfn cosi "/// This function maps integers indexes to symbolic token ids";
+  cprintfn cosi "/// This function maps tokens to integer indexes";
   cprintfn cosi "val tagOfToken: token -> int";
 
   cprintfn cos "";
-  cprintfn cos "// This function maps integers indexes to symbolic token ids";
+  cprintfn cos "// This function maps integer indexes to symbolic token ids";
   cprintfn cos "let tokenTagToTokenId (tokenIdx:int) = ";
   cprintfn cos "  match tokenIdx with";
   spec.Tokens |> List.iteri (fun i (id,typ) -> 
@@ -239,7 +239,7 @@ let main() =
   cprintfn cos "  | _ -> failwith \"tokenTagToTokenId: bad token\""
 
   cprintfn cosi "";
-  cprintfn cosi "/// This function maps integers indexes to symbolic token ids";
+  cprintfn cosi "/// This function maps integer indexes to symbolic token ids";
   cprintfn cosi "val tokenTagToTokenId: int -> tokenId";
 
   cprintfn cos "";

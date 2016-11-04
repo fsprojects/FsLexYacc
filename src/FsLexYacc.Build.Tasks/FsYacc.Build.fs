@@ -70,11 +70,6 @@ type FsYacc() =
         with get ()  = toolPath
         and  set (s) = toolPath <- s
         
-    // Name of the .exe to call
-    member this.ToolExe
-        with get ()  = toolExe
-        and  set (s) = toolExe <- s        
-
     // ToolTask methods
     override this.ToolName = "fsyacc.exe"
     

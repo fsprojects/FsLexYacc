@@ -1,8 +1,8 @@
 %{
 (* (c) Microsoft Corporation 2005-2008.  *)
 
-open FSharp.PowerPack.FsLex
-open FSharp.PowerPack.FsLex.AST
+open FsLexYacc.FsLex
+open FsLexYacc.FsLex.AST
 
 %} 
 

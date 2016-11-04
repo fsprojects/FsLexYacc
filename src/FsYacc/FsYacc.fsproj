@@ -11,7 +11,7 @@
     <!-- 5310 tracks reenabling -->
     <DefineConstants>INTERNALIZED_FSLEXYACC_RUNTIME;$(DefineConstants)</DefineConstants>
     <AllowCrossTargeting>true</AllowCrossTargeting>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,7 +34,7 @@
       <OtherFlags>--unicode --lexlib Internal.Utilities.Text.Lexing</OtherFlags>
     </FsLex>
     <FsYacc Include="fsyaccpars.fsy">
-      <OtherFlags>--internal --module FSharp.PowerPack.FsYacc.Parser --lexlib Internal.Utilities.Text.Lexing --parslib Internal.Utilities.Text.Parsing</OtherFlags>
+      <OtherFlags>--internal --module FsLexYacc.FsYacc.Parser --lexlib Internal.Utilities.Text.Lexing --parslib Internal.Utilities.Text.Parsing</OtherFlags>
     </FsYacc>
     <Compile Include="AssemblyInfo.fs">
       <Link>AssemblyInfo.fs</Link>
@@ -61,6 +61,9 @@
     <Compile Include="fsyaccpars.fs" />
     <Compile Include="fsyacclex.fs" />
     <Compile Include="fsyacc.fs" />
+    <Content Include="App.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />

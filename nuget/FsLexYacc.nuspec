@@ -17,10 +17,10 @@
     @dependencies@
   </metadata>
   <files>
-    <file src="..\bin\FSharp.Core.dll" target="bin" />
-    <file src="..\bin\fslex.exe" target="bin" />
-    <file src="..\bin\fsyacc.exe" target="bin" />
-    <file src="..\bin\FsLexYacc.targets" target="bin" />
-    <file src="..\bin\FsLexYacc.Build.Tasks.dll" target="bin" />
+    <file src="..\bin\FSharp.Core.dll" target="build" />
+    <file src="..\bin\fslex.exe" target="build" />
+    <file src="..\bin\fsyacc.exe" target="build" />
+    <file src="..\bin\FsLexYacc.targets" target="build" />
+    <file src="..\bin\FsLexYacc.Build.Tasks.dll" target="build" />
   </files>
 </package>

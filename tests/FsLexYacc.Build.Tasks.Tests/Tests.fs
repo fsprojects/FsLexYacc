@@ -3,7 +3,6 @@
 open NUnit.Framework
 open Microsoft.FSharp.Build.Logging
 
-
 let [<Test>]``FsLex app crash error`` () =
   match "FSLEX: error FSL000: Something gone wrong" with
   | FsLexCrash "Something gone wrong" -> ignore()

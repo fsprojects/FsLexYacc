@@ -159,7 +159,7 @@ You must also update the position recorded in the lex buffer each time you proce
         lexbuf.EndPos <- lexbuf.EndPos.AsNewLinePos()
 
 
-Likewise if your language includes the ability to mark source code locations, see custom essay (e.g. the `#line` directive in OCaml and F#) then you must similarly adjust the `lexbuf.EndPos` according to the information your grok from your input.
+Likewise if your language includes the ability to mark source code locations, see custom essay (e.g. the `#line` directive in OCaml and F#) then you must similarly adjust the `lexbuf.EndPos` according to the information you grok from your input.
 
 Notes on OCaml Compatibility
 ----------------------------

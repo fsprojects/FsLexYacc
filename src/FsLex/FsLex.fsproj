@@ -2,6 +2,7 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">$(MSBuildProjectDirectory)\..\..\</SolutionDir>
     <Platform>AnyCPU</Platform>
     <ProjectGuid>{BD2284A5-AA4D-442D-B4FB-E43B2FE9DD2A}</ProjectGuid>
     <TreatWarningsAsErrors>

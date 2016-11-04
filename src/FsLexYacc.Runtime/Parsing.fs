@@ -115,6 +115,7 @@ type internal Stack<'a>(n)  =
         count <- count + 1
         
     member buf.IsEmpty = (count = 0)
+#if __DEBUG
     member buf.PrintStack() = 
         for i = 0 to (count - 1) do 
 #if FX_NO_CONSOLE
@@ -122,6 +123,7 @@ type internal Stack<'a>(n)  =
 #else
             System.Console.Write("{0}{1}",(contents.[i]),if i=count-1 then ":" else "-") 
 #endif         
+#endif
 exception RecoverableParseError
 exception Accept of obj
 

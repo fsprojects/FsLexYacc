@@ -17,3 +17,6 @@
 * Build system upgraded to MSBuild 4.0
 * Fixed Mono/Linux compilation
 * New example with a walkthrough
+
+#### 6.2.0 - November 11, 2016
+* Use only profile 259, move to Paket, remove LKG

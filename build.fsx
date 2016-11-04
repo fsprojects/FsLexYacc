@@ -48,7 +48,6 @@ let gitName = "FsLexYacc"
 // Read additional information from the release notes document
 Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
 let release = parseReleaseNotes (IO.File.ReadAllLines "RELEASE_NOTES.md")
-let releaseRuntime = parseReleaseNotes (IO.File.ReadAllLines "RELEASE_NOTES_Runtime.md")
 
 // Generate assembly info files with the right version & up-to-date information
 Target "AssemblyInfo" (fun _ ->
@@ -58,8 +57,8 @@ Target "AssemblyInfo" (fun _ ->
           [ Attribute.Title project
             Attribute.Product "FsLexYacc.Runtime"
             Attribute.Description summary
-            Attribute.Version releaseRuntime.AssemblyVersion
-            Attribute.FileVersion releaseRuntime.AssemblyVersion ]
+            Attribute.Version release.AssemblyVersion
+            Attribute.FileVersion release.AssemblyVersion ]
   for project in projects do 
       let fileName = "src/" + project + "/AssemblyInfo.fs"
       CreateFSharpAssemblyInfo fileName

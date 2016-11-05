@@ -22,7 +22,7 @@ open System
 
 // The name of the project 
 // (used by attributes in AssemblyInfo, name of a NuGet package and directory in 'src')
-let projects = [ "FsLex"; "FsYacc"; "FsLexYacc.Build.Tasks" ]
+let projects = [ "FsLex"; "FsYacc"; ]
 let runtimeProjects = [ "FsLexYacc.Runtime" ]
 let project = "FsLexYacc"
 // Short summary of the project
@@ -86,7 +86,6 @@ Target "CleanDocs" (fun _ ->
 Target "Build" (fun _ ->
     let projects =
         (!! "src/**/*.fsproj")
-          ++ "tests/FsLexYacc.Build.Tasks.Tests/*.fsproj"
 
     projects
     |> MSBuildRelease "" "Rebuild"

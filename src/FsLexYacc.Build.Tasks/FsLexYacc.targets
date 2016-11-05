@@ -15,6 +15,10 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup>
 		<CompileDependsOn>CallFsLex;CallFsYacc;$(CompileDependsOn)</CompileDependsOn>
+		<FsLexToolPath Condition="'$(FsLexToolPath)' == ''">$(MSBuildThisFileDirectory)</FsLexToolPath>
+		<FsLexToolExe Condition="'$(FsLexToolExe)' == ''">fslex.exe</FsLexToolExe>
+		<FsYaccToolPath Condition="'$(FsYaccToolPath)' == ''">$(MSBuildThisFileDirectory)</FsYaccToolPath>
+		<FsYaccToolExe Condition="'$(FsYaccToolExe)' == ''">fsyacc.exe</FsYaccToolExe>
 	</PropertyGroup>
 
 	<!-- Build FsLex files. -->
@@ -27,14 +31,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 		<!-- Create the output directory -->
 		<MakeDir Directories="$(FsLexOutputFolder)"/>
 		<!-- Call FsLex -->
-		<PropertyGroup>
-			<FsLexToolPath Condition="'$(FsLexToolPath)' == ''">$(MSBuildThisFileDirectory)</FsLexToolPath>
-			<FsLexToolExe Condition="'$(FsLexToolExe)' == ''">fslex.exe</FsLexToolExe>
-			<_Command>$(FsLexToolPath)\$(FsLexToolExe)  -o &quot;$(FsLexOutputFolder)%(FsLex.Filename).fs&quot; %(FsLex.OtherFlags) %(FsLex.Identity)</_Command>
-			<_Command Condition="'%(FsLex.CodePage)' != ''">$(_Command) --codepage %(FsLex.CodePage)</_Command>
-			<_Command Condition="'%(FsLex.Unicode)' == 'true'">$(_Command) --unicode</_Command>
-		</PropertyGroup>
-		<Exec Command="$(_Command)" />
+		<Exec Command="$(FsLexToolPath)\$(FsLexToolExe)  -o &quot;$(FsLexOutputFolder)%(FsLex.Filename).fs&quot; %(FsLex.OtherFlags) %(FsLex.Identity)" />
 		<!-- Make sure it will get cleaned  -->
 		<CreateItem Include="$(FsLexOutputFolder)%(FsLex.Filename).fs">
 			<Output TaskParameter="Include" ItemName="FileWrites"/>
@@ -50,17 +47,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 
 		<!-- Create the output directory -->
 		<MakeDir Directories="$(FsYaccOutputFolder)"/>
-		<!-- Call FsYacc -->
-		<PropertyGroup>
-			<FsYaccToolPath Condition="'$(FsYaccToolPath)' == ''">$(MSBuildThisFileDirectory)</FsYaccToolPath>
-			<FsYaccToolExe Condition="'$(FsYaccToolExe)' == ''">fsyacc.exe</FsYaccToolExe>
-			<_Command>$(FsYaccToolPath)\$(FsYaccToolExe)  -o &quot;$(FsYaccOutputFolder)%(FsYacc.Filename).fs&quot; %(FsYacc.OtherFlags) %(FsYacc.Identity)</_Command>
-			<_Command Condition="'%(FsYacc.CodePage)' != ''">$(_Command) --codepage %(FsYacc.CodePage)</_Command>
-			<_Command Condition="'%(FsYacc.Unicode)' == 'true'">$(_Command) --unicode</_Command>
-			<_Command Condition="'%(FsYacc.Open)' != ''">$(_Command)  --open %(FsYacc.Open)</_Command>
-			<_Command Condition="'%(FsYacc.Module)' != ''">$(_Command)  --module %(FsYacc.Module)</_Command>
-		</PropertyGroup>
-		<Exec Command="$(_Command)" />
+		<Exec Command="$(FsYaccToolPath)\$(FsYaccToolExe)  -o &quot;$(FsYaccOutputFolder)%(FsYacc.Filename).fs&quot; %(FsYacc.OtherFlags) %(FsYacc.Identity)" />
 
 		<!-- Make sure it will get cleaned  -->
 		<CreateItem Include="$(FsYaccOutputFolder)%(FsYacc.Filename).fs">

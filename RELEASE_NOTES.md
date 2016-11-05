@@ -21,3 +21,7 @@
 #### 7.0.0 - November 11, 2016
 * Use only profile 259, move to Paket, remove LKG
 * Remove the use of a task DLL
+
+#### 7.0.1 - November 11, 2016
+* Fix targets file
+* Remove <Open> and <Module> and just have the user pass them in via <OtherFlags>

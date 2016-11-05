@@ -115,23 +115,20 @@ Target "RunTests" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Build a NuGet package
 
-Target "NuGet-FsLexYacc.Runtime" (fun _ ->
+Target "NuGet" (fun _ ->
     Paket.Pack (fun p -> 
         { p with 
             TemplateFile = "nuget/FsLexYacc.Runtime.template"
             Version = release.NugetVersion
             OutputPath = "bin"
             ReleaseNotes = toLines release.Notes })
-
-)
-
-Target "NuGet-FsLexYacc" (fun _ ->
     Paket.Pack (fun p -> 
         { p with 
             TemplateFile = "nuget/FsLexYacc.template"
             Version = release.NugetVersion
             OutputPath = "bin"
             ReleaseNotes = toLines release.Notes })
+
 )
 
 // --------------------------------------------------------------------------------------
@@ -166,8 +163,8 @@ Target "All" DoNothing
 "Clean"
   ==> "AssemblyInfo"
   ==> "Build"
-//  ==> "RunTests"
-//  =?> ("RunOldFsYaccTests", not isLinux)
+  ==> "RunTests"
+  =?> ("RunOldFsYaccTests", not isLinux)
   ==> "All"
 
 "All" 
@@ -176,8 +173,7 @@ Target "All" DoNothing
   ==> "ReleaseDocs"
 
 "All"
-  ==> "NuGet-FsLexYacc.Runtime"
-  ==> "NuGet-FsLexYacc"
+  ==> "NuGet"
   ==> "Release"
 
 RunTargetOrDefault "All"

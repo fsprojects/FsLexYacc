@@ -18,5 +18,6 @@
 * Fixed Mono/Linux compilation
 * New example with a walkthrough
 
-#### 6.2.0 - November 11, 2016
+#### 7.0.0 - November 11, 2016
 * Use only profile 259, move to Paket, remove LKG
+* Remove the use of a task DLL

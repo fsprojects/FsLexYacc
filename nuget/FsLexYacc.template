@@ -16,7 +16,6 @@ files
   ../bin/fslex.exe ==> build
   ../bin/fsyacc.exe ==> build
   ../bin/FsLexYacc.targets ==> build
-  ../bin/FsLexYacc.Build.Tasks.dll ==> build
 dependencies
   FsLexYacc.Runtime ~> CURRENTVERSION
   

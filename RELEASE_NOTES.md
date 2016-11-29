@@ -25,3 +25,6 @@
 #### 7.0.1 - November 11, 2016
 * Fix targets file
 * Remove <Open> and <Module> and just have the user pass them in via <OtherFlags>
+
+#### 7.0.2 - November 29, 2016
+* Fix targets file when space in path

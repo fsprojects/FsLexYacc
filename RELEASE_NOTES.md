@@ -28,3 +28,6 @@
 
 #### 7.0.2 - November 5, 2016
 * Improve output
+
+#### 7.0.3 - November 29, 2016
+* Fix targets file when space in path

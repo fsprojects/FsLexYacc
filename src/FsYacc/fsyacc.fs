@@ -142,19 +142,19 @@ let main() =
           let oso = (File.CreateText filename :> TextWriter) 
           (fun f -> f oso) 
 
-  logf (fun oso -> fprintfn oso "Output file describing compiled parser placed in %s and %s" output outputi);
+  logf (fun oso -> fprintfn oso "        Output file describing compiled parser placed in %s and %s" output outputi);
 
-  printfn "building tables"; 
+  printfn "        building tables"; 
   let spec1 = ProcessParserSpecAst spec 
   let (prods,states, startStates,actionTable,immediateActionTable,gotoTable,endOfInputTerminalIdx,errorTerminalIdx,nonTerminals) = 
       CompilerLalrParserSpec logf spec1 
 
   let (code,pos) = spec.Header 
-  printfn "%d states" states.Length; 
-  printfn "%d nonterminals" gotoTable.[0].Length; 
-  printfn "%d terminals" actionTable.[0].Length; 
-  printfn "%d productions" prods.Length; 
-  printfn "#rows in action table: %d" actionTable.Length; 
+  printfn "        %d states" states.Length; 
+  printfn "        %d nonterminals" gotoTable.[0].Length; 
+  printfn "        %d terminals" actionTable.[0].Length; 
+  printfn "        %d productions" prods.Length; 
+  printfn "        #rows in action table: %d" actionTable.Length; 
 (*
   printfn "#unique rows in action table: %d" (List.length (Array.foldBack (fun row acc -> insert (Array.to_list row) acc) actionTable [])); 
   printfn "maximum #different actions per state: %d" (Array.foldBack (fun row acc ->max (List.length (List.foldBack insert (Array.to_list row) [])) acc) actionTable 0); 

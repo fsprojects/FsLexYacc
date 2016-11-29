@@ -18,10 +18,13 @@
 * Fixed Mono/Linux compilation
 * New example with a walkthrough
 
-#### 7.0.0 - November 11, 2016
+#### 7.0.0 - November 5, 2016
 * Use only profile 259, move to Paket, remove LKG
 * Remove the use of a task DLL
 
-#### 7.0.1 - November 11, 2016
+#### 7.0.1 - November 5, 2016
 * Fix targets file
 * Remove <Open> and <Module> and just have the user pass them in via <OtherFlags>
+
+#### 7.0.2 - November 5, 2016
+* Improve output

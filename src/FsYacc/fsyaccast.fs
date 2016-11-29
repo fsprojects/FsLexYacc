@@ -118,7 +118,7 @@ let ProcessParserSpecAst (spec: ParserSpec) =
            | Terminal t ->  
                if not (IsTerminal t) then failwith (sprintf "token %s is not declared" t)
            
-    if spec.StartSymbols= [] then (failwith "at least one %start declaration is required\n");
+    if spec.StartSymbols= [] then (failwith "at least one %start declaration is required");
 
     for (nt,_) in spec.Types do 
         checkNonTerminal nt;
@@ -349,7 +349,7 @@ type PropagateTable() =
 /// Compile a pre-processed LALR parser spec to tables following the Dragon book algorithm
 let CompilerLalrParserSpec logf (spec : ProcessedParserSpec) =
     let stopWatch = new System.Diagnostics.Stopwatch()
-    let reportTime() = printfn "time: %A" stopWatch.Elapsed; stopWatch.Reset(); stopWatch.Start()
+    let reportTime() = printfn "        time: %A" stopWatch.Elapsed; stopWatch.Reset(); stopWatch.Start()
     stopWatch.Start()
 
     // Augment the grammar 
@@ -368,9 +368,6 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec) =
     let prodTab = ProductionTable(ntTab,termTab,nonTerminals,prods)
     let dummyLookaheadIdx = termTab.ToIndex dummyLookahead
     let endOfInputTerminalIdx = termTab.ToIndex endOfInputTerminal
-
-
-    // printf "terminalPrecInfo(ELSE) = %a\n" outputPrecInfo (termTab.PrecInfoOfIndex (termTab.ToIndex "ELSE"));
 
     let errorTerminalIdx = termTab.ToIndex "error"
 
@@ -481,13 +478,13 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec) =
         fprintf os "    %s -> %a . %a" (ntTab.OfIndex (ntIdx_of_item0 item0)) (* outputPrecInfo precInfo *) OutputSyms (lsyms_of_item0 item0) OutputSyms (rsyms_of_item0 item0) 
         
     let OutputItem0Set os s = 
-        Set.iter (fun item -> fprintf os "%a\n" OutputItem0 item) s
+        Set.iter (fun item -> fprintfn os "%a" OutputItem0 item) s
 
     let OutputFirstSet os m = 
-        Set.iter (function None ->  fprintf os "<empty>" | Some x -> fprintf os "  term %s\n" x) m
+        Set.iter (function None ->  fprintf os "<empty>" | Some x -> fprintfn os "  term %s" x) m
 
     let OutputFirstMap os m = 
-        Map.iter (fun x y -> fprintf os "first '%a' = \n%a\n" OutputSym x OutputFirstSet y) m
+        Map.iter (fun x y -> fprintf os "first '%a' = " OutputSym x; fprintfn os "%a" OutputFirstSet y) m
 
     let OutputAction os m = 
         match m with 
@@ -497,10 +494,10 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec) =
         | Accept -> fprintf os "  accept" 
     
     let OutputActions os m = 
-        Array.iteri (fun i (prec,action) -> let term = termTab.OfIndex i in fprintf os "    action '%s' (%a): %a\n" term outputPrecInfo prec OutputAction action) m
+        Array.iteri (fun i (prec,action) -> let term = termTab.OfIndex i in fprintfn os "    action '%s' (%a): %a" term outputPrecInfo prec OutputAction action) m
 
     let OutputActionTable os m = 
-        Array.iteri (fun i n -> fprintf os "state %d:\n%a\n" i OutputActions n) m
+        Array.iteri (fun i n -> fprintfn os "state %d:" i; fprintfn os "%a" OutputActions n) m
 
     let OutputImmediateActions os m = 
         match m with 
@@ -508,10 +505,19 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec) =
         | Some a -> OutputAction os a
     
     let OutputGotos os m = 
-        Array.iteri (fun ntIdx s -> let nonterm = ntTab.OfIndex ntIdx in match s with Some st -> fprintf os "    goto %s: %d\n" nonterm st | None -> ()) m
+        Array.iteri (fun ntIdx s -> let nonterm = ntTab.OfIndex ntIdx in match s with Some st -> fprintfn os "    goto %s: %d" nonterm st | None -> ()) m
     
     let OutputCombined os m = 
-        Array.iteri (fun i (a,b,c,d) -> fprintf os "state %d:\n  items:\n%a\n  actions:\n%a\n  immediate action: %a\n gotos:\n%a\n" i OutputItem0Set a OutputActions b OutputImmediateActions c OutputGotos d) m
+        Array.iteri (fun i (a,b,c,d) -> 
+            fprintf os "state %d:" i
+            fprintf os "  items:"
+            fprintf os "%a" OutputItem0Set a 
+            fprintf os "  actions:"
+            fprintf os "%a" OutputActions b 
+            fprintf os "  immediate action: "
+            fprintf os "%a" OutputImmediateActions c 
+            fprintf os "  gotos:"
+            fprintf os "%a" OutputGotos d) m
     
     let OutputLalrTables os (prods,states, startStates,actionTable,immediateActionTable,gotoTable,endOfInputTerminalIdx,errorTerminalIdx) = 
         let combined = Array.ofList (List.map2 (fun x (y,(z,w)) -> x,y,z,w) (Array.toList states) (List.zip (Array.toList actionTable) (List.zip (Array.toList immediateActionTable) (Array.toList gotoTable))))
@@ -756,7 +762,7 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec) =
                         an, "{" + pstr + " " + astr + "}"
                     let a1n, astr1 = reportAction x1
                     let a2n, astr2 = reportAction x2
-                    printf "%s/%s error at state %d on terminal %s between %s and %s - assuming the former because %s\n" a1n a2n kernelIdx (termTab.OfIndex termIdx) astr1 astr2 reason
+                    printfn "        %s/%s error at state %d on terminal %s between %s and %s - assuming the former because %s" a1n a2n kernelIdx (termTab.OfIndex termIdx) astr1 astr2 reason
                 match itemSoFar,itemNew with 
                 | (_,Shift s1),(_, Shift s2) -> 
                    if actionSoFar <> actionNew then 
@@ -776,11 +782,11 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec) =
                         | LeftAssoc ->  reduceItem
                         | RightAssoc -> shiftItem
                         | NonAssoc ->
-                           reportConflict shiftItem reduceItem "we preffer shift on equal precedences"
+                           reportConflict shiftItem reduceItem "we prefer shift on equal precedences"
                            incr shiftReduceConflicts;
                            shiftItem
                     | _ ->
-                       reportConflict shiftItem reduceItem "we preffer shift when unable to compare precedences"
+                       reportConflict shiftItem reduceItem "we prefer shift when unable to compare precedences"
                        incr shiftReduceConflicts;
                        shiftItem
                 | ((_,Reduce prodIdx1),(_, Reduce prodIdx2)) -> 
@@ -872,22 +878,22 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec) =
 
     // The goto table is much simpler - it is based on LR(0) kernels alone. 
 
-    reportTime(); printf  "building goto table..."; stdout.Flush();
+    reportTime(); printf  "        building goto table..."; stdout.Flush();
     let gotoTable = 
          let gotos kernelIdx = Array.ofList (List.map (fun nt -> gotoKernel (GotoItemIdx(kernelIdx,PNonTerminal nt))) ntTab.Indexes)
          Array.ofList (List.map gotos kernelTab.Indexes)
 
-    reportTime(); printfn  "returning tables."; stdout.Flush();
-    if !shiftReduceConflicts > 0 then printfn  "%d shift/reduce conflicts" !shiftReduceConflicts; stdout.Flush();
-    if !reduceReduceConflicts > 0 then printfn  "%d reduce/reduce conflicts" !reduceReduceConflicts; stdout.Flush();
-    if !shiftReduceConflicts > 0 || !reduceReduceConflicts > 0 then printfn  "consider setting precedences explicitly using %%left %%right and %%nonassoc on terminals and/or setting explicit precedence on rules using %%prec"
+    reportTime(); printfn  "        returning tables."; stdout.Flush();
+    if !shiftReduceConflicts > 0 then printfn  "        %d shift/reduce conflicts" !shiftReduceConflicts; stdout.Flush();
+    if !reduceReduceConflicts > 0 then printfn  "        %d reduce/reduce conflicts" !reduceReduceConflicts; stdout.Flush();
+    if !shiftReduceConflicts > 0 || !reduceReduceConflicts > 0 then printfn  "        consider setting precedences explicitly using %%left %%right and %%nonassoc on terminals and/or setting explicit precedence on rules using %%prec"
 
     /// The final results
     let states = kernels |> Array.ofList 
     let prods = Array.ofList (List.map (fun (Production(nt,prec,syms,code)) -> (nt, ntTab.ToIndex nt, syms,code)) prods)
 
     logf (fun logStream -> 
-        printf  "writing tables to log\n"; stdout.Flush();
+        printfn  "writing tables to log"; stdout.Flush();
         OutputLalrTables logStream     (prods, states, startKernelIdxs, actionTable, immediateActionTable, gotoTable, (termTab.ToIndex endOfInputTerminal), errorTerminalIdx));
 
     let states = states |> Array.map (Set.toList >> List.map prodIdx_of_item0)

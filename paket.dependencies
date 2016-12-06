@@ -1,9 +1,16 @@
 source https://www.myget.org/F/dotnet-core/api/v3/index.json
 source https://www.nuget.org/api/v2/
+source https://www.myget.org/F/netcorecli-fsc-preview3/api/v3/index.json
+source https://dotnet.myget.org/F/dotnet-buildtools/api/v3/index.json
 
-nuget FAKE
-nuget FSharp.Formatting
+nuget Microsoft.NETCore.App 1.0.1
 nuget NUnit 
 nuget NUnit.Runners
-nuget FsLexYacc
-nuget FSharp.Core 
+nuget FsLexYacc 
+nuget FSharp.Core 4.0.1.7-alpha alpha
+nuget System.Globalization 4.3.0
+
+group build 
+    source https://www.nuget.org/api/v2/
+    nuget FAKE
+    nuget FSharp.Formatting

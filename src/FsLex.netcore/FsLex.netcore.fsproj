@@ -1,0 +1,73 @@
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" />
+  <PropertyGroup>
+    <AssemblyName>fslex</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp1.0</TargetFramework>
+    <DefineConstants>INTERNALIZED_FSLEXYACC_RUNTIME;$(DefineConstants)</DefineConstants>
+    <DebugType>pdbonly</DebugType>
+    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Version>7.0.3</Version>
+    <Authors>Don Syme</Authors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DefineConstants>INTERNALIZED_FSLEXYACC_RUNTIME</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <FsLex Include="..\FsLex\fslexlex.fsl">
+      <OtherFlags>--unicode --lexlib Internal.Utilities.Text.Lexing</OtherFlags>
+    </FsLex>
+    <FsYacc Include="..\FsLex\fslexpars.fsy">
+      <OtherFlags>--internal --module FsLexYacc.FsLex.Parser --lexlib Internal.Utilities.Text.Lexing --parslib Internal.Utilities.Text.Parsing</OtherFlags>
+    </FsYacc>
+    <Compile Include="..\FsLex\AssemblyInfo.fs">
+      <Link>AssemblyInfo.fs</Link>
+    </Compile>
+    <Compile Include="..\FsLexYacc.Runtime\Lexing.fsi">
+      <Link>lexing.fsi</Link>
+    </Compile>
+    <Compile Include="..\FsLexYacc.Runtime\Lexing.fs">
+      <Link>lexing.fs</Link>
+    </Compile>
+    <Compile Include="..\FsLexYacc.Runtime\Parsing.fsi">
+      <Link>parsing.fsi</Link>
+    </Compile>
+    <Compile Include="..\FsLexYacc.Runtime\Parsing.fs">
+      <Link>parsing.fs</Link>
+    </Compile>
+    <Compile Include="..\Common\Arg.fsi">
+      <Link>arg.fsi</Link>
+    </Compile>
+    <Compile Include="..\Common\Arg.fs">
+      <Link>arg.fs</Link>
+    </Compile>
+    <Compile Include="..\FsLex\fslexast.fs" />
+    <Compile Include="..\FsLex\fslexpars.fs" />
+    <Compile Include="..\FsLex\fslexlex.fs" />
+    <Compile Include="..\FsLex\fslex.fs" />
+    <Content Include="..\FsLex\App.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Sdk">
+      <Version>1.0.0-alpha-20161029-1</Version>
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="FSharp.NET.Sdk">
+      <Version>1.0.0-alpha-000001</Version>
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <DotNetCliToolReference Include="dotnet-compile-fsc">
+      <Version>1.0.0-preview2-020000</Version>
+    </DotNetCliToolReference>
+  </ItemGroup>
+  <Import Project="..\..\packages\FsLexYacc\build\FsLexYacc.targets" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
+</Project>

@@ -3,6 +3,7 @@
 module FsLexYacc.FsLex.AST
 
 open System.Collections.Generic
+open System.Globalization
 open Microsoft.FSharp.Text
 open Microsoft.FSharp.Collections
 open Internal.Utilities
@@ -23,7 +24,7 @@ let unicode = ref false
 
 let unicodeCategories = 
  dict 
-  [| "Pe", System.Globalization.UnicodeCategory.ClosePunctuation; // (Pe)
+  [|"Pe", System.Globalization.UnicodeCategory.ClosePunctuation; // (Pe)
     "Pc", System.Globalization.UnicodeCategory.ConnectorPunctuation; // (Pc)
     "Cc", System.Globalization.UnicodeCategory.Control; // (Cc)
     "Sc", System.Globalization.UnicodeCategory.CurrencySymbol; // (Sc)
@@ -214,7 +215,7 @@ let LexerStateToNfa (macros: Map<string,_>) (clauses: Clause list) =
             let re = Alt([ yield Inp(Alphabet(EncodeUnicodeCategory uc))
                            // Also include any specific characters in this category
                            for c in GetSingleCharAlphabet() do 
-                               if System.Char.GetUnicodeCategory(c) = unicodeCategories.[uc] then 
+                               if CharUnicodeInfo.GetUnicodeCategory(c) = unicodeCategories.[uc] then 
                                     yield Inp(Alphabet(EncodeChar(c))) ])
             CompileRegexp re dest
 
@@ -233,7 +234,7 @@ let LexerStateToNfa (macros: Map<string,_>) (clauses: Clause list) =
                            // That is, negations _only_ exclude precisely the given set of characters. You can't
                            // exclude whole classes of characters as yet
                            if !unicode then 
-                               let ucs = chars |> Set.map(DecodeChar >> System.Char.GetUnicodeCategory)  
+                               let ucs = chars |> Set.map(DecodeChar >> CharUnicodeInfo.GetUnicodeCategory)  
                                for KeyValue(nm,uc) in unicodeCategories do
                                    //if ucs.Contains(uc) then 
                                    //    do printfn "warning: the unicode category '\\%s' ('%s') is automatically excluded by this character set negation. Consider adding this to the negation." nm  (uc.ToString())

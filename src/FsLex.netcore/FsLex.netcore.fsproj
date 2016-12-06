@@ -8,6 +8,8 @@
     <DebugType>pdbonly</DebugType>
     <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <OutDir>bin\$(Configuration)</OutDir>
+    
   </PropertyGroup>
   <PropertyGroup>
     <Version>7.0.3</Version>

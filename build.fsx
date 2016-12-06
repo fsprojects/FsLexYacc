@@ -4,10 +4,15 @@
 
 #I @"packages/build/FAKE/tools"
 #r @"packages/build/FAKE/tools/FakeLib.dll"
+#r "System.IO.Compression.FileSystem"
+// #r @"packages/System.IO.Compression/lib/net46/System.IO.Compression.dll"
+// #r @"packages/System.IO.Compression.ZipFile/lib/net46/System.IO.Compression.ZipFile.dll"
+
 open Fake 
 open Fake.Git
 open Fake.AssemblyInfoFile
 open Fake.ReleaseNotesHelper
+open Fake.UserInputHelper
 open System
 open System.IO
 
@@ -100,8 +105,8 @@ let dotnetCliPath = System.IO.DirectoryInfo "./dotnetcore"
 
 Target "Build" (fun _ ->
     let projects =
-        (!! "src/**/*.fsproj")
-
+        !! "src/**/*.fsproj"
+        -- "src/**.netcore/*.fsproj"
     projects
     |> MSBuildRelease "" "Rebuild"
     |> ignore
@@ -146,9 +151,9 @@ Target "InstallDotNetCore" (fun _ ->
         webclient.DownloadFile(downloadPath, localPath)
         
         if isLinux then
-            Fake.ArchiveHelper.Tar.Extract (System.IO.DirectoryInfo localPath) (System.IO.FileInfo dotnetCliPath.FullName)
+            Fake.ArchiveHelper.Tar.Extract (DirectoryInfo localPath) (FileInfo dotnetCliPath.FullName)
         else  
-            Fake.ArchiveHelper.Zip.Extract (System.IO.DirectoryInfo localPath) (System.IO.FileInfo dotnetCliPath.FullName)
+            global.System.IO.Compression.ZipFile.ExtractToDirectory(localPath, dotnetCliPath.FullName)
         
         tracefn "dotnet cli path - %s" dotnetCliPath.FullName
         System.IO.Directory.EnumerateFiles dotnetCliPath.FullName
@@ -288,6 +293,9 @@ Target "All" DoNothing
 
 "Clean"
   ==> "AssemblyInfo"
+  ==> "InstallDotnetCore"
+  ==> "DotnetRestore"
+  ==> "DotnetBuild"  
   ==> "Build"
   ==> "RunTests"
   =?> ("RunOldFsYaccTests", not isLinux)

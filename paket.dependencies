@@ -8,7 +8,10 @@ nuget NUnit
 nuget NUnit.Runners
 nuget FsLexYacc 
 nuget FSharp.Core 4.0.1.7-alpha alpha
-nuget System.Globalization 4.3.0
+nuget System.Globalization
+nuget FSharp.NET.Sdk
+nuget Microsoft.NET.Sdk
+nuget System.IO
 
 group build 
     source https://www.nuget.org/api/v2/

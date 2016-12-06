@@ -1,5 +1,5 @@
 FSharp.Core
+System.IO
 Microsoft.NETCore.App
-System.Globalization
 Microsoft.NET.Sdk
 FSharp.NET.Sdk

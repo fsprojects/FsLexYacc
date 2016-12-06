@@ -521,7 +521,7 @@ let main() =
       let ty = types.[id] in 
       cprintfn cosi "val %s : (%s.LexBuffer<%s> -> token) -> %s.LexBuffer<%s> -> (%s) " id lexlib tychar lexlib tychar ty;
 
-  logf (fun oso -> oso.Close())
+  logf (fun (oso:TextWriter) -> oso.Dispose())
 
 let _ = 
     try main()

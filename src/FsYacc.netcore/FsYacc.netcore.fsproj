@@ -1,7 +1,7 @@
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" />
   <PropertyGroup>
-    <AssemblyName>fslex</AssemblyName>
+    <AssemblyName>fsyacc</AssemblyName>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp1.0</TargetFramework>
     <DefineConstants>INTERNALIZED_FSLEXYACC_RUNTIME;$(DefineConstants)</DefineConstants>
@@ -17,13 +17,13 @@
     <DefineConstants>INTERNALIZED_FSLEXYACC_RUNTIME</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <FsLex Include="..\FsLex\fslexlex.fsl">
+    <FsLex Include="..\FsYacc\fsyacclex.fsl">
       <OtherFlags>--unicode --lexlib Internal.Utilities.Text.Lexing</OtherFlags>
     </FsLex>
-    <FsYacc Include="..\FsLex\fslexpars.fsy">
-      <OtherFlags>--internal --module FsLexYacc.FsLex.Parser --lexlib Internal.Utilities.Text.Lexing --parslib Internal.Utilities.Text.Parsing</OtherFlags>
+    <FsYacc Include="..\FsYacc\fsyaccpars.fsy">
+      <OtherFlags>--internal --module FsLexYacc.FsYacc.Parser --lexlib Internal.Utilities.Text.Lexing --parslib Internal.Utilities.Text.Parsing</OtherFlags>
     </FsYacc>
-    <Compile Include="..\FsLex\AssemblyInfo.fs">
+    <Compile Include="..\FsYacc\AssemblyInfo.fs">
       <Link>AssemblyInfo.fs</Link>
     </Compile>
     <Compile Include="..\FsLexYacc.Runtime\Lexing.fsi">
@@ -44,11 +44,14 @@
     <Compile Include="..\Common\Arg.fs">
       <Link>arg.fs</Link>
     </Compile>
-    <Compile Include="..\FsLex\fslexast.fs" />
-    <Compile Include="..\FsLex\fslexpars.fs" />
-    <Compile Include="..\FsLex\fslexlex.fs" />
-    <Compile Include="..\FsLex\fslex.fs" />
-    <Content Include="..\FsLex\App.config">
+    <Compile Include="..\FsYacc\fsyaccast.fs" />
+    <Compile Include="..\FsYacc\fsyaccpars.fs" />
+    <Compile Include="..\FsYacc\fsyacclex.fs" />
+    <Compile Include="..\FsYacc\fsyacc.fs" />
+    <Content Include="..\FsYacc\App.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\FsLexYacc.Build.Tasks\FsLexYacc.targets">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -58,6 +61,7 @@
       <Version>1.0.0-preview2-020000</Version>
     </DotNetCliToolReference>
   </ItemGroup>
+  
   <Import Project="..\..\packages\FsLexYacc\build\FsLexYacc.targets" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
   <Import Project="..\..\.paket\Paket.Restore.targets" />

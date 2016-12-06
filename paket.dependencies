@@ -3,7 +3,7 @@ source https://www.nuget.org/api/v2/
 
 nuget FAKE
 nuget FSharp.Formatting
-nuget NUnit 2.6.3
-nuget NUnit.Runners 2.6.3
+nuget NUnit 
+nuget NUnit.Runners
 nuget FsLexYacc
-nuget FSharp.Core 3.1.2.5
+nuget FSharp.Core 

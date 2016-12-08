@@ -182,6 +182,7 @@ TestResults.xml
 
 # Nuget outputs
 nuget/*.nupkg
+/src/**/AssemblyInfo.fs
 
 # ===================================================
 # Exclude generated lexer/parser source files

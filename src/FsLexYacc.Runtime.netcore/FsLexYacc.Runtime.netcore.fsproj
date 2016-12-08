@@ -4,9 +4,12 @@
     <AssemblyName>FsLexYacc.Runtime</AssemblyName>
     <OutputType>Library</OutputType>
     <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFrameworks>net45;net461;netstandard1.6</TargetFrameworks>
+
     <DebugType>pdbonly</DebugType>
     <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <OutputPath>..\..\bin\</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -16,13 +19,11 @@
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <Optimize>false</Optimize>
-    <OutputPath>..\..\bin\Debug\</OutputPath>
     <Tailcalls>false</Tailcalls>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <Optimize>true</Optimize>
-    <OutputPath>..\..\bin\</OutputPath>
     <Tailcalls>true</Tailcalls>
   </PropertyGroup>
 
@@ -68,6 +69,6 @@
     </DotNetCliToolReference>
   </ItemGroup>
 
-  <Import Project="..\..\.paket\Paket.Restore.targets" />  
+  <!--<Import Project="..\..\.paket\Paket.Restore.targets" />  -->
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
 </Project>

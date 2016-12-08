@@ -109,7 +109,7 @@ let dotnetCliPath = System.IO.DirectoryInfo "./dotnetsdk"
 Target "Build" (fun _ ->
     let projects =
         !! "src/**/*.fsproj"
-        ++ "tests/**/*.fsproj"
+        // ++ "tests/**/*.fsproj"
         -- "src/**.netcore/*.fsproj"
     projects
     |> MSBuildRelease "" "Rebuild"
@@ -143,6 +143,8 @@ Target "InstallDotNetCore" (fun _ ->
         let archiveFileName = 
             if isLinux then
                 sprintf "dotnet-dev-ubuntu-x64.%s.tar.gz" dotnetcliVersion
+            elif isMacOS then
+                sprintf "dotnet-dev-osx-x64.%s.tar.gz" dotnetcliVersion
             else
                 sprintf "dotnet-dev-win-x64.%s.zip" dotnetcliVersion
         let downloadPath = 
@@ -297,14 +299,10 @@ Target "Release" DoNothing
 Target "All" DoNothing
 Target "Dotnet" DoNothing
 
-"Clean"
-  ==> "InstallDotnetCore"
-  ==> "DotnetRestore"
-  ==> "DotnetBuild"  
-  ==> "Dotnet"
-  ==> "All"
+
 
 "Clean"
+  ==> "Build"
   ==> "InstallDotnetCore"
   ==> "DotnetRestore"
   ==> "DotnetPackage"
@@ -312,6 +310,10 @@ Target "Dotnet" DoNothing
 "Clean"
   ==> "AssemblyInfo" 
   ==> "Build"
+  ==> "InstallDotnetCore"
+  ==> "DotnetRestore"
+  ==> "DotnetBuild"  
+  ==> "Dotnet"
 //  ==> "RunTests"
   =?> ("RunOldFsYaccTests", not isLinux)
   ==> "All"

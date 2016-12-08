@@ -1,29 +1,21 @@
 language: csharp
-sudo: false
 
-# addons:
-#   apt:
-#     packages:
-#     - gettext
-#     - libcurl4-openssl-dev
-#     - libicu-dev
-#     - libssl-dev
-#     - libunwind8
-#     - zlib1g
-
-branches:
-  except:
-    - gh-pages
-
-env:
- - HOME=/home/travis APPDATA=/home/travis LocalAppData=/home/travis # DISABLE_NETCORE=true
- - EnableNuGetPackageRestore=true
+addons:
+  apt:
+    packages:
+    - gettext
+    - libcurl4-openssl-dev
+    - libicu-dev
+    - libssl-dev
+    - libunwind8
+    - zlib1g
 
 matrix:
   include:
     # Ubuntu 14.04
     - os: linux 
       dist: trusty
+      sudo: required
       dotnet: "1.0.0-preview2-003131"
       env: DOTNET_SDK_URL=https://dotnetcli.blob.core.windows.net/dotnet/Sdk/1.0.0-preview3-004056/dotnet-dev-ubuntu-x64.1.0.0-preview3-004056.tar.gz
     # OSX 10.11
@@ -32,12 +24,10 @@ matrix:
       dotnet: "1.0.0-preview2-003131"
       env: DOTNET_SDK_URL=https://dotnetcli.blob.core.windows.net/dotnet/Sdk/1.0.0-preview3-004056/dotnet-dev-osx-x64.1.0.0-preview3-004056.tar.gz
 
-
 before install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update               ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install openssl      ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew link --force openssl ; fi
-
 
 install:
   # Download .NET Core SDK and add to PATH

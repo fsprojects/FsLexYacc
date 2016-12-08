@@ -5,30 +5,23 @@
     <OutputType>Library</OutputType>
     <TargetFramework>netstandard1.6</TargetFramework>
     <TargetFrameworks>net45;net461;netstandard1.6</TargetFrameworks>
-
     <DebugType>pdbonly</DebugType>
     <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <OutputPath>..\..\bin</OutputPath>
   </PropertyGroup>
-
   <PropertyGroup>
     <Version>7.0.3</Version>
     <Authors>Don Syme</Authors>
   </PropertyGroup>
-
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <Optimize>false</Optimize>
     <Tailcalls>false</Tailcalls>
   </PropertyGroup>
-
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <Optimize>true</Optimize>
     <Tailcalls>true</Tailcalls>
   </PropertyGroup>
-
-
-
   <ItemGroup>
     <Compile Include="..\FsLexYacc.Runtime\AssemblyInfo.fs">
       <Link>AssemblyInfo.fs</Link>
@@ -46,11 +39,10 @@
       <Link>parsing.fs</Link>
     </Compile>
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="FSharp.Core">
       <Version>4.0.1.7-alpha</Version>
-    </PackageReference> 
+    </PackageReference>
     <PackageReference Include="NETStandard.Library">
       <Version>1.6.1</Version>
     </PackageReference>
@@ -61,14 +53,11 @@
       <Version>1.0.0-alpha-20161104-2</Version>
     </PackageReference>
   </ItemGroup>
-
-
   <ItemGroup>
     <DotNetCliToolReference Include="dotnet-compile-fsc">
       <Version>1.0.0-preview2-020000</Version>
     </DotNetCliToolReference>
   </ItemGroup>
-
-  <Import Project="..\..\.paket\Paket.Restore.targets" />  
+  <!--<Import Project="..\..\.paket\Paket.Restore.targets" />  -->
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
 </Project>

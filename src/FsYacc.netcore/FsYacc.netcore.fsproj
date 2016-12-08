@@ -11,12 +11,10 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <OutputPath>..\..\bin</OutputPath>
   </PropertyGroup>
-
   <PropertyGroup>
     <Version>7.0.3</Version>
     <Authors>Don Syme</Authors>
   </PropertyGroup>
-
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DefineConstants>INTERNALIZED_FSLEXYACC_RUNTIME</DefineConstants>
   </PropertyGroup>
@@ -59,7 +57,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="NETStandard.Library">
       <Version>1.6.1</Version>
@@ -70,18 +67,16 @@
     <PackageReference Include="Microsoft.NET.Sdk">
       <Version>1.0.0-alpha-20161104-2</Version>
     </PackageReference>
-        <PackageReference Include="FSharp.Core">
+    <PackageReference Include="FSharp.Core">
       <Version>4.0.1.7-alpha</Version>
     </PackageReference>
   </ItemGroup>
-
   <ItemGroup>
     <DotNetCliToolReference Include="dotnet-compile-fsc">
       <Version>1.0.0-preview2-020000</Version>
     </DotNetCliToolReference>
   </ItemGroup>
-
-  <Import Project="..\..\.paket\Paket.Restore.targets" />  
+  <!--<Import Project="..\..\.paket\Paket.Restore.targets" />  -->
   <Import Project="..\..\packages\FsLexYacc\build\FsLexYacc.targets" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
 </Project>

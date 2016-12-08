@@ -3,15 +3,16 @@ source https://www.nuget.org/api/v2/
 source https://www.myget.org/F/netcorecli-fsc-preview3/api/v3/index.json
 source https://dotnet.myget.org/F/dotnet-buildtools/api/v3/index.json
 
-nuget Microsoft.NETCore.App 1.0.1
+# nuget Microsoft.NETCore.App 1.0.1
 nuget NUnit 
 nuget NUnit.Runners
 nuget FsLexYacc 
-nuget FSharp.Core 4.0.1.7-alpha alpha
+nuget FSharp.Core  3.1.2.5
+# nuget FSharp.Core 4.0.1.7-alpha alpha
 nuget System.Globalization
-nuget NETStandard.Library 1.6.1
-nuget FSharp.NET.Sdk
-nuget Microsoft.NET.Sdk
+# nuget NETStandard.Library 1.6.1
+# nuget FSharp.NET.Sdk
+# nuget Microsoft.NET.Sdk
 nuget System.IO
 
 group build 

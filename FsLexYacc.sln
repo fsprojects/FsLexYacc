@@ -24,10 +24,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{BF60
 		build.cmd = build.cmd
 		build.fsx = build.fsx
 		build.sh = build.sh
-		nuget\FsLexYacc.nuspec = nuget\FsLexYacc.nuspec
-		nuget\FsLexYacc.Runtime.nuspec = nuget\FsLexYacc.Runtime.nuspec
+		nuget\FsLexYacc.Runtime.template = nuget\FsLexYacc.Runtime.template
+		nuget\FsLexYacc.template = nuget\FsLexYacc.template
 		paket.dependencies = paket.dependencies
 		paket.lock = paket.lock
+		nuget\publish.cmd = nuget\publish.cmd
 		README.md = README.md
 		RELEASE_NOTES.md = RELEASE_NOTES.md
 	EndProjectSection

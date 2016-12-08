@@ -81,7 +81,7 @@
     </DotNetCliToolReference>
   </ItemGroup>
 
-  <!--<Import Project="..\..\.paket\Paket.Restore.targets" />  -->
+  <Import Project="..\..\.paket\Paket.Restore.targets" />  
   <Import Project="..\..\packages\FsLexYacc\build\FsLexYacc.targets" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
 </Project>

@@ -9,7 +9,7 @@
     <DebugType>pdbonly</DebugType>
     <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <OutputPath>..\..\bin\</OutputPath>
+    <OutputPath>..\..\bin</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -69,6 +69,6 @@
     </DotNetCliToolReference>
   </ItemGroup>
 
-  <!--<Import Project="..\..\.paket\Paket.Restore.targets" />  -->
+  <Import Project="..\..\.paket\Paket.Restore.targets" />  
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
 </Project>

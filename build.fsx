@@ -79,6 +79,9 @@ Target "AssemblyInfo" (fun _ ->
 // Clean build results & restore NuGet packages
 
 Target "Clean" (fun _ ->
+    !! "/**/**/obj"
+    ++ "/**/**/bin"
+    |> CleanDirs
     CleanDirs ["bin"; "temp"]
 )
 
@@ -98,7 +101,7 @@ let runCmdIn workDir exe =
 let dotnet workDir = runCmdIn workDir "dotnet"
 
 let dotnetcliVersion = "1.0.0-preview3-004056"
-let dotnetCliPath = System.IO.DirectoryInfo "./dotnetcore"
+let dotnetCliPath = System.IO.DirectoryInfo "./dotnetsdk"
 
 // --------------------------------------------------------------------------------------
 // Build library & test project
@@ -106,13 +109,14 @@ let dotnetCliPath = System.IO.DirectoryInfo "./dotnetcore"
 Target "Build" (fun _ ->
     let projects =
         !! "src/**/*.fsproj"
+        ++ "tests/**/*.fsproj"
         -- "src/**.netcore/*.fsproj"
     projects
     |> MSBuildRelease "" "Rebuild"
     |> ignore
 )
 
-let dotnetExePath = if isWindows then "dotnetcore/dotnet.exe" else "dotnetcore/dotnet" |> FullName
+let dotnetExePath = if isWindows then "dotnetsdk/dotnet.exe" else "dotnetsdk/dotnet" |> FullName
 
 Target "InstallDotNetCore" (fun _ ->
     if isLinux then () else
@@ -203,22 +207,23 @@ Target "DotnetBuild" (fun _ ->
                 })
         )
     )
-
+let versionSuffix = "alpha-0001"
 Target "DotnetPackage" (fun _ ->
     if isLinux then
         netcoreFiles
         |> Seq.iter (fun proj ->
             let dir = Path.GetDirectoryName proj
-            dotnet dir "--verbose pack"
+            dotnet dir "--verbose pack --version-suffix %s" versionSuffix  
         )
     else
         netcoreFiles
         |> Seq.iter (fun proj ->
-            DotNetCli.Pack (fun c ->
+            DotNetCli.Pack (fun (c:DotNetCli.PackParams) ->
                 { c with
                     Project = proj
                     ToolPath = dotnetExePath
-                    AdditionalArgs = ["/p:RuntimeIdentifier=win7-x64"]
+                    VersionSuffix = versionSuffix
+                    // AdditionalArgs = ["/p:RuntimeIdentifier=win7-x64"]
                 })
         )
 )
@@ -290,14 +295,24 @@ Target "Release" DoNothing
 // Run all targets by default. Invoke 'build <Target>' to override
 
 Target "All" DoNothing
+Target "Dotnet" DoNothing
 
 "Clean"
-  ==> "AssemblyInfo"
   ==> "InstallDotnetCore"
   ==> "DotnetRestore"
   ==> "DotnetBuild"  
+  ==> "Dotnet"
+  ==> "All"
+
+"Clean"
+  ==> "InstallDotnetCore"
+  ==> "DotnetRestore"
+  ==> "DotnetPackage"
+
+"Clean"
+  ==> "AssemblyInfo" 
   ==> "Build"
-  ==> "RunTests"
+//  ==> "RunTests"
   =?> ("RunOldFsYaccTests", not isLinux)
   ==> "All"
 

@@ -9,7 +9,7 @@ open Parser
 
 exception SyntaxError of string
 
-let lexeme = LexBuffer.LexemeString
+let lexeme : string = LexBuffer<char>.LexemeString
 
 let newline (lexbuf: LexBuffer<_>) = 
   lexbuf.StartPos <- lexbuf.StartPos.NextLine

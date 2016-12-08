@@ -192,3 +192,6 @@ src/FsLex/fslexpars.fsi
 src/FsYacc/fsyacclex.fs
 src/FsYacc/fsyaccpars.fs
 src/FsYacc/fsyaccpars.fsi
+tests/TestProjectUsingNugetPackage/Lexer.fs
+tests/TestProjectUsingNugetPackage/Parser.fs
+tests/TestProjectUsingNugetPackage/Parser.fsi

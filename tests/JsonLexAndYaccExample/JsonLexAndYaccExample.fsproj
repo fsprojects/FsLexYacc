@@ -12,6 +12,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>
     <Name>JsonLexAndYaccExample</Name>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -48,7 +49,7 @@
     </Otherwise>
   </Choose>
   <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
-  <Import Project="..\..\bin\Debug\FsLexYacc.targets" />
+  <!--<Import Project="..\..\src\FsLexYacc.Build.Tasks\FsLexYacc.targets" />-->
   <ItemGroup>
     <Compile Include="JsonValue.fs" />
     <FsYacc Include="Parser.fsy">
@@ -69,13 +70,20 @@
     <Reference Include="FSharp.Core">
       <HintPath>..\fsyacc\Fsharp.Core\FSharp.Core.dll</HintPath>
     </Reference>
-    <Reference Include="FsLexYacc.Runtime">
-      <HintPath>..\..\bin\Debug\FsLexYacc.Runtime.dll</HintPath>
-    </Reference>
+    <!--<Reference Include="FsLexYacc.Runtime">
+      <HintPath>..\..\bin\$(Configuration)\FsLexYacc.Runtime.dll</HintPath>
+    </Reference>-->
     <Reference Include="mscorlib" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\FsLexYacc.Runtime\FsLexYacc.Runtime.fsproj">
+      <Name>FsLexYacc.Runtime</Name>
+      <Project>{7e90d6ce-a10b-4858-a5bc-41df7250cbcc}</Project>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -12,7 +12,7 @@ let main argv =
 
     //a few parsing tests with simple and complex json
     let simpleJson = "{\"f\" : 1}"
-    let (Some parseResult) = simpleJson |> parse 
+    let parseResult = simpleJson |> parse |> Option.get
     printfn "%s" (JsonValue.print parseResult)
 
 
@@ -23,7 +23,7 @@ let main argv =
                 { ""name"": ""New York"", ""zips"": [10001] } 
               ]
             }"
-    let (Some parseResult2) = simpleJson2 |> parse 
+    let parseResult2 = simpleJson2 |> parse |> Option.get
     printfn "%s" (JsonValue.print parseResult2)
 
     let complexJson = System.IO.File.ReadAllText "randomComplexTestsJson.json"
@@ -33,7 +33,7 @@ let main argv =
     //test lexing error 
     try
         let simpleJson = "{\"f\" ;"
-        let (Some parseResult) = simpleJson |> parse 
+        let parseResult = simpleJson |> parse |> Option.get
         printfn "%s" (JsonValue.print parseResult)
     with 
         | e ->  printfn "Error is expected here: \n %s" (e.Message)

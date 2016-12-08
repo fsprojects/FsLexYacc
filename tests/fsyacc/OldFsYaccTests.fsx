@@ -1,4 +1,4 @@
-#I @"../../packages/FAKE/tools"
+#I @"../../packages/build/FAKE/tools"
 #r @"FakeLib.dll"
 open Fake
 open System
@@ -21,12 +21,18 @@ let fsYacc = run @"..\..\bin\fsyacc.exe"
 let fsc output files =
     traceImportant <| sprintf "Building '%s' with from %A" output files
     "lexing.fs"::"parsing.fs"::@"..\..\src\Common\Arg.fs"::"arg.fs"::"tree.ml"::files
-    |> Fsc (fun p ->
-        { p with References = [@"FsLexYacc.Runtime.dll"
-                               @"System.Runtime"
-                               @"System.IO"
-                               @"..\..\packages\FSharp.Core\lib\net40\FSharp.Core.dll"]
-                 Output = output; Debug = true; FscTarget = FscTarget.Exe })
+    |> FscHelper.compile [
+        References [
+            @"FsLexYacc.Runtime.dll"
+            @"System.Runtime"
+            @"System.IO"
+            @"../../packages/FSharp.Core/lib/net40/FSharp.Core.dll"            
+        ]
+        Out "output"
+        Debug true
+        Target TargetType.Exe
+    ] |> ignore
+
     File.WriteAllText(output |> FileHelper.changeExt ".exe.config","""<?xml version="1.0" encoding="utf-8"?>
 <configuration>
   <runtime>

@@ -31,7 +31,8 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 		<!-- Create the output directory -->
 		<MakeDir Directories="$(FsLexOutputFolder)"/>
 		<!-- Call FsLex -->
-		<Exec Command="&quot;$(FsLexToolPath)\$(FsLexToolExe)&quot;  -o &quot;$(FsLexOutputFolder)%(FsLex.Filename).fs&quot; %(FsLex.OtherFlags) %(FsLex.Identity)" />
+		<Exec Command="&quot;$(FsLexToolPath)\$(FsLexToolExe)&quot;  -o &quot;$(FsLexOutputFolder)%(FsLex.Filename).fs&quot; %(FsLex.OtherFlags) %(FsLex.Identity)" Condition="'$(OS)' != 'Unix'" />
+		<Exec Command="mono &quot;$(FsLexToolPath)\$(FsLexToolExe)&quot;  -o &quot;$(FsLexOutputFolder)%(FsLex.Filename).fs&quot; %(FsLex.OtherFlags) %(FsLex.Identity)" Condition="'$(OS)' == 'Unix'" />
 		<!-- Make sure it will get cleaned  -->
 		<CreateItem Include="$(FsLexOutputFolder)%(FsLex.Filename).fs">
 			<Output TaskParameter="Include" ItemName="FileWrites"/>
@@ -47,7 +48,8 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 
 		<!-- Create the output directory -->
 		<MakeDir Directories="$(FsYaccOutputFolder)"/>
-		<Exec Command="&quot;$(FsYaccToolPath)\$(FsYaccToolExe)&quot;  -o &quot;$(FsYaccOutputFolder)%(FsYacc.Filename).fs&quot; %(FsYacc.OtherFlags) %(FsYacc.Identity)" />
+		<Exec Command="&quot;$(FsYaccToolPath)\$(FsYaccToolExe)&quot;  -o &quot;$(FsYaccOutputFolder)%(FsYacc.Filename).fs&quot; %(FsYacc.OtherFlags) %(FsYacc.Identity)" Condition="'$(OS)' != 'Unix'" />
+		<Exec Command="mono &quot;$(FsYaccToolPath)\$(FsYaccToolExe)&quot;  -o &quot;$(FsYaccOutputFolder)%(FsYacc.Filename).fs&quot; %(FsYacc.OtherFlags) %(FsYacc.Identity)" Condition="'$(OS)' == 'Unix'" />
 
 		<!-- Make sure it will get cleaned  -->
 		<CreateItem Include="$(FsYaccOutputFolder)%(FsYacc.Filename).fs">

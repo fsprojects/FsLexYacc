@@ -5,13 +5,13 @@ open System.Reflection
 [<assembly: AssemblyTitleAttribute("FsYacc")>]
 [<assembly: AssemblyProductAttribute("FsLexYacc")>]
 [<assembly: AssemblyDescriptionAttribute("FsLex/FsYacc lexer/parser generation tools")>]
-[<assembly: AssemblyVersionAttribute("7.0.3")>]
-[<assembly: AssemblyFileVersionAttribute("7.0.3")>]
+[<assembly: AssemblyVersionAttribute("7.0.4")>]
+[<assembly: AssemblyFileVersionAttribute("7.0.4")>]
 do ()
 
 module internal AssemblyVersionInformation =
     let [<Literal>] AssemblyTitle = "FsYacc"
     let [<Literal>] AssemblyProduct = "FsLexYacc"
     let [<Literal>] AssemblyDescription = "FsLex/FsYacc lexer/parser generation tools"
-    let [<Literal>] AssemblyVersion = "7.0.3"
-    let [<Literal>] AssemblyFileVersion = "7.0.3"
+    let [<Literal>] AssemblyVersion = "7.0.4"
+    let [<Literal>] AssemblyFileVersion = "7.0.4"

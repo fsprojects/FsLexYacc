@@ -48,7 +48,7 @@
     </Otherwise>
   </Choose>
   <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
-  <Import Project="..\..\bin\Debug\FsLexYacc.targets" />
+  <Import Project="..\..\bin\FsLexYacc.targets"  />
   <ItemGroup>
     <Compile Include="JsonValue.fs" />
     <FsYacc Include="Parser.fsy">
@@ -67,10 +67,10 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core">
-      <HintPath>..\fsyacc\Fsharp.Core\FSharp.Core.dll</HintPath>
+      <HintPath>..\..\packages\FSharp.Core\lib\net40\FSharp.Core.dll</HintPath>
     </Reference>
     <Reference Include="FsLexYacc.Runtime">
-      <HintPath>..\..\bin\Debug\FsLexYacc.Runtime.dll</HintPath>
+      <HintPath>..\..\bin\FsLexYacc.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="System" />

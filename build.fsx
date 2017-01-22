@@ -85,7 +85,7 @@ Target "CleanDocs" (fun _ ->
 
 Target "Build" (fun _ ->
     let projects =
-        (!! "src/**/*.fsproj")
+        (!! "src/**/*.fsproj").And("tests/**/*.fsproj")
 
     projects
     |> MSBuildRelease "" "Rebuild"
@@ -99,16 +99,6 @@ Target "RunOldFsYaccTests" (fun _ ->
     let result = executeFSIWithArgs @"tests\fsyacc" "OldFsYaccTests.fsx" ["--define:RELEASE"] []
     if not result then
         failwith "Old FsLexYacc tests were failed"
-)
-
-Target "RunTests" (fun _ ->
-    !! testAssemblies 
-    |> NUnit (fun p ->
-        { p with
-            Framework = "v4.0.30319"
-            DisableShadowCopy = true
-            TimeOut = TimeSpan.FromMinutes 20.
-            OutputFile = "TestResults.xml" })
 )
 
 // --------------------------------------------------------------------------------------
@@ -162,7 +152,6 @@ Target "All" DoNothing
 "Clean"
   ==> "AssemblyInfo"
   ==> "Build"
-  ==> "RunTests"
   =?> ("RunOldFsYaccTests", not isLinux)
   ==> "All"
 

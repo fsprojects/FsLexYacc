@@ -31,3 +31,6 @@
 
 #### 7.0.3 - November 29, 2016
 * Fix targets file when space in path
+
+#### 7.0.4 - January 22, 2017
+* Fix targets file for OSX

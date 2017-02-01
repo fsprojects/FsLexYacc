@@ -6,9 +6,9 @@ authors
   Microsoft Corporation, Don Syme, F# Software Foundation contributors
 summary
   Runtime for FsLex/FsYacc lexer/parser generation tools
-licenseurl https://github.com/fsproject/FsLexYacc/blob/master/LICENSE
-projecturl https://github.com/fsproject/FsLexYacc
-iconurl https://raw.github.com/fsproject/FsLexYacc/master/misc/logo.png
+licenseurl https://github.com/fsprojects/FsLexYacc/blob/master/LICENSE.txt
+projecturl https://github.com/fsprojects/FsLexYacc
+iconurl https://raw.githubusercontent.com/fsprojects/FsLexYacc/master/docs/files/img/logo.png
 tags
   F#, fsharp, yacc, fsyacc, lex, parsing, lexing, fslex
 files

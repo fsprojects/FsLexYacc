@@ -34,3 +34,7 @@
 
 #### 7.0.4 - January 22, 2017
 * Fix targets file for OSX
+
+#### 7.0.5 - February 1, 2017
+* Fix an error preventing the use of verbose mode
+

@@ -160,8 +160,14 @@ Target "All" DoNothing
   ==> "GenerateDocs"
   ==> "ReleaseDocs"
 
-"All"
+"Build"
   ==> "NuGet"
+
+"All" 
   ==> "Release"
+
+"NuGet" 
+  ==> "Release"
+
 
 RunTargetOrDefault "All"

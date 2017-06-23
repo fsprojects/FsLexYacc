@@ -16,5 +16,30 @@ files
   ../bin/fslex.exe ==> build
   ../bin/fsyacc.exe ==> build
   ../bin/FsLexYacc.targets ==> build
+  ../src/FsLexYacc.Runtime/Lexing.fsi ==> src/fslex
+  ../src/FsLexYacc.Runtime/Lexing.fs ==> src/fslex
+  ../src/FsLexYacc.Runtime/Parsing.fsi ==> src/fslex
+  ../src/FsLexYacc.Runtime/Parsing.fs ==> src/fslex
+  ../src/Common/Arg.fsi ==> src/fslex
+  ../src/Common/Arg.fs ==> src/fslex
+  ../src/FsLex/fslexast.fs ==> src/fslex
+  ../src/FsLex/fslexpars.fs ==> src/fslex
+  ../src/FsLex/fslexlex.fs ==> src/fslex
+  ../src/FsLex/fslex.fs ==> src/fslex
+  ../src/FsLex/App.config ==> src/fslex
+  ../src/FsLex/fslex.fsx ==> src/fslex
+  ../src/FsLexYacc.Runtime/Lexing.fsi ==> src/fsyacc
+  ../src/FsLexYacc.Runtime/Lexing.fs ==> src/fsyacc
+  ../src/FsLexYacc.Runtime/Parsing.fsi ==> src/fsyacc
+  ../src/FsLexYacc.Runtime/Parsing.fs ==> src/fsyacc
+  ../src/Common/Arg.fsi ==> src/fsyacc
+  ../src/Common/Arg.fs ==> src/fsyacc
+  ../src/FsYacc/fsyaccast.fs ==> src/fsyacc
+  ../src/FsYacc/fsyaccpars.fs ==> src/fsyacc
+  ../src/FsYacc/fsyacclex.fs ==> src/fsyacc
+  ../src/FsYacc/fsyacc.fs ==> src/fsyacc
+  ../src/FsYacc/App.config ==> src/fsyacc
+  ../src/FsYacc/fsyacc.fsx ==> src/fsyacc
+  ../src/FsLexYacc.Build.Tasks/FsLexYacc.targets ==> src
 dependencies
   FsLexYacc.Runtime ~> CURRENTVERSION

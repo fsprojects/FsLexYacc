@@ -523,7 +523,7 @@ let main() =
 
   logf (fun oso -> oso.Close())
 
-let _ = 
+let result = 
     try main()
     with e -> 
       eprintf "FSYACC: error FSY000: %s" (match e with Failure s -> s | e -> e.Message);

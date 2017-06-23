@@ -38,3 +38,6 @@
 #### 7.0.5 - February 1, 2017
 * Fix an error preventing the use of verbose mode
 
+#### 7.0.6 - 23 June, 2017
+* Add source to build
+

@@ -222,4 +222,4 @@ let main() =
     exit 1
 
 
-let _ = main()
+let result = main()

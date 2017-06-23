@@ -1,6 +1,6 @@
 NUGET
   remote: https://www.nuget.org/api/v2
-    FAKE (4.44.4)
+    FAKE (4.61.3)
     FSharp.Compiler.Service (2.0.0.6)
     FSharp.Core (3.1.2.5)
     FSharp.Formatting (2.14.4)
@@ -8,8 +8,9 @@ NUGET
       FSharpVSPowerTools.Core (>= 2.3 < 2.4)
     FSharpVSPowerTools.Core (2.3)
       FSharp.Compiler.Service (>= 2.0.0.3)
-    FsLexYacc (6.1)
-      FsLexYacc.Runtime (>= 6.1)
-    FsLexYacc.Runtime (6.1)
+    FsLexYacc (7.0.5)
+      FsLexYacc.Runtime (>= 7.0.5 < 7.1)
+    FsLexYacc.Runtime (7.0.5)
+      FSharp.Core (>= 3.1.2.5)
     NUnit (2.6.3)
     NUnit.Runners (2.6.3)

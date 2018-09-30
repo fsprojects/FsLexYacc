@@ -13,6 +13,7 @@ namespace Microsoft.FSharp.Text.Lexing
     open System.Collections.Generic
 
     // REVIEW: This type showed up on a parsing-intensive performance measurement. Consider whether it can be a struct-record later when we have this feature. -jomo
+    [<Struct>]
 #if INTERNALIZED_FSLEXYACC_RUNTIME
     type internal Position = 
 #else

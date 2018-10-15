@@ -11,7 +11,7 @@ open System.IO
 
 let run exe args =
     traceImportant <| sprintf "Running '%s' with args '%s'" exe args
-    if not <| directExec (fun x-> 
+    if not <| directExec (fun x->
         x.FileName <- exe
         x.Arguments <- args)
     then failwithf "'%s' failed '%s'" exe args
@@ -21,12 +21,11 @@ let fsYacc = run @"..\..\bin\fsyacc.exe"
 let fsc output files =
     traceImportant <| sprintf "Building '%s' with from %A" output files
     "lexing.fs"::"parsing.fs"::@"..\..\src\Common\Arg.fs"::"arg.fs"::"tree.ml"::files
-    |> Fsc (fun p ->
-        { p with References = [@"FsLexYacc.Runtime.dll"
-                               @"System.Runtime"
-                               @"System.IO"
-                               @"..\..\packages\FSharp.Core\lib\net40\FSharp.Core.dll"]
-                 Output = output; Debug = true; FscTarget = FscTarget.Exe })
+    |> Compile [ Out output; Target TargetType.Exe; Debug true; NoFramework
+                 Reference @"FsLexYacc.Runtime.dll"
+                 Reference @"System.Runtime"
+                 Reference @"System.IO"
+                 Reference @"..\..\packages\FSharp.Core\lib\net40\FSharp.Core.dll" ]
     File.WriteAllText(output |> FileHelper.changeExt ".exe.config","""<?xml version="1.0" encoding="utf-8"?>
 <configuration>
   <runtime>

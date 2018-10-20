@@ -1,11 +1,9 @@
-[![Issue Stats](http://issuestats.com/github/fsprojects/FsLexYacc/badge/pr?style=flat)](http://issuestats.com/github/fsprojects/FsLexYacc)
-[![Issue Stats](http://issuestats.com/github/fsprojects/FsLexYacc/badge/issue?style=flat)](http://issuestats.com/github/fsprojects/FsLexYacc)
 FsLexYacc
 =======================
 
 FsLex and FsYacc tools, originally part of the "F# PowerPack"
 
-See http://fsprojects.github.io/FsLexYacc.
+See https://fsprojects.github.io/FsLexYacc.
 
 Build the project
 -----------------

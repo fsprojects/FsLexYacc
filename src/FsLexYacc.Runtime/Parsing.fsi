@@ -7,8 +7,8 @@ namespace Internal.Utilities.Text.Parsing
 open Internal.Utilities
 open Internal.Utilities.Text.Lexing
 #else
-namespace Microsoft.FSharp.Text.Parsing
-open Microsoft.FSharp.Text.Lexing
+namespace FSharp.Text.Parsing
+open FSharp.Text.Lexing
 #endif
 
 open System.Collections.Generic

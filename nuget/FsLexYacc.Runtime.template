@@ -12,7 +12,9 @@ iconurl https://raw.githubusercontent.com/fsprojects/FsLexYacc/master/docs/files
 tags
   F#, fsharp, yacc, fsyacc, lex, parsing, lexing, fslex
 files
-  ../bin/FsLexYacc.Runtime.dll ==> lib/portable-net45+netcore45+wpa81+wp8+MonoAndroid10+MonoTouch10
-  ../bin/FsLexYacc.Runtime.xml ==> lib/portable-net45+netcore45+wpa81+wp8+MonoAndroid10+MonoTouch10
+  ../src/FsLexYacc.Runtime/bin/Release/net46/FsLexYacc.Runtime.dll ==> lib/net46
+  ../src/FsLexYacc.Runtime/bin/Release/net46/FsLexYacc.Runtime.xml ==> lib/net46
+  ../src/FsLexYacc.Runtime/bin/Release/netstandard2.0/FsLexYacc.Runtime.dll ==> lib/netstandard2.0
+  ../src/FsLexYacc.Runtime/bin/Release/netstandard2.0/FsLexYacc.Runtime.xml ==> lib/netstandard2.0
 dependencies
   FSharp.Core >= LOCKEDVERSION

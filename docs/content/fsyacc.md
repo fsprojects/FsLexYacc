@@ -119,9 +119,9 @@ Command line options
 
         --tokens: Simply tokenize the specification file itself.
 
-        --lexlib <string>: Specify the namespace for the implementation of the parser table interperter (default Microsoft.FSharp.Text.Parsing)
+        --lexlib <string>: Specify the namespace for the implementation of the parser table interperter (default FSharp.Text.Parsing)
 
-        --parslib <string>: Specify the namespace for the implementation of the parser table interperter (default Microsoft.FSharp.Text.Parsing)
+        --parslib <string>: Specify the namespace for the implementation of the parser table interperter (default FSharp.Text.Parsing)
 
         --codepage <int>: Assume input lexer specification file is encoded with the given codepage.
 

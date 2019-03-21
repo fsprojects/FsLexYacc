@@ -1,6 +1,6 @@
 ﻿
 module Program
-open Microsoft.FSharp.Text.Lexing
+open FSharp.Text.Lexing
 open JsonParsing
 
 [<EntryPoint>]
@@ -12,8 +12,8 @@ let main argv =
 
     //a few parsing tests with simple and complex json
     let simpleJson = "{\"f\" : 1}"
-    let (Some parseResult) = simpleJson |> parse 
-    printfn "%s" (JsonValue.print parseResult)
+    let parseResult = simpleJson |> parse 
+    printfn "%s" (JsonValue.print parseResult.Value)
 
 
     let simpleJson2 = @"{
@@ -23,8 +23,8 @@ let main argv =
                 { ""name"": ""New York"", ""zips"": [10001] } 
               ]
             }"
-    let (Some parseResult2) = simpleJson2 |> parse 
-    printfn "%s" (JsonValue.print parseResult2)
+    let parseResult2 = simpleJson2 |> parse 
+    printfn "%s" (JsonValue.print parseResult2.Value)
 
     let complexJson = System.IO.File.ReadAllText "randomComplexTestsJson.json"
     complexJson |> parse |> ignore
@@ -33,8 +33,8 @@ let main argv =
     //test lexing error 
     try
         let simpleJson = "{\"f\" ;"
-        let (Some parseResult) = simpleJson |> parse 
-        printfn "%s" (JsonValue.print parseResult)
+        let parseResult = simpleJson |> parse 
+        printfn "%s" (JsonValue.print parseResult.Value)
     with 
         | e ->  printfn "Error is expected here: \n %s" (e.Message)
 

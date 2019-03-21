@@ -40,7 +40,7 @@ expr:  expr MINUS expr { Tree.Node("-",[$1;$3]) }
 |  LET error IN expr END {  System.Console.Error.WriteLine("invisible error recovery successful."); $4 } 
 |  LPAREN expr error { System.Console.Error.WriteLine("Missing paren: visible recovery successful."); $2 } 
 |  RPAREN RPAREN RPAREN { System.Console.Error.WriteLine("Three parens is a bit rich - why not use Lisp if you like that sort of thing. Raising explicit parse error, which we will recover from."); 
-                          raise Microsoft.FSharp.Text.Parsing.RecoverableParseError } 
+                          raise FSharp.Text.Parsing.RecoverableParseError } 
 |  IDENT { Tree.Node($1,[]) } 
 
 

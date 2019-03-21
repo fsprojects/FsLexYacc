@@ -174,7 +174,7 @@ Reload/Open project and add below code to ``Lexer.fsl:``
     
     module Lexer
     
-    open Microsoft.FSharp.Text.Lexing
+    open FSharp.Text.Lexing
     open System
     open Parser
     
@@ -245,7 +245,7 @@ You should be able to build project and preview generated lexer in ``Lexer.fs`` 
 The last piece of the puzzle is to write program which will user parser. Look at below code. ``parse ``function will take text json (string) parse it and return syntax tree. You can see result in debug:
 
     module Program
-    open Microsoft.FSharp.Text.Lexing
+    open FSharp.Text.Lexing
     open JsonParsing
     
     [<EntryPoint>]

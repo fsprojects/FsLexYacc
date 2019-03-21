@@ -1,11 +1,11 @@
 // (c) Microsoft Corporation 2005-2009.
 // Parsing: support fsyacc-generated parsers
 
-[<CompilerMessage("This module is for ML compatibility. Consider using the Microsoft.FSharp.Text.Parsing namespace directly. This message can be disabled using '--nowarn:62' or '#nowarn \"62\"'.", 62, IsHidden=true)>]
+[<CompilerMessage("This module is for ML compatibility. Consider using the FSharp.Text.Parsing namespace directly. This message can be disabled using '--nowarn:62' or '#nowarn \"62\"'.", 62, IsHidden=true)>]
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Microsoft.FSharp.Compatibility.OCaml.Parsing
-open Microsoft.FSharp.Text.Lexing
-open Microsoft.FSharp.Text.Parsing
+open FSharp.Text.Lexing
+open FSharp.Text.Parsing
 open Microsoft.FSharp.Compatibility.OCaml
 
 let err _  = failwith "You must generate your parser using the '--ml-compatibility' option or call 'Parsing.set_parse_state parseState' in each action before using functions from the Parsing module.  This is because the module uses global state which must be set up for use in each parsing action. Review the notes in the 'Microsoft.FSharp.Compatibility.OCaml.Parsing' module if you are using parsers on multiple threads."

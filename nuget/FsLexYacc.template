@@ -12,10 +12,10 @@ iconurl https://raw.githubusercontent.com/fsprojects/FsLexYacc/master/docs/files
 tags
   F#, fsharp, yacc, fsyacc, lex, parsing, lexing, fslex
 files
-  ../bin/FSharp.Core.dll ==> build
-  ../bin/fslex.exe ==> build
-  ../bin/fsyacc.exe ==> build
-  ../bin/FsLexYacc.targets ==> build
+  ../src/FsLexYacc.Runtime/bin/Release/net46/FSharp.Core.dll ==> build
+  ../src/FsLex/bin/Release/net46/fslex.exe ==> build
+  ../src/FsYacc/bin/Release/net46/fsyacc.exe ==> build
+  ../src/FsLexYacc.Build.Tasks/FsLexYacc.targets ==> build
   ../src/FsLexYacc.Runtime/Lexing.fsi ==> src/fslex
   ../src/FsLexYacc.Runtime/Lexing.fs ==> src/fslex
   ../src/FsLexYacc.Runtime/Parsing.fsi ==> src/fslex

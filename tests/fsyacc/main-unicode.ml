@@ -3,7 +3,7 @@
 open Tree
 open System.IO
 open Microsoft.FSharp.Compatibility.OCaml
-open Microsoft.FSharp.Text
+open FSharp.Text
 
 let tokenize = ref false
 
@@ -14,7 +14,7 @@ let inputs = ref []
 
 let _ = Arg.parse usage (fun x -> inputs := !inputs @ [x]) "test... <filename> <filename>\nTests that all inputs give equivalent syntac trees"
 
-open Microsoft.FSharp.Text.Lexing
+open FSharp.Text.Lexing
 open Microsoft.FSharp.Compatibility.OCaml.Lexing
 
 type UnicodeLexbuf =  LexBuffer<char>

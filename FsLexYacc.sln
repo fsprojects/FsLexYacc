@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.438
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{1F1B4F0F-2998-4D74-865B-9122611C2B14}"
 	ProjectSection(SolutionItems) = preProject
@@ -12,11 +12,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{1F1B4F
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{A6A6AF7D-D6E3-442D-9B1E-58CC91879BE1}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsLex", "src\FsLex\FsLex.fsproj", "{BD2284A5-AA4D-442D-B4FB-E43B2FE9DD2A}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FsLex", "src\FsLex\FsLex.fsproj", "{BD2284A5-AA4D-442D-B4FB-E43B2FE9DD2A}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsYacc", "src\FsYacc\FsYacc.fsproj", "{DDD90630-1CDA-4CB3-9A0A-6A1253478C2D}"
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsLexYacc.Build.Tasks", "src\FsLexYacc.Build.Tasks\FsLexYacc.Build.Tasks.fsproj", "{A9566921-4193-4EC8-83FB-F5A0DC257678}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FsYacc", "src\FsYacc\FsYacc.fsproj", "{DDD90630-1CDA-4CB3-9A0A-6A1253478C2D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{BF60BC93-E09B-4E5F-9D85-95A519479D54}"
 	ProjectSection(SolutionItems) = preProject
@@ -45,9 +43,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{ED8079DD
 		tests\fsyacc\OldFsYaccTests.fsx = tests\fsyacc\OldFsYaccTests.fsx
 	EndProjectSection
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsLexYacc.Build.Tasks.Tests", "tests\FsLexYacc.Build.Tasks.Tests\FsLexYacc.Build.Tasks.Tests.fsproj", "{E789C72A-5CFD-436B-8EF1-61AA2852A89F}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FsLexYacc.Runtime", "src\FsLexYacc.Runtime\FsLexYacc.Runtime.fsproj", "{7E90D6CE-A10B-4858-A5BC-41DF7250CBCC}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsLexYacc.Runtime", "src\FsLexYacc.Runtime\FsLexYacc.Runtime.fsproj", "{7E90D6CE-A10B-4858-A5BC-41DF7250CBCC}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "JsonLexAndYaccExample", "tests\JsonLexAndYaccExample\JsonLexAndYaccExample.fsproj", "{3A7662D3-A30C-4BD4-BA0A-08A53DC59445}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DDD90630-1CDA-4CB3-9A0A-6A1253478C2D} = {DDD90630-1CDA-4CB3-9A0A-6A1253478C2D}
+		{BD2284A5-AA4D-442D-B4FB-E43B2FE9DD2A} = {BD2284A5-AA4D-442D-B4FB-E43B2FE9DD2A}
+	EndProjectSection
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "LexAndYaccMiniProject", "tests\LexAndYaccMiniProject\LexAndYaccMiniProject.fsproj", "{91D0BE7A-E128-498A-BB68-6ED65A582E04}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DDD90630-1CDA-4CB3-9A0A-6A1253478C2D} = {DDD90630-1CDA-4CB3-9A0A-6A1253478C2D}
+		{BD2284A5-AA4D-442D-B4FB-E43B2FE9DD2A} = {BD2284A5-AA4D-442D-B4FB-E43B2FE9DD2A}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -79,26 +87,6 @@ Global
 		{DDD90630-1CDA-4CB3-9A0A-6A1253478C2D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{DDD90630-1CDA-4CB3-9A0A-6A1253478C2D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{DDD90630-1CDA-4CB3-9A0A-6A1253478C2D}.Release|x86.ActiveCfg = Release|Any CPU
-		{A9566921-4193-4EC8-83FB-F5A0DC257678}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A9566921-4193-4EC8-83FB-F5A0DC257678}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A9566921-4193-4EC8-83FB-F5A0DC257678}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{A9566921-4193-4EC8-83FB-F5A0DC257678}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{A9566921-4193-4EC8-83FB-F5A0DC257678}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{A9566921-4193-4EC8-83FB-F5A0DC257678}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A9566921-4193-4EC8-83FB-F5A0DC257678}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A9566921-4193-4EC8-83FB-F5A0DC257678}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{A9566921-4193-4EC8-83FB-F5A0DC257678}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{A9566921-4193-4EC8-83FB-F5A0DC257678}.Release|x86.ActiveCfg = Release|Any CPU
-		{E789C72A-5CFD-436B-8EF1-61AA2852A89F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E789C72A-5CFD-436B-8EF1-61AA2852A89F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E789C72A-5CFD-436B-8EF1-61AA2852A89F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{E789C72A-5CFD-436B-8EF1-61AA2852A89F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{E789C72A-5CFD-436B-8EF1-61AA2852A89F}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{E789C72A-5CFD-436B-8EF1-61AA2852A89F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E789C72A-5CFD-436B-8EF1-61AA2852A89F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E789C72A-5CFD-436B-8EF1-61AA2852A89F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{E789C72A-5CFD-436B-8EF1-61AA2852A89F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{E789C72A-5CFD-436B-8EF1-61AA2852A89F}.Release|x86.ActiveCfg = Release|Any CPU
 		{7E90D6CE-A10B-4858-A5BC-41DF7250CBCC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7E90D6CE-A10B-4858-A5BC-41DF7250CBCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E90D6CE-A10B-4858-A5BC-41DF7250CBCC}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -109,6 +97,30 @@ Global
 		{7E90D6CE-A10B-4858-A5BC-41DF7250CBCC}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{7E90D6CE-A10B-4858-A5BC-41DF7250CBCC}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{7E90D6CE-A10B-4858-A5BC-41DF7250CBCC}.Release|x86.ActiveCfg = Release|Any CPU
+		{3A7662D3-A30C-4BD4-BA0A-08A53DC59445}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A7662D3-A30C-4BD4-BA0A-08A53DC59445}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A7662D3-A30C-4BD4-BA0A-08A53DC59445}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{3A7662D3-A30C-4BD4-BA0A-08A53DC59445}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{3A7662D3-A30C-4BD4-BA0A-08A53DC59445}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3A7662D3-A30C-4BD4-BA0A-08A53DC59445}.Debug|x86.Build.0 = Debug|Any CPU
+		{3A7662D3-A30C-4BD4-BA0A-08A53DC59445}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A7662D3-A30C-4BD4-BA0A-08A53DC59445}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A7662D3-A30C-4BD4-BA0A-08A53DC59445}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{3A7662D3-A30C-4BD4-BA0A-08A53DC59445}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{3A7662D3-A30C-4BD4-BA0A-08A53DC59445}.Release|x86.ActiveCfg = Release|Any CPU
+		{3A7662D3-A30C-4BD4-BA0A-08A53DC59445}.Release|x86.Build.0 = Release|Any CPU
+		{91D0BE7A-E128-498A-BB68-6ED65A582E04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91D0BE7A-E128-498A-BB68-6ED65A582E04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91D0BE7A-E128-498A-BB68-6ED65A582E04}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{91D0BE7A-E128-498A-BB68-6ED65A582E04}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{91D0BE7A-E128-498A-BB68-6ED65A582E04}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{91D0BE7A-E128-498A-BB68-6ED65A582E04}.Debug|x86.Build.0 = Debug|Any CPU
+		{91D0BE7A-E128-498A-BB68-6ED65A582E04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91D0BE7A-E128-498A-BB68-6ED65A582E04}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91D0BE7A-E128-498A-BB68-6ED65A582E04}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{91D0BE7A-E128-498A-BB68-6ED65A582E04}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{91D0BE7A-E128-498A-BB68-6ED65A582E04}.Release|x86.ActiveCfg = Release|Any CPU
+		{91D0BE7A-E128-498A-BB68-6ED65A582E04}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -116,6 +128,10 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{83F16175-43B1-4C90-A1EE-8E351C33435D} = {A6A6AF7D-D6E3-442D-9B1E-58CC91879BE1}
 		{8E6D5255-776D-4B61-85F9-73C37AA1FB9A} = {A6A6AF7D-D6E3-442D-9B1E-58CC91879BE1}
-		{E789C72A-5CFD-436B-8EF1-61AA2852A89F} = {ED8079DD-2B06-4030-9F0F-DC548F98E1C4}
+		{3A7662D3-A30C-4BD4-BA0A-08A53DC59445} = {ED8079DD-2B06-4030-9F0F-DC548F98E1C4}
+		{91D0BE7A-E128-498A-BB68-6ED65A582E04} = {ED8079DD-2B06-4030-9F0F-DC548F98E1C4}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5F6E586E-166D-4397-A502-18C61E31AA9C}
 	EndGlobalSection
 EndGlobal

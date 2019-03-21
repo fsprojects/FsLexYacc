@@ -1,7 +1,7 @@
 ﻿// Learn more about F# at http://fsharp.net
 
 open System.IO
-open Microsoft.FSharp.Text.Lexing
+open FSharp.Text.Lexing
 
 let testLexerAndParserFromString text expectedCount = 
     let lexbuf = LexBuffer<char>.FromString text

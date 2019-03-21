@@ -8,7 +8,7 @@
 #if INTERNALIZED_FSLEXYACC_RUNTIME
 namespace Internal.Utilities.Text.Lexing
 #else
-namespace Microsoft.FSharp.Text.Lexing
+namespace FSharp.Text.Lexing
 #endif
 
 open System.Collections.Generic

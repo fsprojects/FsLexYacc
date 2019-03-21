@@ -15,10 +15,10 @@
 /// position is transferred to be the start position and a new start position
 /// is allocated with an updated pos_cnum field.
 //[<CompilerMessage("This construct is for ML compatibility. This message can be disabled using '--nowarn:62' or '#nowarn \"62\"'.", 62, IsHidden=true)>]
-[<CompilerMessage("This module is for ML compatibility. Consider using the Microsoft.FSharp.Text.Lexing namespace directly", 62, IsHidden=true)>]
+[<CompilerMessage("This module is for ML compatibility. Consider using the FSharp.Text.Lexing namespace directly", 62, IsHidden=true)>]
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Microsoft.FSharp.Compatibility.OCaml.Lexing
-open Microsoft.FSharp.Text.Lexing
+open FSharp.Text.Lexing
 
      
 type position = Position

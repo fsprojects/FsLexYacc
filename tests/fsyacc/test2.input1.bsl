@@ -1,1 +1,1 @@
-parsed .\test2.input1 ok
+parsed ./test2.input1 ok

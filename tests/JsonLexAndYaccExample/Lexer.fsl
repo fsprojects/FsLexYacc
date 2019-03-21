@@ -3,13 +3,13 @@
 
 module Lexer
 
-open Microsoft.FSharp.Text.Lexing
+open FSharp.Text.Lexing
 open System
 open Parser
 
 exception SyntaxError of string
 
-let lexeme = LexBuffer.LexemeString
+let lexeme = LexBuffer<_>.LexemeString
 
 let newline (lexbuf: LexBuffer<_>) = 
   lexbuf.StartPos <- lexbuf.StartPos.NextLine

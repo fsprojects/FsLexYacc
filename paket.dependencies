@@ -1,8 +1,10 @@
 source https://www.nuget.org/api/v2/
 
+frameworks: net46, netstandard2.0
+
 nuget FAKE
 nuget FSharp.Formatting
 nuget NUnit 2.6.3
 nuget NUnit.Runners 2.6.3
 nuget FsLexYacc
-nuget FSharp.Core 3.1.2.5
+nuget FSharp.Core 4.3.4

@@ -6,7 +6,7 @@
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Microsoft.FSharp.Compatibility.OCaml.Lexing
 
-open Microsoft.FSharp.Text.Lexing
+open FSharp.Text.Lexing
 open System.IO
 open System.Text
 

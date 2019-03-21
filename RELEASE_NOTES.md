@@ -41,3 +41,11 @@
 #### 7.0.6 - 23 June, 2017
 * Add source to build
 
+#### 8.0.1 - 21 March, 2019
+* Fix recursion problem 
+* Support netstandard2.0
+* Build with dotnet toolchain
+* Cleanup runtime code
+
+
+

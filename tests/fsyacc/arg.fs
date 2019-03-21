@@ -2,7 +2,7 @@
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Microsoft.FSharp.Compatibility.OCaml.Arg
-open Microsoft.FSharp.Text
+open FSharp.Text
 
 let Clear  x = ArgType.Clear x
 let Float  x = ArgType.Float x

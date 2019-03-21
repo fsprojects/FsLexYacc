@@ -13,7 +13,7 @@
 /// rather is accessed via the functions available on the following local
 /// variable which is available in all parser actions:
 ///
-///    parseState : 'a Microsoft.FSharp.Text.Parsing.IParseState
+///    parseState : 'a FSharp.Text.Parsing.IParseState
 ///
 /// However, this is not compatible with the parser specifications used
 /// with ocamlyacc and similar tools, which make a single parser state available
@@ -33,10 +33,10 @@
 /// functions if there may be more than one parser active, and
 /// should instead use the functions directly available from the parseState
 /// object.
-[<CompilerMessage("This module is for ML compatibility. Consider using the Microsoft.FSharp.Text.Parsing namespace directly. This message can be disabled using '--nowarn:62' or '#nowarn \"62\"'.", 62, IsHidden=true)>]
+[<CompilerMessage("This module is for ML compatibility. Consider using the FSharp.Text.Parsing namespace directly. This message can be disabled using '--nowarn:62' or '#nowarn \"62\"'.", 62, IsHidden=true)>]
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Microsoft.FSharp.Compatibility.OCaml.Parsing
-open Microsoft.FSharp.Text.Parsing
+open FSharp.Text.Parsing
 open Microsoft.FSharp.Compatibility.OCaml
 
 val rhs_end: int -> int
@@ -52,6 +52,6 @@ val set_parse_state: IParseState -> unit
 
 /// You can initialize error recovery by raising the Parse_error exception. 
 
-exception Parse_error = Microsoft.FSharp.Text.Parsing.RecoverableParseError
+exception Parse_error = FSharp.Text.Parsing.RecoverableParseError
 
 

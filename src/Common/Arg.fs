@@ -3,7 +3,7 @@
 #if INTERNALIZED_FSLEXYACC_RUNTIME
 namespace Internal.Utilities
 #else
-namespace Microsoft.FSharp.Text
+namespace FSharp.Text
 #endif
 
 

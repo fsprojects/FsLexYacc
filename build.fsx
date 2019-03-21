@@ -190,7 +190,7 @@ Target "All" DoNothing
 "Clean"
   ==> "AssemblyInfo"
   ==> "Build"
-  =?> ("RunOldFsYaccTests", isWindows)
+//  =?> ("RunOldFsYaccTests", isWindows)
   ==> "All"
 
 "All" 

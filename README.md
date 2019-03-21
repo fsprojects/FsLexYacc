@@ -17,5 +17,6 @@ Build the project
 ### Maintainer(s)
 
 - [@kkm000](https://github.com/kkm000)
+- [@dsyme](https://github.com/dsyme)
 
 The default maintainer account for projects under "fsprojects" is [@fsprojectsgit](https://github.com/fsprojectsgit) - F# Community Project Incubation Space (repo management)

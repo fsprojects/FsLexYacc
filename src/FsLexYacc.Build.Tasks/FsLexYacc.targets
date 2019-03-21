@@ -27,7 +27,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 		Inputs="@(FsLex)"
 		Outputs="@(FsLex->'$(FsLexOutputFolder)%(Filename).fs')"
 		Condition="'@(FsLex)'!=''"
-        BeforeTargets="CoreCompile">
+    BeforeTargets="CoreCompile">
 
 		<!-- Create the output directory -->
 		<MakeDir Directories="$(FsLexOutputFolder)"/>
@@ -46,7 +46,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 		Inputs="@(FsYacc)"
 		Outputs="@(FsYacc->'$(FsYaccOutputFolder)%(Filename).fs')"
 		Condition="'@(FsYacc)'!=''"
-        BeforeTargets="CoreCompile">
+    BeforeTargets="CoreCompile">
 
 		<!-- Create the output directory -->
 		<MakeDir Directories="$(FsYaccOutputFolder)"/>

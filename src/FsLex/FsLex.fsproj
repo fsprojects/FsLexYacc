@@ -41,6 +41,11 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <Import Project="..\..\packages\FsLexYacc\build\FsLexYacc.targets" />
+  <!-- <Import Project="..\..\packages\FsLexYacc\build\FsLexYacc.targets" /> -->
+  <PropertyGroup>
+    <FsLexToolPath>..\..\packages\FsLexYacc\build</FsLexToolPath>
+    <FsYaccToolPath>..\..\packages\FsLexYacc\build</FsYaccToolPath>
+  </PropertyGroup>
+  <Import Project="..\FsLexYacc.Build.Tasks\FsLexYacc.targets" />
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

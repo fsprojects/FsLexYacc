@@ -1,7 +1,5 @@
 ﻿{
 
-module Lexer
-
 // Opens methods related to fslex.exe
 open FSharp.Text.Lexing
 

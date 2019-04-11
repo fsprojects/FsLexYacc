@@ -6,11 +6,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetIsNetFxOnLinux)' == 'true'">
-    <FrameworkPathOverride  Condition="'$(TargetFramework)' == 'net46'">$(NuGetPackageRoot)microsoft.targetingpack.netframework.v4.6/1.0.1/lib/net47/</FrameworkPathOverride>
-    <FrameworkPathOverride  Condition="'$(TargetFramework)' == 'net461'">$(NuGetPackageRoot)microsoft.targetingpack.netframework.v4.6.1/1.0.1/lib/net47/</FrameworkPathOverride>
+    <FrameworkPathOverride  Condition="'$(TargetFramework)' == 'net46'">$(NuGetPackageRoot)microsoft.targetingpack.netframework.v4.6/1.0.1/lib/net46/</FrameworkPathOverride>
+    <FrameworkPathOverride  Condition="'$(TargetFramework)' == 'net461'">$(NuGetPackageRoot)microsoft.targetingpack.netframework.v4.6.1/1.0.1/lib/net461/</FrameworkPathOverride>
     <FrameworkPathOverride  Condition="'$(TargetFramework)' == 'net47'">$(NuGetPackageRoot)microsoft.targetingpack.netframework.v4.7/1.0.1/lib/net47/</FrameworkPathOverride>
-    <FrameworkPathOverride  Condition="'$(TargetFramework)' == 'net471'">$(NuGetPackageRoot)microsoft.targetingpack.netframework.v4.7.1/1.0.1/lib/net47/</FrameworkPathOverride>
-    <FrameworkPathOverride  Condition="'$(TargetFramework)' == 'net472'">$(NuGetPackageRoot)microsoft.targetingpack.netframework.v4.7.2/1.0.1/lib/net47/</FrameworkPathOverride>
+    <FrameworkPathOverride  Condition="'$(TargetFramework)' == 'net471'">$(NuGetPackageRoot)microsoft.targetingpack.netframework.v4.7.1/1.0.1/lib/net471/</FrameworkPathOverride>
+    <FrameworkPathOverride  Condition="'$(TargetFramework)' == 'net472'">$(NuGetPackageRoot)microsoft.targetingpack.netframework.v4.7.2/1.0.1/lib/net472/</FrameworkPathOverride>
     <RestoreAdditionalProjectSources>https://dotnet.myget.org/F/dotnet-core/api/v3/index.json</RestoreAdditionalProjectSources>
   </PropertyGroup>
 

@@ -12,5 +12,5 @@ else
     exit $exit_code
   fi
   
- .fake/fake run build.fsx $@ --fsiargs build.fsx
+ .fake/fake run build.fsx $@
 fi

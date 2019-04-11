@@ -6,7 +6,7 @@ nuget Fake.Core.ReleaseNotes
 nuget Fake.DotNet.Cli
 nuget Fake.DotNet.AssemblyInfoFile
 nuget Fake.DotNet.Paket
-nuget Fake.Tools.Git"
+nuget Fake.Tools.Git //"
 
 #if !FAKE
 #load "./.fake/build.fsx/intellisense.fsx"

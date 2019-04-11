@@ -188,3 +188,10 @@ src/FsLex/fslexpars.fsi
 src/FsYacc/fsyacclex.fs
 src/FsYacc/fsyaccpars.fs
 src/FsYacc/fsyaccpars.fsi
+tests/fsyacc/test1-unicode.exe.config
+tests/fsyacc/test1.exe.config
+tests/fsyacc/test1.input1.bsl.err
+tests/fsyacc/test1compat.exe.config
+tests/fsyacc/test2.exe.config
+tests/fsyacc/test2compat.exe.config
+.paket

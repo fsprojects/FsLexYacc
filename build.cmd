@@ -1,12 +1,11 @@
 @echo off
-.paket\paket.bootstrapper.exe
-if errorlevel 1 (
-  exit /b %errorlevel%
-)
+dotnet tool install fake-cli --tool-path .fake --version 5.12.6
+
+dotnet tool install paket --tool-path .paket
 
 .paket\paket.exe restore
 if errorlevel 1 (
   exit /b %errorlevel%
 )
 
-packages\FAKE\tools\FAKE.exe build.fsx %*
+.fake\fake.exe run build.fsx %*

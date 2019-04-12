@@ -47,5 +47,13 @@
 * Build with dotnet toolchain
 * Cleanup runtime code
 
+#### 9.0.1 - 12 April, 2019
+* Tools now run on .NET Core
 
+#### 9.0.2 - 12 April, 2019
+* Bootstrap using new package
+
+#### 9.0.3 - 12 April, 2019
+* Don't require FSharp.Core for tools package
+* Bootstrap using new package
 

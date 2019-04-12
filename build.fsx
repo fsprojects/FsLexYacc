@@ -139,13 +139,13 @@ Target.create "CleanDocs" (fun _ ->
 // Build library & test project
 
 Target.create "Build" (fun _ ->
-    let projects =
-        (!! "src/**/*.fsproj").And("tests/**/*.fsproj")
-
-    projects |> Seq.iter (fun proj ->
-      DotNet.build (fun opts -> { opts with Common = { opts.Common with DotNetCliPath = getSdkPath ()
-                                                                        CustomParams = Some "/v:n /p:SourceLinkCreate=true" }
-                                            Configuration = DotNet.BuildConfiguration.Release }) proj)
+    for project in ["src/FsLex/fslex.fsproj"; "src/FsYacc/fsyacc.fsproj"] do
+      for framework in ["net46"; "netcoreapp2.0"] do 
+          DotNet.publish (fun opts -> { opts with Common = { opts.Common with DotNetCliPath = getSdkPath (); CustomParams = Some "/v:n" }; Configuration = DotNet.BuildConfiguration.Release; Framework = Some framework }) project
+    for project in [ "src/FsLexYacc.Runtime/FsLexYacc.Runtime.fsproj"
+                     "tests/JsonLexAndYaccExample/JsonLexAndYaccExample.fsproj"
+                     "tests/LexAndYaccMiniProject/LexAndYaccMiniProject.fsproj" ] do
+          DotNet.build (fun opts -> { opts with Common = { opts.Common with DotNetCliPath = getSdkPath (); CustomParams = Some "/v:n" }; Configuration = DotNet.BuildConfiguration.Release }) project
 )
 
 // --------------------------------------------------------------------------------------
@@ -160,18 +160,23 @@ Target.create "Build" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Build a NuGet package
 
+let paketToolPath = __SOURCE_DIRECTORY__ + (if Environment.isWindows then "\\.paket\\paket.exe" else "/.paket/paket")
+
 Target.create "NuGet" (fun _ ->
     Paket.pack (fun p -> 
+        printfn "p.ToolPath = %A" p.ToolPath
         { p with 
             TemplateFile = "nuget/FsLexYacc.Runtime.template"
             Version = release.NugetVersion
             OutputPath = "bin"
+            ToolPath = paketToolPath
             ReleaseNotes = String.toLines release.Notes })
     Paket.pack (fun p -> 
         { p with 
             TemplateFile = "nuget/FsLexYacc.template"
             Version = release.NugetVersion
             OutputPath = "bin"
+            ToolPath = paketToolPath
             ReleaseNotes = String.toLines release.Notes })
 
 )
@@ -206,8 +211,8 @@ Target.create "Release" ignore
 Target.create "All" ignore
 
 "Clean"
-  ==> "AssemblyInfo"
-  ==> "Build"
+  ==>  "AssemblyInfo"
+  ==>  "Build"
 //  =?> ("RunOldFsYaccTests", isWindows)
   ==> "All"
 

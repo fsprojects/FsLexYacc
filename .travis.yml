@@ -1,17 +1,14 @@
 language: csharp
-dotnet:
-  - 2.1.403
+mono: none
+dotnet: 2.1.403
 
 os:
   - linux
   - osx
 
-mono:
-  - latest
-
 env:
   - EnableNuGetPackageRestore=true
 
 script: 
-  - ./build.sh
+  - ./build.sh --target NuGet
 

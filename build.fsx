@@ -160,7 +160,7 @@ Target.create "Build" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Build a NuGet package
 
-let paketToolPath = __SOURCE_DIRECTORY__ + (if Environment.isWindows then "\\.paket\\paket.exe" else "/.paket/paket.exe")
+let paketToolPath = __SOURCE_DIRECTORY__ + (if Environment.isWindows then "\\.paket\\paket.exe" else "/.paket/paket")
 
 Target.create "NuGet" (fun _ ->
     Paket.pack (fun p -> 

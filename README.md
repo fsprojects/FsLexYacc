@@ -15,14 +15,14 @@ Build the project
 * [![NuGet Badge](https://buildstats.info/nuget/FsLexYacc)](https://www.nuget.org/packages/FsLexYacc) - `FsLexYacc`
 
 
-
 ### Releasing
 
     .\build.cmd --target NuGet
+    ./build.sh --target NuGet
 
     set APIKEY=...
-    ..\FSharp.TypeProviders.SDK\.nuget\nuget.exe push bin\FsLexYacc.Runtime.9.0.1.nupkg %APIKEY% -Source https://nuget.org
-    ..\FSharp.TypeProviders.SDK\.nuget\nuget.exe push bin\FsLexYacc.9.0.1.nupkg %APIKEY% -Source https://nuget.org
+    ..\FSharp.TypeProviders.SDK\.nuget\nuget.exe push bin\FsLexYacc.Runtime.9.0.3.nupkg %APIKEY% -Source https://nuget.org
+    ..\FSharp.TypeProviders.SDK\.nuget\nuget.exe push bin\FsLexYacc.9.0.3.nupkg %APIKEY% -Source https://nuget.org
 
 ### Maintainer(s)
 

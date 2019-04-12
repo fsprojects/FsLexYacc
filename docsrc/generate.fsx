@@ -4,7 +4,8 @@
 // --------------------------------------------------------------------------------------
 
 // Binaries that have XML documentation (in a corresponding generated XML file)
-let referenceBinaries = [ "FsLexYacc.Runtime.dll" ]
+let referenceBinaries = [  __SOURCE_DIRECTORY__ + "/../src/FsLexYacc.Runtime/bin/Release/net46/FsLexYacc.Runtime.dll" ]
+
 // Web site location for the generated documentation
 let website = "/FsLexYacc"
 
@@ -32,7 +33,6 @@ open FSharp.Literate
 open FSharp.MetadataFormat
 
 // Paths with template/source/docs locations
-let bin        = __SOURCE_DIRECTORY__ + "/../src/FsLexYacc.Runtime/bin/Release/net46"
 let output     = __SOURCE_DIRECTORY__ + "/../docs"
 let contentIn  = __SOURCE_DIRECTORY__ + "/content"
 let files      = __SOURCE_DIRECTORY__ + "/files"
@@ -82,7 +82,7 @@ let buildReference () =
   Directory.CreateDirectory referenceOut |> ignore
   for lib in referenceBinaries do
     MetadataFormat.Generate
-      ( bin + "/" + lib, output + "/reference", layoutRoots,
+      ( lib, output + "/reference", layoutRoots,
         parameters = ("root", root)::info,
         sourceRepo = githubLink + "/tree/master",
         sourceFolder = __SOURCE_DIRECTORY__ + "/.." + "/..",

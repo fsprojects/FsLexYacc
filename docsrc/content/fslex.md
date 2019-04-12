@@ -6,17 +6,11 @@ The `fslex.exe` tool is a lexer generator for byte and Unicode character input.
 Getting Started
 ---------------
 
-Install the `FsLexYacc` nuget package.
+Add an `FsLexYacc` package reference to your project
 
-MSBuild support
----------------
-
-The nuget package includes MSBuild support for `FsLex` and `FsYacc`. You must add a `FsLexYacc.targets` reference
-to your project file manually like this (adjust the nuget package number if needed):
-
-    <Import Project="..\packages\FsLexYacc.8.0.1\bin\FsLexYacc.targets" />
-
-You must also add `FsLex` and `FsYacc` entries like this:
+    <PackageReference Include="FsLexYacc" Version="9.0.2" />
+    
+You then add `FsLex` and `FsYacc` entries like this:
 
     <FsYacc Include="..\LexAndYaccMiniProject\Parser.fsy">
       <OtherFlags>--module Parser</OtherFlags>

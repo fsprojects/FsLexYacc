@@ -6,7 +6,10 @@ Overview
 Getting Started
 ---------------
 
-Install the `FsLexYacc` nuget package.
+Add an `FsLexYacc` package reference to your project
+
+    <PackageReference Include="FsLexYacc" Version="9.0.2" />
+
 
 Sample input
 ------------

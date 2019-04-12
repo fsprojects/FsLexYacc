@@ -57,3 +57,6 @@
 * Don't require FSharp.Core for tools package
 * Bootstrap using new package
 
+#### 9.1.0 - 12 April, 2019
+* Make async lexing obsolete
+* Restart doc generation (manually)

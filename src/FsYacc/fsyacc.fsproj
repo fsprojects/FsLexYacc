@@ -3,7 +3,7 @@
   <Import Project="..\..\netfx.props" />
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net46</TargetFramework>
+    <TargetFrameworks>net46;netcoreapp2.0</TargetFrameworks>
     <DefineConstants>INTERNALIZED_FSLEXYACC_RUNTIME;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
@@ -45,10 +45,19 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="4.5.2" />
+  </ItemGroup>
+  <!-- Force the use of the .NET Framework binaries until the nuget package is updated -->
+  <!-- TODO: start to use the nuget targets again once nuget package is updated -->
   <!-- <Import Project="..\..\packages\FsLexYacc\build\FsLexYacc.targets" /> -->
   <PropertyGroup>
+		<UseFsLexYaccToolRunner Condition="'$(OS)' != 'Unix'">false</UseFsLexYaccToolRunner>
+		<FsLexYaccToolRunner Condition="'$(OS)' == 'Unix'">mono </FsLexYaccToolRunner>
     <FsLexToolPath>..\..\packages\FsLexYacc\build</FsLexToolPath>
     <FsYaccToolPath>..\..\packages\FsLexYacc\build</FsYaccToolPath>
+    <FsLexToolExe>fslex.exe</FsLexToolExe>
+    <FsYaccToolExe>fsyacc.exe</FsYaccToolExe>
   </PropertyGroup>
   <Import Project="..\FsLexYacc.Build.Tasks\FsLexYacc.targets" />
   <Import Project="..\..\.paket\Paket.Restore.targets" />

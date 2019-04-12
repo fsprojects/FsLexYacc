@@ -47,5 +47,7 @@
 * Build with dotnet toolchain
 * Cleanup runtime code
 
+#### 9.0.1 - 12 April, 2019
+* Tools now run on .NET Core
 
 

@@ -1,6 +1,6 @@
 source https://www.nuget.org/api/v2/
 
-frameworks: net46, netstandard2.0
+frameworks: net46, netstandard2.0, netcoreapp2.0
 
 nuget FSharp.Formatting
 nuget NUnit 2.6.3
@@ -8,14 +8,3 @@ nuget NUnit.Runners 2.6.3
 nuget FsLexYacc
 nuget FSharp.Core 4.3.4
 
-group Build
-  source https://nuget.org/api/v2
-  storage none
-  framework netstandard2.0
-
-  nuget Fake.Core.Target
-  nuget Fake.DotNet.Cli
-  nuget Fake.Tools.Git
-#  nuget Fake.Core.ReleaseNotes
-#  nuget Fake.DotNet.Testing.Expecto
-#  nuget FSharp.Core 4.3.4 // Must be same version as FAKE -> https://github.com/fsharp/FAKE/issues/2001 

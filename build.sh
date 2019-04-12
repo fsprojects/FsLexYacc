@@ -1,37 +1,16 @@
 #!/bin/bash
 if test "$OS" = "Windows_NT"
 then
-  # use .Net
-  .paket/paket.bootstrapper.exe
-  exit_code=$?
-  if [ $exit_code -ne 0 ]; then
-    exit $exit_code
-  fi
-
-  .paket/paket.exe restore
-  exit_code=$?
-  if [ $exit_code -ne 0 ]; then
-    exit $exit_code
-  fi
-
-  packages/FAKE/tools/FAKE.exe build.fsx $@
+  cmd /C build.cmd
 else
-  # use mono
-  if [[ ! -e ~/.config/.mono/certs ]]; then
-    mozroots --import --sync --quiet
-  fi
-  
-  mono .paket/paket.bootstrapper.exe
-  exit_code=$?
-  if [ $exit_code -ne 0 ]; then
-    exit $exit_code
-  fi
+  dotnet tool install fake-cli --tool-path .fake --version 5.12.6
+  dotnet tool install paket --tool-path .paket
 
-  mono .paket/paket.exe restore
+  .paket/paket restore
   exit_code=$?
   if [ $exit_code -ne 0 ]; then
     exit $exit_code
   fi
   
-  mono packages/FAKE/tools/FAKE.exe $@ --fsiargs -d:MONO build.fsx
+ .fake/fake run build.fsx $@
 fi

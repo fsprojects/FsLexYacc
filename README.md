@@ -15,6 +15,12 @@ Build the project
 * [![NuGet Badge](https://buildstats.info/nuget/FsLexYacc)](https://www.nuget.org/packages/FsLexYacc) - `FsLexYacc`
 
 
+### Generating docs
+
+This is currently done manually:
+
+    fsi docsrc\generate.fsx
+    
 ### Releasing
 
     .\build.cmd --target NuGet

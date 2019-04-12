@@ -13,8 +13,8 @@ let githubLink = "http://github.com/fsprojects/FsLexYacc"
 // Specify more information about your project
 let info =
   [ "project-name", "FsLexYacc"
-    "project-author", "Your Name"
-    "project-summary", "A short summary of your project"
+    "project-author", "FsLexYacc contributors"
+    "project-summary", "Lex and Yacc for F#"
     "project-github", githubLink
     "project-nuget", "https://www.nuget.org/packages/FsLexYacc/" ]
 
@@ -22,7 +22,7 @@ let info =
 // For typical project, no changes are needed below
 // --------------------------------------------------------------------------------------
 
-#load "../../packages/FSharp.Formatting/FSharp.Formatting.fsx"
+#load "../packages/FSharp.Formatting/FSharp.Formatting.fsx"
 //#I "../../packages/FAKE/tools/"
 //#r "FakeLib.dll"
 //open Fake
@@ -31,23 +31,24 @@ open System.IO
 open FSharp.Literate
 open FSharp.MetadataFormat
 
+// Paths with template/source/docs locations
+let bin        = __SOURCE_DIRECTORY__ + "/../src/FsLexYacc.Runtime/bin/Release/net46"
+let output     = __SOURCE_DIRECTORY__ + "/../docs"
+let contentIn  = __SOURCE_DIRECTORY__ + "/content"
+let files      = __SOURCE_DIRECTORY__ + "/files"
+let templates  = __SOURCE_DIRECTORY__ + "/templates"
+let formatting = __SOURCE_DIRECTORY__ + "/../packages/FSharp.Formatting/"
+let docTemplate = formatting + "/templates/docpage.cshtml"
+let referenceOut = output + "/reference"
+let contentOut = output + "/content"
+
 // When called from 'build.fsx', use the public project URL as <root>
 // otherwise, use the current 'output' directory.
 #if RELEASE
 let root = website
 #else
-let root = "file://" + (__SOURCE_DIRECTORY__ + "/../docs")
+let root = "file://" + output
 #endif
-
-// Paths with template/source/docs locations
-let bin        = __SOURCE_DIRECTORY__ + "/../../src/FsLexYacc.Runtime/bin/Release/net46"
-let content    = __SOURCE_DIRECTORY__ + "/../content"
-let output     = __SOURCE_DIRECTORY__ + "/../../docs"
-let files      = __SOURCE_DIRECTORY__ + "/../files"
-let templates  = __SOURCE_DIRECTORY__ + "/templates"
-let formatting = __SOURCE_DIRECTORY__ + "/../../packages/FSharp.Formatting/"
-let docTemplate = formatting + "/templates/docpage.cshtml"
-let reference = output + "/reference"
 
 // Where to look for *.csproj templates (in this order)
 let layoutRoots =
@@ -60,16 +61,25 @@ let rec copyRecursive dir1 dir2 =
        let subdir2 = Path.Combine(dir2, Path.GetDirectoryName subdir1)
        copyRecursive subdir1 subdir2
   for file in Directory.EnumerateFiles dir1 do
-       File.Copy(file, file.Replace(dir1, dir2))
+       File.Copy(file, file.Replace(dir1, dir2), true)
 
 // Copy static files and CSS + JS from F# Formatting
 let copyFiles () =
-  copyRecursive (formatting + "/styles") (output + "/content")
+  copyRecursive (formatting + "/styles") contentOut
+
+// Build documentation from `fsx` and `md` files in `docsrc/content` to `docs`
+let buildDocumentation () =
+  let subdirs = Directory.EnumerateDirectories(contentIn, "*", SearchOption.AllDirectories)
+  for dir in Seq.append [contentIn] subdirs do
+    let sub = if dir.Length > contentIn.Length then dir.Substring(contentIn.Length + 1) else "."
+    Literate.ProcessDirectory
+      ( dir, docTemplate, output + "/" + sub, replacements = ("root", root)::info,
+        layoutRoots = layoutRoots )
 
 // Build API reference from XML comments
 let buildReference () =
-  Directory.Delete reference
-  Directory.CreateDirectory reference |> ignore
+  if Directory.Exists referenceOut then Directory.Delete(referenceOut, true)
+  Directory.CreateDirectory referenceOut |> ignore
   for lib in referenceBinaries do
     MetadataFormat.Generate
       ( bin + "/" + lib, output + "/reference", layoutRoots,
@@ -77,15 +87,6 @@ let buildReference () =
         sourceRepo = githubLink + "/tree/master",
         sourceFolder = __SOURCE_DIRECTORY__ + "/.." + "/..",
         publicOnly = true )
-
-// Build documentation from `fsx` and `md` files in `docs/content`
-let buildDocumentation () =
-  let subdirs = Directory.EnumerateDirectories(content, "*", SearchOption.AllDirectories)
-  for dir in Seq.append [content] subdirs do
-    let sub = if dir.Length > content.Length then dir.Substring(content.Length + 1) else "."
-    Literate.ProcessDirectory
-      ( dir, docTemplate, output + "/" + sub, replacements = ("root", root)::info,
-        layoutRoots = layoutRoots )
 
 // Generate
 copyFiles()

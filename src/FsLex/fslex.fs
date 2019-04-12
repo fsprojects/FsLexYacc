@@ -42,11 +42,15 @@ let input = ref None
 let out = ref None
 let inputCodePage = ref None
 let light = ref None
+let modname = ref None
+let internal_module = ref false
 
 let mutable lexlib = "FSharp.Text.Lexing"
 
 let usage =
   [ ArgInfo ("-o", ArgType.String (fun s -> out := Some s), "Name the output file.") 
+    ArgInfo ("--module", ArgType.String (fun s -> modname := Some s), "Define the F# module name to host the generated parser."); 
+    ArgInfo ("--internal", ArgType.Unit (fun () -> internal_module := true), "Generate an internal module");
     ArgInfo ("--codepage", ArgType.Int (fun i -> inputCodePage := Some i), "Assume input lexer specification file is encoded with the given codepage.") 
     ArgInfo ("--light", ArgType.Unit (fun () ->  light := Some true), "(ignored)")
     ArgInfo ("--light-off", ArgType.Unit (fun () ->  light := Some false), "Add #light \"off\" to the top of the generated file")
@@ -99,6 +103,12 @@ let main() =
 
     if (!light = Some(false)) || (!light = None && (Path.HasExtension(output) && Path.GetExtension(output) = ".ml")) then
         cfprintfn os "#light \"off\""
+
+    match !modname with
+    | None -> ()
+    | Some s ->
+        let internal_tag = if !internal_module then "internal " else ""
+        cfprintfn os "module %s%s" internal_tag s
     
     let printLinesIfCodeDefined (code,pos:Position) =
         if pos <> Position.Empty  // If bottom code is unspecified, then position is empty.        

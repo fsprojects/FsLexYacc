@@ -210,11 +210,9 @@ Target.create "Release" ignore
 
 Target.create "All" ignore
 
-//"Clean"
-//  ==> 
-//"AssemblyInfo"
-//  ==> 
-"Build"
+"Clean"
+  ==>  "AssemblyInfo"
+  ==>  "Build"
 //  =?> ("RunOldFsYaccTests", isWindows)
   ==> "All"
 

@@ -42,9 +42,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Update="FSharp.Core" Version="4.5.2" />
-  </ItemGroup>
   <!-- Force the use of the .NET Framework binaries until the nuget package is updated -->
   <!-- TODO: start to use the nuget targets again once nuget package is updated -->
   <!-- <Import Project="..\..\packages\FsLexYacc\build\FsLexYacc.targets" /> -->

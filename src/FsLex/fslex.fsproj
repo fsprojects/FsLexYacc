@@ -45,7 +45,7 @@
   <!-- Force the use of the .NET Framework binaries until the nuget package is updated -->
   <!-- TODO: start to use the nuget targets again once nuget package is updated -->
   <!-- <Import Project="..\..\packages\FsLexYacc\build\FsLexYacc.targets" /> -->
-  <PropertyGroup>
+<!--  <PropertyGroup>
 		<UseFsLexYaccToolRunner Condition="'$(OS)' != 'Unix'">false</UseFsLexYaccToolRunner>
 		<FsLexYaccToolRunner Condition="'$(OS)' == 'Unix'">mono </FsLexYaccToolRunner>
     <FsLexToolPath>..\..\packages\FsLexYacc\build</FsLexToolPath>
@@ -54,5 +54,6 @@
     <FsYaccToolExe>fsyacc.exe</FsYaccToolExe>
   </PropertyGroup>
   <Import Project="..\FsLexYacc.Build.Tasks\FsLexYacc.targets" />
+  -->
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

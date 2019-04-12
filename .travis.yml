@@ -1,4 +1,6 @@
 language: csharp
+dotnet:
+  - 2.2.202
 
 os:
   - linux

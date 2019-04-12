@@ -50,4 +50,6 @@
 #### 9.0.1 - 12 April, 2019
 * Tools now run on .NET Core
 
+#### 9.0.2 - 12 April, 2019
+* Bootstrap using new package
 

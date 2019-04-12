@@ -44,4 +44,4 @@ files
   ../src/FsLexYacc.Build.Tasks/FsLexYacc.targets ==> src
 dependencies
   FsLexYacc.Runtime ~> CURRENTVERSION
-  FSharp.Core ~> CURRENTVERSION
+  FSharp.Core ~> LOCKEDVERSION

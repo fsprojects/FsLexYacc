@@ -17,8 +17,8 @@ Build the project
 ### Releasing
 
     set APIKEY=...
-    ..\FSharp.TypeProviders.SDK\.nuget\nuget.exe push bin\FsLexYacc.Runtime.8.0.1.nupkg %APIKEY% -Source https://nuget.org
-    ..\FSharp.TypeProviders.SDK\.nuget\nuget.exe push bin\FsLexYacc.8.0.1.nupkg %APIKEY% -Source https://nuget.org
+    ..\FSharp.TypeProviders.SDK\.nuget\nuget.exe push bin\FsLexYacc.Runtime.9.0.1.nupkg %APIKEY% -Source https://nuget.org
+    ..\FSharp.TypeProviders.SDK\.nuget\nuget.exe push bin\FsLexYacc.9.0.1.nupkg %APIKEY% -Source https://nuget.org
 
 ### Maintainer(s)
 

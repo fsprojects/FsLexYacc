@@ -14,7 +14,7 @@
       <OtherFlags>--module Parser</OtherFlags>
     </FsYacc>
     <FsLex Include="Lexer.fsl">
-      <OtherFlags>--unicode</OtherFlags>
+      <OtherFlags>--module Lexer --unicode</OtherFlags>
     </FsLex>
     <Compile Include="Parser.fsi" />
     <Compile Include="Parser.fs" />

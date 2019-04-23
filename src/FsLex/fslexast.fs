@@ -31,7 +31,7 @@ let unicodeCategories =
     "Nd", System.Globalization.UnicodeCategory.DecimalDigitNumber; // (Nd)
     "Me", System.Globalization.UnicodeCategory.EnclosingMark; // (Me)
     "Pf", System.Globalization.UnicodeCategory.FinalQuotePunctuation; // (Pf)
-    "Cf", enum 15; //System.Globalization.UnicodeCategory.Format; // (Cf)
+    "Cf", System.Globalization.UnicodeCategory.Format; // (Cf)
     "Pi", System.Globalization.UnicodeCategory.InitialQuotePunctuation; // (Pi)
     "Nl", System.Globalization.UnicodeCategory.LetterNumber; // (Nl)
     "Zl", System.Globalization.UnicodeCategory.LineSeparator; // (Zl)
@@ -261,7 +261,8 @@ type internal NfaNodeIdSetBuilder = HashSet<NodeId>
 
 type internal NfaNodeIdSet(nodes: NfaNodeIdSetBuilder) = 
     // BEWARE: the next line is performance critical
-    let s = nodes |> Seq.toArray |> (fun arr -> Array.sortInPlaceWith compare arr; arr) // 19
+    let s = nodes |> Seq.toArray
+    do Array.sortInPlaceWith compare s // 19
 
     // These are all surprisingly slower:
     //let s = nodes |> Seq.toArray |> Array.sort 
@@ -342,11 +343,11 @@ let NfaToDfa (nfaNodeMap:NfaNodeMap) nfaStartNode =
     EClosure1 acc nfaStartNode;
     let nfaSet0 = new NfaNodeIdSet(acc)
 
-    let dfaNodes = ref (Map.empty<NfaNodeIdSet,DfaNode>)
+    let dfaNodes = Dictionary<NfaNodeIdSet,DfaNode>()
 
     let GetDfaNode nfaSet = 
-        if (!dfaNodes).ContainsKey(nfaSet) then 
-            (!dfaNodes).[nfaSet]
+        if dfaNodes.ContainsKey(nfaSet) then 
+            dfaNodes.[nfaSet]
         else 
             let dfaNode =
                 { Id= newDfaNodeId(); 
@@ -357,41 +358,34 @@ let NfaToDfa (nfaNodeMap:NfaNodeMap) nfaStartNode =
                             |> List.concat }
             //Printf.printfn "id = %d" dfaNode.Id;
 
-            dfaNodes := (!dfaNodes).Add(nfaSet,dfaNode); 
+            dfaNodes.Add(nfaSet,dfaNode); 
             dfaNode
             
-    let workList = ref [nfaSet0]
-    let doneSet = ref Set.empty
+    let workList = Stack()
+    workList.Push nfaSet0
+    let doneSet = HashSet()
 
-    //let count = ref 0 
-    let rec Loop () = 
-        match !workList with 
-        | [] -> ()
-        | nfaSet ::t -> 
-            workList := t;
-            if (!doneSet).Contains(nfaSet) then 
-                Loop () 
-            else
-                let moves = ComputeMoves nfaSet
-                for (KeyValue(inp,movesForInput)) in moves do
-                    assert (inp <> Epsilon);
-                    let moveSet = EClosure movesForInput;
-                    if not moveSet.IsEmpty then 
-                        //incr count
-                        let dfaNode = GetDfaNode nfaSet
-                        dfaNode.Transitions <- (inp, GetDfaNode moveSet) :: dfaNode.Transitions;
-                        (* Printf.printf "%d (%s) : %s --> %d (%s)\n" dfaNode.Id dfaNode.Name (match inp with EncodeChar c -> String.make 1 c | LEof -> "eof") moveSetDfaNode.Id moveSetDfaNode.Name;*)
-                        workList := moveSet :: !workList;
+    //let count = ref 0
+    while workList.Count <> 0 do
+        let nfaSet = workList.Pop()
+        if not <| doneSet.Contains(nfaSet) then
+            let moves = ComputeMoves nfaSet
+            for (KeyValue(inp,movesForInput)) in moves do
+                assert (inp <> Epsilon);
+                let moveSet = EClosure movesForInput;
+                if not moveSet.IsEmpty then 
+                    //incr count
+                    let dfaNode = GetDfaNode nfaSet
+                    dfaNode.Transitions <- (inp, GetDfaNode moveSet) :: dfaNode.Transitions;
+                    // Printf.printf "%d (%s) : %s --> %d (%s)\n" dfaNode.Id dfaNode.Name (match inp with EncodeChar c -> String.make 1 c | LEof -> "eof") moveSetDfaNode.Id moveSetDfaNode.Name;
+                    workList.Push(moveSet);
+                 
+                doneSet.Add(nfaSet) |> ignore
 
-                doneSet := (!doneSet).Add(nfaSet);
-
-
-                Loop()
-    Loop();
     //Printf.printfn "count = %d" !count;
     let ruleStartNode = GetDfaNode nfaSet0
     let ruleNodes = 
-        (!dfaNodes) 
+        dfaNodes
         |> Seq.map (fun kvp -> kvp.Value) 
         |> Seq.toList
         |> List.sortBy (fun s -> s.Id)

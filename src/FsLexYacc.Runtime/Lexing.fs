@@ -264,10 +264,10 @@ namespace FSharp.Text.Lexing
             LexBuffer<char>.FromChars (s.ToCharArray())
 
         static member FromTextReader (tr:System.IO.TextReader) : LexBuffer<char> = 
-           LexBuffer<char>.FromFunction(tr.Read) 
+           LexBuffer<char>.FromReadFunctions(Some tr.Read, Some (tr.ReadAsync >> Async.AwaitTask))
 
         static member FromBinaryReader (br:System.IO.BinaryReader) : LexBuffer<byte> = 
-           LexBuffer<byte>.FromFunction(br.Read) 
+           LexBuffer<byte>.FromFunction(br.Read)
 
         static member FromStream (stream:System.IO.Stream) : LexBuffer<byte> = 
            LexBuffer<byte>.FromReadFunctions(Some(stream.Read), Some(fun (buf, offset, len) -> stream.AsyncRead(buf, offset=offset, count=len))) 

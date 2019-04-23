@@ -200,8 +200,8 @@ let LexerStateToNfa (macros: Map<string,_>) (clauses: Clause list) =
             AddToMultiMap nfaNode.Transitions Epsilon sre
             nfaNodeMap.NewNfaNode([(Epsilon,sre); (Epsilon,dest)],[])
         | Macro m ->
-            if not (macros.ContainsKey(m)) then failwithf "The macro %s is not defined" m
-            CompileRegexp (macros.[m]) dest
+            if not <| macros.ContainsKey(m) then failwithf "The macro %s is not defined" m
+            CompileRegexp macros.[m] dest
 
         // These cases unwind the difficult cases in the syntax that rely on knowing the
         // entire alphabet.
@@ -298,7 +298,7 @@ type internal NfaNodeIdSet(nodes: NfaNodeIdSetBuilder) =
     override x.GetHashCode() = hash s
 
     member x.IsEmpty = (s.Length = 0)
-    member x.Iterate f = s |> Array.iter f
+    member x.Iterate f = Array.iter f s
 
 type NodeSetSet = Set<NfaNodeIdSet>
 
@@ -307,7 +307,6 @@ let newDfaNodeId =
     fun () -> let res = !i in incr i; res
 
 let NfaToDfa (nfaNodeMap:NfaNodeMap) nfaStartNode =
-    let numNfaNodes = nfaNodeMap.Count
     let rec EClosure1 (acc:NfaNodeIdSetBuilder) (n:NfaNode) =
         if not (acc.Contains(n.Id)) then
             acc.Add(n.Id) |> ignore

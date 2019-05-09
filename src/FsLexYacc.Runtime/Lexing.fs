@@ -62,6 +62,14 @@ namespace FSharp.Text.Lexing
             let pos = pos
             {pos with pos_cnum = pos.pos_cnum + by}
 
+        static member MakeSimpleLineDirective line fileName =
+            sprintf 
+                "#line %d \"%s\" // " // todo: add optional line text as a comment
+                    line
+                    fileName
+
+        static member MakeLineDirective (pos: Position) = Position.MakeSimpleLineDirective pos.Line pos.FileName
+
         static member Empty = 
             { pos_fname="" 
               pos_lnum= 0 

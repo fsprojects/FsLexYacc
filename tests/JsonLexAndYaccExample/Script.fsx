@@ -1,5 +1,5 @@
-﻿#r "bin\\debug\\FsLexYacc.Runtime.dll"
-#r "bin\\debug\\JsonLexAndYaccExample.exe"
+﻿#r "bin/debug/net46/FsLexYacc.Runtime.dll"
+#r "bin/debug/net46/JsonLexAndYaccExample.exe"
 
 open FSharp.Text.Lexing
 open JsonParsing

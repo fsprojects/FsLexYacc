@@ -49,7 +49,7 @@ let light = ref None
 let inputCodePage = ref None
 let mutable lexlib = "FSharp.Text.Lexing"
 let mutable parslib = "FSharp.Text.Parsing"
-
+let mutable skipLineDirectives = false
 let usage =
   [ ArgInfo("-o", ArgType.String (fun s -> out := Some s), "Name the output file.");
     ArgInfo("-v", ArgType.Unit (fun () -> log := true), "Produce a listing file."); 
@@ -62,7 +62,9 @@ let usage =
     ArgInfo("--tokens", ArgType.Set tokenize, "Simply tokenize the specification file itself."); 
     ArgInfo("--lexlib", ArgType.String (fun s ->  lexlib <- s), "Specify the namespace for the implementation of the lexer (default: FSharp.Text.Lexing)");
     ArgInfo("--parslib", ArgType.String (fun s ->  parslib <- s), "Specify the namespace for the implementation of the parser table interpreter (default: FSharp.Text.Parsing)");
-    ArgInfo("--codepage", ArgType.Int (fun i -> inputCodePage := Some i), "Assume input lexer specification file is encoded with the given codepage.");  ]
+    ArgInfo("--codepage", ArgType.Int (fun i -> inputCodePage := Some i), "Assume input lexer specification file is encoded with the given codepage.");  
+    ArgInfo ("--skip-line-directives", ArgType.Unit (fun () -> skipLineDirectives <- true), "Skip line directives from output (workaround colorization bug)")
+  ]
 
 let _ = ArgParser.Parse(usage,(fun x -> match !input with Some _ -> failwith "more than one input given" | None -> input := Some x),"fsyacc <filename>")
 
@@ -135,6 +137,18 @@ let main() =
   let cprintf (os:TextWriter,lineCount) fmt = Printf.fprintf os fmt
   let cprintfn (os:TextWriter,lineCount) fmt = Printf.kfprintf (fun () -> incr lineCount; os.WriteLine()) os fmt
 
+  
+  let printLineDirectiveIfNeededForPosition cos pos =
+    if skipLineDirectives then ()
+    else 
+      cprintfn cos "%s" (Position.MakeLineDirective pos)
+  
+  let printLineDirectiveIfNeededForLineCountAndFile cos lineCount fileName =
+    if skipLineDirectives then ()
+    else 
+      cprintfn cos "%s" (Position.MakeSimpleLineDirective lineCount fileName)
+  
+
   let logf = 
       match outputo with 
       | None -> (fun f -> ())
@@ -189,12 +203,11 @@ let main() =
   cprintfn cos "open %s.ParseHelpers" parslib;
   if !compat then 
       cprintfn cos "open Microsoft.FSharp.Compatibility.OCaml.Parsing";
-
-  cprintfn cos "# %d \"%s\"" pos.pos_lnum pos.pos_fname;
+  printLineDirectiveIfNeededForPosition cos pos;
   cprintfn cos "%s" code;
   lineCountOutput := !lineCountOutput + code.Replace("\r","").Split([| '\n' |]).Length;
 
-  cprintfn cos "# %d \"%s\"" !lineCountOutput output;
+  printLineDirectiveIfNeededForLineCountAndFile cos !lineCountOutput output;
   // Print the datatype for the tokens
   cprintfn cos "// This type is the type of tokens accepted by the parser";
   for out in [cos;cosi] do
@@ -440,7 +453,7 @@ let main() =
       cprintf cos "let _fsyacc_reductions ()  =" ;
       cprintfn cos "    [| " ;
       for nt,ntIdx,syms,code in prods do 
-          cprintfn cos "# %d \"%s\"" !lineCountOutput output;
+          printLineDirectiveIfNeededForLineCountAndFile cos !lineCountOutput output;
           cprintfn cos "        (fun (parseState : %s.IParseState) ->"  parslib
           if !compat then 
               cprintfn cos "            Parsing.set_parse_state parseState;"
@@ -459,7 +472,7 @@ let main() =
           cprintfn cos "                (";
           cprintfn cos "                   (";
           match code with 
-          | Some (_,pos) -> cprintfn cos "# %d \"%s\"" pos.pos_lnum pos.pos_fname
+          | Some (_,pos) -> printLineDirectiveIfNeededForPosition cos pos
           | None -> ()
           match code with 
           | Some (code,_) -> 
@@ -478,13 +491,13 @@ let main() =
           cprintfn cos "                   )";
           // Place the line count back for the type constraint
           match code with 
-          | Some (_,pos) -> cprintfn cos "# %d \"%s\"" pos.pos_lnum pos.pos_fname
+          | Some (_,pos) -> printLineDirectiveIfNeededForPosition cos pos
           | None -> ()
           cprintfn cos "                 : %s));" (if types.ContainsKey nt then  types.[nt] else "'"+nt);
       done;
       cprintfn cos "|]" ;
   end;
-  cprintfn cos "# %d \"%s\"" !lineCountOutput output;
+  printLineDirectiveIfNeededForLineCountAndFile cos !lineCountOutput output;
   cprintfn cos "let tables () : %s.Tables<_> = " parslib
   cprintfn cos "  { reductions= _fsyacc_reductions ();"
   cprintfn cos "    endOfInputTag = _fsyacc_endOfInputTag;"

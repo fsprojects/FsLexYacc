@@ -44,7 +44,7 @@ let inputCodePage = ref None
 let light = ref None
 let modname = ref None
 let internal_module = ref false
-
+let skipLineDirectives = ref false
 let mutable lexlib = "FSharp.Text.Lexing"
 
 let usage =
@@ -56,6 +56,7 @@ let usage =
     ArgInfo ("--light-off", ArgType.Unit (fun () ->  light := Some false), "Add #light \"off\" to the top of the generated file")
     ArgInfo ("--lexlib", ArgType.String (fun s ->  lexlib <- s), "Specify the namespace for the implementation of the lexer table interpreter (default FSharp.Text.Lexing)")
     ArgInfo ("--unicode", ArgType.Set unicode, "Produce a lexer for use with 16-bit unicode characters.")  
+    ArgInfo ("--skip-line-directives", ArgType.Unit (fun () -> skipLineDirectives := true), "Skip line directives from output (workaround colorization bug)")
   ]
 
 let _ = ArgParser.Parse(usage, (fun x -> match !input with Some _ -> failwith "more than one input given" | None -> input := Some x), "fslex <filename>")
@@ -70,6 +71,16 @@ let sentinel = 255 * 256 + 255
 
 let lineCount = ref 0
 let cfprintfn (os: #TextWriter) fmt = Printf.kfprintf (fun () -> incr lineCount; os.WriteLine()) os fmt
+
+let printLineDirectiveIfNeededForPosition (os: #TextWriter) pos=
+  if !skipLineDirectives then ()
+  else 
+    cfprintfn os "%s" (Position.MakeLineDirective pos)
+
+let printLineDirectiveIfNeededForLineCountAndFile (os: #TextWriter) lineCount fileName =
+  if !skipLineDirectives then ()
+  else 
+    cfprintfn os "%s" (Position.MakeSimpleLineDirective lineCount fileName)
 
 let main() = 
   try 
@@ -112,14 +123,15 @@ let main() =
     
     let printLinesIfCodeDefined (code,pos:Position) =
         if pos <> Position.Empty  // If bottom code is unspecified, then position is empty.        
-        then 
-            cfprintfn os "%s" (Position.MakeLineDirective pos)
+        then
+            printLineDirectiveIfNeededForPosition os pos
             cfprintfn os "%s" code
 
     printLinesIfCodeDefined spec.TopCode
     let code = fst spec.TopCode
     lineCount := !lineCount + code.Replace("\r","").Split([| '\n' |]).Length
-    cfprintfn os "%s" (Position.MakeSimpleLineDirective !lineCount output)
+    
+    printLineDirectiveIfNeededForLineCountAndFile os !lineCount output
     
     cfprintfn os "let trans : uint16[] array = "
     cfprintfn os "    [| "
@@ -210,11 +222,12 @@ let main() =
         cfprintfn os "  match _fslex_tables.Interpret(%d,lexbuf) with" startNode.Id
         actions |> Seq.iteri (fun i (code:string, pos) -> 
             cfprintfn os "  | %d -> ( " i
-            cfprintfn os "%s" (Position.MakeLineDirective pos)
+            printLineDirectiveIfNeededForPosition os pos
+            
             let lines = code.Split([| '\r'; '\n' |], StringSplitOptions.RemoveEmptyEntries)
             for line in lines do
                 cfprintfn os "               %s" line
-            cfprintfn os "%s" (Position.MakeSimpleLineDirective !lineCount output)
+            printLineDirectiveIfNeededForLineCountAndFile os !lineCount output
             cfprintfn os "          )")
         cfprintfn os "  | _ -> failwith \"%s\"" ident
     
@@ -222,7 +235,7 @@ let main() =
     cfprintfn os ""
         
     printLinesIfCodeDefined spec.BottomCode
-    cfprintfn os "%s" (Position.MakeSimpleLineDirective 3000000 output)
+    printLineDirectiveIfNeededForLineCountAndFile os 3000000 output
     
   with e -> 
     eprintf "FSLEX: error FSL000: %s" (match e with Failure s -> s | e -> e.ToString())

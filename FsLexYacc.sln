@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.438
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.352
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{1F1B4F0F-2998-4D74-865B-9122611C2B14}"
 	ProjectSection(SolutionItems) = preProject
@@ -12,13 +12,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{1F1B4F
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{A6A6AF7D-D6E3-442D-9B1E-58CC91879BE1}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FsLex", "src\FsLex\fslex.fsproj", "{BD2284A5-AA4D-442D-B4FB-E43B2FE9DD2A}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "fslex", "src\FsLex\fslex.fsproj", "{BD2284A5-AA4D-442D-B4FB-E43B2FE9DD2A}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FsYacc", "src\FsYacc\fsyacc.fsproj", "{DDD90630-1CDA-4CB3-9A0A-6A1253478C2D}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "fsyacc", "src\FsYacc\fsyacc.fsproj", "{DDD90630-1CDA-4CB3-9A0A-6A1253478C2D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{BF60BC93-E09B-4E5F-9D85-95A519479D54}"
 	ProjectSection(SolutionItems) = preProject
+		build.cmd = build.cmd
 		build.fsx = build.fsx
+		build.sh = build.sh
 		nuget\FsLexYacc.nuspec = nuget\FsLexYacc.nuspec
 		nuget\FsLexYacc.Runtime.nuspec = nuget\FsLexYacc.Runtime.nuspec
 		README.md = README.md

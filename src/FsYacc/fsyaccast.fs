@@ -84,7 +84,7 @@ let ProcessParserSpecAst (spec: ParserSpec) =
         explicitPrecInfo |> Map.ofList
 
     let implicitSymPrecInfo = NoPrecedence
-    let terminals = List.map fst spec.Tokens @ ["error"]in 
+    let terminals = List.map fst spec.Tokens @ ["error"]
     let terminalSet = Set.ofList terminals
     let IsTerminal z = terminalSet.Contains(z)
     let prec_of_terminal sym implicitPrecInfo = 

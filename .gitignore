@@ -195,3 +195,4 @@ tests/fsyacc/test1compat.exe.config
 tests/fsyacc/test2.exe.config
 tests/fsyacc/test2compat.exe.config
 .paket
+/.vs

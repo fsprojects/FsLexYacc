@@ -9,7 +9,6 @@ open System
 open System.Collections.Generic
 open Printf
 open Microsoft.FSharp.Collections
-open Internal.Utilities
 open Internal.Utilities.Text.Lexing
 
 /// An active pattern that should be in the F# standard library
@@ -18,17 +17,17 @@ let (|KeyValue|) (kvp:KeyValuePair<_,_>) = kvp.Key,kvp.Value
 
 type Identifier = string
 type Code = string * Position
+type Associativity = LeftAssoc | RightAssoc | NonAssoc
+type Rule = Rule of Identifier list * Identifier option * Code option
 
 type ParserSpec= 
     { Header         : Code;
       Tokens         : (Identifier * string option) list;
       Types          : (Identifier * string) list;
-      Associativities: (Identifier * Associativity) list list;
+      Associativities: (Identifier * Associativity) list list; // suggest to do: (Associativity * Identifier list) list
       StartSymbols   : Identifier list;
       Rules          : (Identifier * Rule list) list }
       
-and Rule = Rule of Identifier list * Identifier option * Code option
-and Associativity = LeftAssoc | RightAssoc | NonAssoc
 
 type Terminal = string
 type NonTerminal = string
@@ -101,7 +100,7 @@ let ProcessParserSpecAst (spec: ParserSpec) =
                     let implicitPrecInfo = NoPrecedence
                     match precsym with 
                     | None -> implicitPrecInfo 
-                    | Some sym -> if explicitPrecInfo.ContainsKey(sym) then explicitPrecInfo.[sym] else implicitPrecInfo
+                    | Some sym -> prec_of_terminal sym None
                 Production(nonterm, precInfo, List.map mkSym syms, code)))
          |> List.concat
     let nonTerminals = List.map fst spec.Rules

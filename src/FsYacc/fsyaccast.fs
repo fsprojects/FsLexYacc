@@ -74,7 +74,7 @@ type ProcessedParserSpec =
 let ProcessParserSpecAst (spec: ParserSpec) = 
     let explicitPrecInfo = 
         spec.Associativities 
-        |> List.mapi (fun n precSpecs -> precSpecs |> List.map (fun (precSym, assoc) -> precSym,ExplicitPrec (assoc, 10000 - n)))
+        |> List.mapi (fun n precSpecs -> precSpecs |> List.map (fun (precSym, assoc) -> precSym,ExplicitPrec (assoc, 9999 - n)))
         |> List.concat
     
     for (key,_) in explicitPrecInfo |> Seq.countBy fst |> Seq.filter (fun (_,n) -> n > 1)  do
@@ -175,7 +175,7 @@ type NonTerminalIndex = int
 type SymbolIndex = int
 let PTerminal(i:TerminalIndex) : SymbolIndex = -i-1
 let PNonTerminal(i:NonTerminalIndex) : SymbolIndex = i
-let (|PTerminal|PNonTerminal|) x = if x < 0 then PTerminal (-(x+1)) else PNonTerminal x
+let (|PTerminal|PNonTerminal|) x = if x < 0 then PTerminal (-x-1) else PNonTerminal x
 
 type SymbolIndexes = SymbolIndex list
 

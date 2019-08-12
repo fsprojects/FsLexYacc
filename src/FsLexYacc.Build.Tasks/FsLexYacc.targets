@@ -42,9 +42,9 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 		<!-- Call FsLex -->
 		<Exec Command="$(FsLexYaccToolRunner)&quot;$(FsLexToolPath)\$(FsLexToolExe)&quot;  -o &quot;$(FsLexOutputFolder)%(FsLex.Filename).fs&quot; %(FsLex.OtherFlags) %(FsLex.Identity)"/>
 		<!-- Make sure it will get cleaned  -->
-		<CreateItem Include="$(FsLexOutputFolder)%(FsLex.Filename).fs">
-			<Output TaskParameter="Include" ItemName="FileWrites"/>
-		</CreateItem>
+		<ItemGroup>
+			<FileWrites Include="$(FsLexOutputFolder)%(FsLex.Filename).fs"/>
+		</ItemGroup>
 	</Target>
 
 	<!-- Build FsYacc files. -->
@@ -60,9 +60,9 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 		<Exec Command="$(FsLexYaccToolRunner)&quot;$(FsYaccToolPath)\$(FsYaccToolExe)&quot;  -o &quot;$(FsYaccOutputFolder)%(FsYacc.Filename).fs&quot; %(FsYacc.OtherFlags) %(FsYacc.Identity)"/>
 
 		<!-- Make sure it will get cleaned  -->
-		<CreateItem Include="$(FsYaccOutputFolder)%(FsYacc.Filename).fs">
-			<Output TaskParameter="Include" ItemName="FileWrites"/>
-		</CreateItem>
+		<ItemGroup>
+			<FileWrites Include="$(FsLexOutputFolder)%(FsLex.Filename).fs"/>
+		</ItemGroup>
 	</Target>
 	<ItemGroup>
 		<AvailableItemName Include="FsLex">

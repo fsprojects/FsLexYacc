@@ -397,10 +397,11 @@ let NfaToDfa (nfaNodeMap:NfaNodeMap) nfaStartNode =
         |> List.sortBy (fun s -> s.Id)
     ruleStartNode,ruleNodes
 
-let Compile spec = 
+let Compile spec =
+    let macros = Map.ofList spec.Macros
     List.foldBack
-        (fun (name,args,clauses) (perRuleData,dfaNodes) -> 
-            let nfa, actions, nfaNodeMap = LexerStateToNfa (Map.ofList spec.Macros) clauses
+        (fun (name,args,clauses) (perRuleData,dfaNodes) ->
+            let nfa, actions, nfaNodeMap = LexerStateToNfa macros clauses
             let ruleStartNode, ruleNodes = NfaToDfa nfaNodeMap nfa
             //Printf.printfn "name = %s, ruleStartNode = %O" name ruleStartNode.Id;
             (ruleStartNode,actions) :: perRuleData, ruleNodes @ dfaNodes)

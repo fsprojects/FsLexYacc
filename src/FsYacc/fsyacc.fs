@@ -485,7 +485,7 @@ let main() =
       cprintfn cos "|]" ;
   end;
   cprintfn cos "# %d \"%s\"" !lineCountOutput output;
-  cprintfn cos "let tables () : %s.Tables<_> = " parslib
+  cprintfn cos "let tables : %s.Tables<_> = " parslib
   cprintfn cos "  { reductions= _fsyacc_reductions ();"
   cprintfn cos "    endOfInputTag = _fsyacc_endOfInputTag;"
   cprintfn cos "    tagOfToken = tagOfToken;"
@@ -506,14 +506,14 @@ let main() =
   
   cprintfn cos "    numTerminals = %d;" (Array.length actionTable.[0]);
   cprintfn cos "    productionToNonTerminalTable = _fsyacc_productionToNonTerminalTable  }"
-  cprintfn cos "let engine lexer lexbuf startState = (tables ()).Interpret(lexer, lexbuf, startState)"                                                                                                         
+  cprintfn cos "let engine lexer lexbuf startState = tables.Interpret(lexer, lexbuf, startState)"                                                                                                         
 
   for (id,startState) in List.zip spec.StartSymbols startStates do
         if not (types.ContainsKey id) then 
           failwith ("a %type declaration is required for for start token "+id);
         let ty = types.[id] in 
         cprintfn cos "let %s lexer lexbuf : %s =" id ty;
-        cprintfn cos "    Microsoft.FSharp.Core.Operators.unbox ((tables ()).Interpret(lexer, lexbuf, %d))" startState
+        cprintfn cos "    Microsoft.FSharp.Core.Operators.unbox tables.Interpret(lexer, lexbuf, %d))" startState
 
   for id in spec.StartSymbols do
       if not (types.ContainsKey id) then 

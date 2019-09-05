@@ -272,29 +272,12 @@ type internal NfaNodeIdSet(nodes: NfaNodeIdSetBuilder) =
     member x.Elements = s 
     member x.Fold f z = Array.fold f z s
     interface System.IComparable with 
-        member x.CompareTo(y:obj) = 
-            let y = (y :?> NfaNodeIdSet)
-            let xr = x.Representation
-            let yr = y.Representation
-            let c = compare xr.Length yr.Length
-            if c <> 0 then c else 
-            let n = yr.Length
-            let rec go i = 
-                if i >= n then 0 else
-                let c = compare xr.[i] yr.[i]
-                if c <> 0 then c else
-                go (i+1) 
-            go 0
+        member x.CompareTo(y:obj) =
+            Array.compareWith compare x.Representation (y :?> NfaNodeIdSet).Representation
 
     override x.Equals(y:obj) = 
         match y with 
-        | :? NfaNodeIdSet as y -> 
-            let xr = x.Representation
-            let yr = y.Representation
-            let n = yr.Length
-            xr.Length = n && 
-            (let rec go i = (i < n) && xr.[i] = yr.[i] && go (i+1) 
-             go 0)
+        | :? NfaNodeIdSet as y -> x.Representation = y.Representation
         | _ -> false
 
     override x.GetHashCode() = hash s

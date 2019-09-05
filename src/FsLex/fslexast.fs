@@ -359,7 +359,7 @@ let NfaToDfa (nfaNodeMap:NfaNodeMap) nfaStartNode =
                     // printf "%d (%s) : %s --> %d (%s)\n" dfaNode.Id dfaNode.Name (match inp with EncodeChar c -> String.make 1 c | LEof -> "eof") moveSetDfaNode.Id moveSetDfaNode.Name
                     workList.Push(moveSet)
 
-                doneSet.Add(nfaSet) |> ignore
+            doneSet.Add(nfaSet) |> ignore
 
     //printfn "count = %d" !count
     let ruleStartNode = GetDfaNode nfaSet0

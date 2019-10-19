@@ -10,11 +10,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{1F1B4F
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{A6A6AF7D-D6E3-442D-9B1E-58CC91879BE1}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "fslex", "src\FsLex\fslex.fsproj", "{BD2284A5-AA4D-442D-B4FB-E43B2FE9DD2A}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FsLex", "src\FsLex\fslex.fsproj", "{BD2284A5-AA4D-442D-B4FB-E43B2FE9DD2A}"
-EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FsYacc", "src\FsYacc\fsyacc.fsproj", "{DDD90630-1CDA-4CB3-9A0A-6A1253478C2D}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "fsyacc", "src\FsYacc\fsyacc.fsproj", "{DDD90630-1CDA-4CB3-9A0A-6A1253478C2D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{BF60BC93-E09B-4E5F-9D85-95A519479D54}"
 	ProjectSection(SolutionItems) = preProject
@@ -23,19 +21,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{BF60
 		nuget\FsLexYacc.Runtime.nuspec = nuget\FsLexYacc.Runtime.nuspec
 		README.md = README.md
 		RELEASE_NOTES.md = RELEASE_NOTES.md
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{83F16175-43B1-4C90-A1EE-8E351C33435D}"
-	ProjectSection(SolutionItems) = preProject
-		docs\tools\generate.fsx = docs\tools\generate.fsx
-		docs\tools\templates\template.cshtml = docs\tools\templates\template.cshtml
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "content", "content", "{8E6D5255-776D-4B61-85F9-73C37AA1FB9A}"
-	ProjectSection(SolutionItems) = preProject
-		docs\content\fslex.md = docs\content\fslex.md
-		docs\content\fsyacc.md = docs\content\fsyacc.md
-		docs\content\index.fsx = docs\content\index.fsx
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{ED8079DD-2B06-4030-9F0F-DC548F98E1C4}"
@@ -55,6 +40,16 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "LexAndYaccMiniProject", "te
 	ProjectSection(ProjectDependencies) = postProject
 		{DDD90630-1CDA-4CB3-9A0A-6A1253478C2D} = {DDD90630-1CDA-4CB3-9A0A-6A1253478C2D}
 		{BD2284A5-AA4D-442D-B4FB-E43B2FE9DD2A} = {BD2284A5-AA4D-442D-B4FB-E43B2FE9DD2A}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docsrc", "docsrc", "{4BB66375-380B-4EBD-9BA6-40CE92EB3D98}"
+	ProjectSection(SolutionItems) = preProject
+		docsrc\content\fslex.md = docsrc\content\fslex.md
+		docsrc\content\fsyacc.md = docsrc\content\fsyacc.md
+		docsrc\generate.fsx = docsrc\generate.fsx
+		docsrc\content\index.fsx = docsrc\content\index.fsx
+		docsrc\content\jsonParserExample.md = docsrc\content\jsonParserExample.md
+		docsrc\templates\template.cshtml = docsrc\templates\template.cshtml
 	EndProjectSection
 EndProject
 Global
@@ -126,8 +121,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{83F16175-43B1-4C90-A1EE-8E351C33435D} = {A6A6AF7D-D6E3-442D-9B1E-58CC91879BE1}
-		{8E6D5255-776D-4B61-85F9-73C37AA1FB9A} = {A6A6AF7D-D6E3-442D-9B1E-58CC91879BE1}
 		{3A7662D3-A30C-4BD4-BA0A-08A53DC59445} = {ED8079DD-2B06-4030-9F0F-DC548F98E1C4}
 		{91D0BE7A-E128-498A-BB68-6ED65A582E04} = {ED8079DD-2B06-4030-9F0F-DC548F98E1C4}
 	EndGlobalSection

@@ -62,40 +62,6 @@ let gitHome = "https://github.com/fsprojects"
 // The name of the project on GitHub
 let gitName = "FsLexYacc"
 
-let desiredSdkVersion = (DotNet.getSDKVersionFromGlobalJson ())
-let mutable sdkPath = None
-let getSdkPath() = (defaultArg sdkPath "dotnet")
-let installed =
-  try
-    DotNet.getVersion id <> null
-  with _ -> false
-
-printfn "Desired .NET SDK version = %s" desiredSdkVersion
-printfn "DotNetCli.isInstalled() = %b" installed
-
-let getPathForSdkVersion (sdkVersion) =
-  DotNet.install (fun v -> { v with Version = DotNet.Version sdkVersion }) (DotNet.Options.Create ())
-  |> fun o -> o.DotNetCliPath
-
-if installed then
-    let installedSdkVersion = DotNet.getVersion id
-    printfn "The installed default .NET SDK version reported by FAKE's 'DotNetCli.getVersion()' is %s" installedSdkVersion
-    if installedSdkVersion <> desiredSdkVersion then
-        match Environment.environVar "CI" with
-        | null ->
-            if installedSdkVersion > desiredSdkVersion then
-                printfn "*** You have .NET SDK version '%s' installed, assuming it is compatible with version '%s'" installedSdkVersion desiredSdkVersion
-            else
-                printfn "*** You have .NET SDK version '%s' installed, we expect at least version '%s'" installedSdkVersion desiredSdkVersion
-        | _ ->
-            printfn "*** The .NET SDK version '%s' will be installed (despite the fact that version '%s' is already installed) because we want precisely that version in CI" desiredSdkVersion installedSdkVersion
-            sdkPath <- Some (getPathForSdkVersion desiredSdkVersion)
-    else
-        sdkPath <- Some (getPathForSdkVersion installedSdkVersion)
-else
-    printfn "*** The .NET SDK version '%s' will be installed (no other version was found by FAKE helpers)" desiredSdkVersion
-    sdkPath <- Some (getPathForSdkVersion desiredSdkVersion)
-
 // --------------------------------------------------------------------------------------
 // END TODO: The rest of the file includes standard build steps 
 // --------------------------------------------------------------------------------------
@@ -141,11 +107,11 @@ Target.create "CleanDocs" (fun _ ->
 Target.create "Build" (fun _ ->
     for project in ["src/FsLex/fslex.fsproj"; "src/FsYacc/fsyacc.fsproj"] do
       for framework in ["net46"; "netcoreapp2.0"] do 
-          DotNet.publish (fun opts -> { opts with Common = { opts.Common with DotNetCliPath = getSdkPath (); CustomParams = Some "/v:n" }; Configuration = DotNet.BuildConfiguration.Release; Framework = Some framework }) project
+          DotNet.publish (fun opts -> { opts with Common = { opts.Common with CustomParams = Some "/v:n" }; Configuration = DotNet.BuildConfiguration.Release; Framework = Some framework }) project
     for project in [ "src/FsLexYacc.Runtime/FsLexYacc.Runtime.fsproj"
                      "tests/JsonLexAndYaccExample/JsonLexAndYaccExample.fsproj"
                      "tests/LexAndYaccMiniProject/LexAndYaccMiniProject.fsproj" ] do
-          DotNet.build (fun opts -> { opts with Common = { opts.Common with DotNetCliPath = getSdkPath (); CustomParams = Some "/v:n" }; Configuration = DotNet.BuildConfiguration.Release }) project
+          DotNet.build (fun opts -> { opts with Common = { opts.Common with CustomParams = Some "/v:n" }; Configuration = DotNet.BuildConfiguration.Release }) project
 )
 
 // --------------------------------------------------------------------------------------

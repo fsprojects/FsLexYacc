@@ -51,7 +51,7 @@ let rec copyRecursive dir1 dir2 =
   for subdir1 in Directory.EnumerateDirectories dir1 do
        let subdir2 = Path.Combine(dir2, Path.GetFileName subdir1)
        copyRecursive subdir1 subdir2
-  for file in Directory.EnumerateFiles dir1 do
+  for file in Directory.GetFiles dir1 do
        File.Copy(file, file.Replace(dir1, dir2), true)
 
 // Copy static files and CSS + JS from F# Formatting
@@ -81,6 +81,7 @@ let buildReference () =
         publicOnly = true )
 
 // Generate
+Directory.Delete(output, true)
 copyFiles()
 buildDocumentation()
 buildReference()

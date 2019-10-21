@@ -107,11 +107,21 @@ Target.create "CleanDocs" (fun _ ->
 Target.create "Build" (fun _ ->
     for project in ["src/FsLex/fslex.fsproj"; "src/FsYacc/fsyacc.fsproj"] do
       for framework in ["net46"; "netcoreapp2.0"] do 
-          DotNet.publish (fun opts -> { opts with Common = { opts.Common with CustomParams = Some "/v:n" }; Configuration = DotNet.BuildConfiguration.Release; Framework = Some framework }) project
+        DotNet.publish (fun opts -> { 
+            opts with 
+                Common = { opts.Common with CustomParams = Some "/v:n" }
+                Configuration = DotNet.BuildConfiguration.Release
+                Framework = Some framework 
+        }) project
+
     for project in [ "src/FsLexYacc.Runtime/FsLexYacc.Runtime.fsproj"
                      "tests/JsonLexAndYaccExample/JsonLexAndYaccExample.fsproj"
                      "tests/LexAndYaccMiniProject/LexAndYaccMiniProject.fsproj" ] do
-          DotNet.build (fun opts -> { opts with Common = { opts.Common with CustomParams = Some "/v:n" }; Configuration = DotNet.BuildConfiguration.Release }) project
+        DotNet.build (fun opts -> { 
+            opts with 
+                Common = { opts.Common with CustomParams = Some "/v:n" }
+                Configuration = DotNet.BuildConfiguration.Release 
+        }) project
 )
 
 // --------------------------------------------------------------------------------------

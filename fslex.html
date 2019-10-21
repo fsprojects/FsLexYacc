@@ -5,25 +5,25 @@
     <title>Overview
 </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="A short summary of your project">
-    <meta name="author" content="Your Name">
+    <meta name="description" content="Lex and Yacc for F#">
+    <meta name="author" content="FsLexYacc contributors">
 
     <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
     <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
     <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
     <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
-    <link type="text/css" rel="stylesheet" href="/FsLexYacc/content/style.css" />
-    <script type="text/javascript" src="/FsLexYacc/content/tips.js"></script>
+    <link type="text/css" rel="stylesheet" href="/content/style.css" />
+    <script type="text/javascript" src="/content/tips.js"></script>
   </head>
   <body>
     <div class="container">
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
           <li><a href="https://fsharp.org">fsharp.org</a></li>
-          <li><a href="https://github.com/fsprojects/FsLexYacc">github page</a></li>
+          <li><a href="http://github.com/fsprojects/FsLexYacc">github page</a></li>
         </ul>
-        <h3 class="muted"><a href="/FsLexYacc/index.html">FsLexYacc</a></h3>
+        <h3 class="muted"><a href="/index.html">FsLexYacc</a></h3>
       </div>
       <hr />
       <div class="row">
@@ -32,17 +32,14 @@
 <h1>Overview</h1>
 <p>The <code>fslex.exe</code> tool is a lexer generator for byte and Unicode character input.</p>
 <h2>Getting Started</h2>
-<p>Install the <code>FsLexYacc</code> nuget package.</p>
-<h2>MSBuild support</h2>
-<p>The nuget package includes MSBuild support for <code>FsLex</code> and <code>FsYacc</code>. You must add a <code>FsLexYacc.targets</code> reference
-to your project file manually like this (adjust the nuget package number if needed):</p>
+<p>Add an <code>FsLexYacc</code> package reference to your project</p>
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="o">&lt;</span><span class="i">Import</span> <span class="i">Project</span><span class="o">=</span><span class="s">&quot;..\packages\FsLexYacc.6.0.1\bin\FsLexYacc.targets&quot;</span> <span class="o">/&gt;</span>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="o">&lt;</span><span class="i">PackageReference</span> <span class="i">Include</span><span class="o">=</span><span class="s">&quot;FsLexYacc&quot;</span> <span class="i">Version</span><span class="o">=</span><span class="s">&quot;9.0.2&quot;</span> <span class="o">/&gt;</span>
 </code></pre></td>
 </tr>
 </table>
-<p>You must also add <code>FsLex</code> and <code>FsYacc</code> entries like this:</p>
+<p>You then add <code>FsLex</code> and <code>FsYacc</code> entries like this:</p>
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -54,7 +51,7 @@ to your project file manually like this (adjust the nuget package number if need
   <span class="o">&lt;</span><span class="i">OtherFlags</span><span class="o">&gt;</span><span class="o">--</span><span class="k">module</span> <span class="i">Parser</span><span class="o">&lt;/</span><span class="i">OtherFlags</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="i">FsYacc</span><span class="o">&gt;</span>
 <span class="o">&lt;</span><span class="i">FsLex</span> <span class="i">Include</span><span class="o">=</span><span class="s">&quot;..\LexAndYaccMiniProject\Lexer.fsl&quot;</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="i">OtherFlags</span><span class="o">&gt;</span><span class="o">--</span><span class="i">unicode</span><span class="o">&lt;/</span><span class="i">OtherFlags</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="i">OtherFlags</span><span class="o">&gt;</span><span class="o">--</span><span class="k">module</span> <span class="i">Lexer</span> <span class="o">--</span><span class="i">unicode</span><span class="o">&lt;/</span><span class="i">OtherFlags</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="i">FsLex</span><span class="o">&gt;</span>
 </code></pre></td>
 </tr>
@@ -159,7 +156,7 @@ In case of tie, the regular expression that occurs earlier in the rule is select
 </code></pre></td>
 </tr>
 </table>
-<p>(difference of character sets) Regular expressions regexp1 and regexp2 must be character sets defined with [… ] (or a a single character expression or underscore _). Match the difference of the two specified character sets.</p>
+<p>(difference of character sets) Regular expressions regexp1 and regexp2 must be character sets defined with […] (or a a single character expression or underscore _). Match the difference of the two specified character sets.</p>
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">regexp</span> <span class="o">*</span>
@@ -212,7 +209,7 @@ In case of tie, the regular expression that occurs earlier in the rule is select
 <p>Concerning the precedences of operators, # has the highest precedence, followed by *, + and ?, then concatenation, then | (alternation).</p>
 <h2>Rule actions</h2>
 <p>The actions are arbitrary F# expressions. Additionally, <code>lexbuf</code> is bound to the current lexer buffer.</p>
-<p>Some typical uses for <code>lexbuf</code>, in conjunction with the operations on lexer buffers provided by the Microsoft.FSharp.Text.Lexing standard library module, are listed below.</p>
+<p>Some typical uses for <code>lexbuf</code>, in conjunction with the operations on lexer buffers provided by the FSharp.Text.Lexing standard library module, are listed below.</p>
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">lexeme</span> <span class="i">lexbuf</span>
@@ -401,7 +398,7 @@ In case of tie, the regular expression that occurs earlier in the rule is select
 </code></pre></td>
 </tr>
 </table>
-<p>Once you have a lexbuffer you can call the above to generate new tokens. Typically you use some methods from <code>Microsoft.FSharp.Text.Lexing</code>
+<p>Once you have a lexbuffer you can call the above to generate new tokens. Typically you use some methods from <code>FSharp.Text.Lexing</code>
 to create lex buffers, either a <code>LexBuffer&lt;byte&gt;</code> for ASCII lexing, or <code>LexBuffer&lt;char&gt;</code> for Unicode lexing.</p>
 <p>Some ways of creating lex buffers are by using:</p>
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
@@ -427,7 +424,7 @@ to create lex buffers, either a <code>LexBuffer&lt;byte&gt;</code> for ASCII lex
 </code></pre></td>
 </tr>
 </table>
-<p>Lexing positions give locations in source files (the relevant type is <code>Microsoft.FSharp.Text.Lexing.Position</code>).</p>
+<p>Lexing positions give locations in source files (the relevant type is <code>FSharp.Text.Lexing.Position</code>).</p>
 <p>Generated lexers are nearly always used in conjunction with parsers generated by <code>FsYacc</code> (also documented on this site). See the Parsed Language starter template.</p>
 <p>Command line options</p>
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
@@ -446,23 +443,31 @@ to create lex buffers, either a <code>LexBuffer&lt;byte&gt;</code> for ASCII lex
 <span class="l">14: </span>
 <span class="l">15: </span>
 <span class="l">16: </span>
+<span class="l">17: </span>
+<span class="l">18: </span>
+<span class="l">19: </span>
+<span class="l">20: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">fslex</span> <span class="o">&lt;</span><span class="i">filename</span><span class="o">&gt;</span>
     <span class="o">-</span><span class="i">o</span> <span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs3', 15)" onmouseover="showTip(event, 'fs3', 15)" class="i">string</span><span class="o">&gt;</span> <span class="i">Name</span> <span class="i">the</span> <span class="i">output</span> <span class="i">file</span><span class="o">.</span>
 
-    <span class="o">--</span><span class="i">codepage</span> <span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs4', 16)" onmouseover="showTip(event, 'fs4', 16)" class="i">int</span><span class="o">&gt;</span> <span class="i">Assume</span> <span class="i">input</span> <span class="i">lexer</span> <span class="i">specification</span> <span class="i">file</span> <span class="i">is</span> <span class="i">encoded</span> <span class="k">with</span> <span class="i">the</span> <span class="i">given</span> <span class="i">codepage</span><span class="o">.</span>
+    <span class="o">--</span><span class="k">module</span> <span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs3', 16)" onmouseover="showTip(event, 'fs3', 16)" class="i">string</span><span class="o">&gt;</span> <span class="i">Define</span> <span class="i">the</span> <span class="i">F#</span> <span class="k">module</span> <span class="i">name</span> <span class="k">to</span> <span class="i">host</span> <span class="i">the</span> <span class="i">generated</span> <span class="i">parser</span><span class="o">.</span>
+
+    <span class="o">--</span><span class="k">internal</span><span class="o">:</span> <span class="i">Generate</span> <span class="i">an</span> <span class="k">internal</span> <span class="k">module</span>
+
+    <span class="o">--</span><span class="i">codepage</span> <span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs4', 17)" onmouseover="showTip(event, 'fs4', 17)" class="i">int</span><span class="o">&gt;</span> <span class="i">Assume</span> <span class="i">input</span> <span class="i">lexer</span> <span class="i">specification</span> <span class="i">file</span> <span class="i">is</span> <span class="i">encoded</span> <span class="k">with</span> <span class="i">the</span> <span class="i">given</span> <span class="i">codepage</span><span class="o">.</span>
 
     <span class="o">--</span><span class="i">light</span><span class="o">:</span> (<span class="i">ignored</span>)
 
     <span class="o">--</span><span class="i">light</span><span class="o">-</span><span class="i">off</span><span class="o">:</span> <span class="i">Add</span> <span class="prep">#light &quot;off&quot;</span> <span class="k">to</span> <span class="i">the</span> <span class="i">top</span> <span class="k">of</span> <span class="i">the</span> <span class="i">generated</span> <span class="i">file</span>
 
-    <span class="o">--</span><span class="i">lexlib</span> <span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs3', 17)" onmouseover="showTip(event, 'fs3', 17)" class="i">string</span><span class="o">&gt;</span> <span class="i">Specify</span> <span class="i">the</span> <span class="k">namespace</span> <span class="k">for</span> <span class="i">the</span> <span class="i">implementation</span> <span class="k">of</span> <span class="i">the</span> <span class="i">lexer</span> <span class="i">table</span> <span class="i">interperter</span> (<span class="k">default</span> <span onmouseout="hideTip(event, 'fs6', 18)" onmouseover="showTip(event, 'fs6', 18)" class="i">Microsoft</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs7', 19)" onmouseover="showTip(event, 'fs7', 19)" class="i">FSharp</span><span class="o">.</span><span class="i">Text</span><span class="o">.</span><span class="i">Lexing</span>)
+    <span class="o">--</span><span class="i">lexlib</span> <span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs3', 18)" onmouseover="showTip(event, 'fs3', 18)" class="i">string</span><span class="o">&gt;</span> <span class="i">Specify</span> <span class="i">the</span> <span class="k">namespace</span> <span class="k">for</span> <span class="i">the</span> <span class="i">implementation</span> <span class="k">of</span> <span class="i">the</span> <span class="i">lexer</span> <span class="i">table</span> <span class="i">interperter</span> (<span class="k">default</span> <span onmouseout="hideTip(event, 'fs6', 19)" onmouseover="showTip(event, 'fs6', 19)" class="i">FSharp</span><span class="o">.</span><span class="i">Text</span><span class="o">.</span><span class="i">Lexing</span>)
 
     <span class="o">--</span><span class="i">unicode</span><span class="o">:</span> <span class="i">Produce</span> <span class="i">a</span> <span class="i">lexer</span> <span class="k">for</span> <span class="k">use</span> <span class="k">with</span> <span class="n">16</span><span class="o">-</span><span class="i">bit</span> <span class="i">unicode</span> <span class="i">characters</span><span class="o">.</span>
 
-    <span class="o">--</span><span class="i">help</span><span class="o">:</span> <span class="i">display</span> <span class="i">this</span> <span onmouseout="hideTip(event, 'fs8', 20)" onmouseover="showTip(event, 'fs8', 20)" class="i">list</span> <span class="k">of</span> <span class="i">options</span>
+    <span class="o">--</span><span class="i">help</span><span class="o">:</span> <span class="i">display</span> <span class="i">this</span> <span onmouseout="hideTip(event, 'fs7', 20)" onmouseover="showTip(event, 'fs7', 20)" class="i">list</span> <span class="k">of</span> <span class="i">options</span>
 
-    <span class="o">-</span><span class="i">help</span><span class="o">:</span> <span class="i">display</span> <span class="i">this</span> <span onmouseout="hideTip(event, 'fs8', 21)" onmouseover="showTip(event, 'fs8', 21)" class="i">list</span> <span class="k">of</span> <span class="i">options</span>
+    <span class="o">-</span><span class="i">help</span><span class="o">:</span> <span class="i">display</span> <span class="i">this</span> <span onmouseout="hideTip(event, 'fs7', 21)" onmouseover="showTip(event, 'fs7', 21)" class="i">list</span> <span class="k">of</span> <span class="i">options</span>
 </code></pre></td>
 </tr>
 </table>
@@ -500,8 +505,8 @@ to create lex buffers, either a <code>LexBuffer&lt;byte&gt;</code> for ASCII lex
 <span class="l"> 9: </span>
 <span class="l">10: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span class="i">current_line</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs9', 22)" onmouseover="showTip(event, 'fs9', 22)" class="i">ref</span> <span class="n">0</span>
-<span class="k">let</span> <span class="i">current_char</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs9', 23)" onmouseover="showTip(event, 'fs9', 23)" class="i">ref</span> <span class="n">0</span>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span class="i">current_line</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs8', 22)" onmouseover="showTip(event, 'fs8', 22)" class="i">ref</span> <span class="n">0</span>
+<span class="k">let</span> <span class="i">current_char</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs8', 23)" onmouseover="showTip(event, 'fs8', 23)" class="i">ref</span> <span class="n">0</span>
 <span class="k">let</span> <span class="i">set_next_line</span> <span class="i">lexbuf</span> <span class="o">=</span> <span class="o">..</span>
 
 <span class="o">..</span><span class="o">.</span>
@@ -535,10 +540,9 @@ to create lex buffers, either a <code>LexBuffer&lt;byte&gt;</code> for ASCII lex
 <div class="tip" id="fs3">Multiple items<br />val string : value:&#39;T -&gt; string<br /><br />Full name: Microsoft.FSharp.Core.Operators.string<br /><br />--------------------<br />type string = System.String<br /><br />Full name: Microsoft.FSharp.Core.string</div>
 <div class="tip" id="fs4">Multiple items<br />val int : value:&#39;T -&gt; int (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.int<br /><br />--------------------<br />type int = int32<br /><br />Full name: Microsoft.FSharp.Core.int<br /><br />--------------------<br />type int&lt;&#39;Measure&gt; = int<br /><br />Full name: Microsoft.FSharp.Core.int&lt;_&gt;</div>
 <div class="tip" id="fs5">Multiple items<br />val byte : value:&#39;T -&gt; byte (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.byte<br /><br />--------------------<br />type byte = System.Byte<br /><br />Full name: Microsoft.FSharp.Core.byte</div>
-<div class="tip" id="fs6">namespace Microsoft</div>
-<div class="tip" id="fs7">namespace Microsoft.FSharp</div>
-<div class="tip" id="fs8">type &#39;T list = List&lt;&#39;T&gt;<br /><br />Full name: Microsoft.FSharp.Collections.list&lt;_&gt;</div>
-<div class="tip" id="fs9">Multiple items<br />val ref : value:&#39;T -&gt; &#39;T ref<br /><br />Full name: Microsoft.FSharp.Core.Operators.ref<br /><br />--------------------<br />type &#39;T ref = Ref&lt;&#39;T&gt;<br /><br />Full name: Microsoft.FSharp.Core.ref&lt;_&gt;</div>
+<div class="tip" id="fs6">namespace Microsoft.FSharp</div>
+<div class="tip" id="fs7">type &#39;T list = List&lt;&#39;T&gt;<br /><br />Full name: Microsoft.FSharp.Collections.list&lt;_&gt;</div>
+<div class="tip" id="fs8">Multiple items<br />val ref : value:&#39;T -&gt; &#39;T ref<br /><br />Full name: Microsoft.FSharp.Core.Operators.ref<br /><br />--------------------<br />type &#39;T ref = Ref&lt;&#39;T&gt;<br /><br />Full name: Microsoft.FSharp.Core.ref&lt;_&gt;</div>
 
         </div>
         <div class="span3">
@@ -551,23 +555,23 @@ to create lex buffers, either a <code>LexBuffer&lt;byte&gt;</code> for ASCII lex
           </a>
           <ul class="nav nav-list" id="menu" style="margin-top: 20px;">
             <li class="nav-header">FsLexYacc</li>
-            <li><a href="/FsLexYacc/index.html">Home page</a></li>
+            <li><a href="/index.html">Home page</a></li>
             <li class="divider"></li>
             <li><a href="https://www.nuget.org/packages/FsLexYacc/">Get Library via NuGet</a></li>
-            <li><a href="https://github.com/fsprojects/FsLexYacc">Source Code on GitHub</a></li>
-            <li><a href="https://github.com/fsprojects/FsLexYacc/blob/master/LICENSE.txt">License</a></li>
-            <li><a href="https://github.com/fsprojects/FsLexYacc/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
+            <li><a href="http://github.com/fsprojects/FsLexYacc">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/fsprojects/FsLexYacc/blob/master/LICENSE.txt">License</a></li>
+            <li><a href="http://github.com/fsprojects/FsLexYacc/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
             
             <li class="nav-header">Getting started</li>
-            <li><a href="/FsLexYacc/fslex.html">Using FsLex</a></li>
-            <li><a href="/FsLexYacc/fsyacc.html">Using FsYacc</a></li>
+            <li><a href="/fslex.html">Using FsLex</a></li>
+            <li><a href="/fsyacc.html">Using FsYacc</a></li>
 
             <li class="nav-header">Documentation</li>
-            <li><a href="/FsLexYacc/reference/index.html">API Reference</a></li>
+            <li><a href="/reference/index.html">API Reference</a></li>
           </ul>
         </div>
       </div>
     </div>
-    <a href="https://github.com/fsprojects/FsLexYacc"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+    <a href="http://github.com/fsprojects/FsLexYacc"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
   </body>
   </html>

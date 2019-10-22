@@ -5,22 +5,28 @@ FsLex and FsYacc tools, originally part of the "F# PowerPack"
 
 See https://fsprojects.github.io/FsLexYacc.
 
+* FsLexYacc.Runtime - [![NuGet Badge](https://buildstats.info/nuget/FsLexYacc.Runtime)](https://www.nuget.org/packages/FsLexYacc.Runtime)
+* FsLexYacc - [![NuGet Badge](https://buildstats.info/nuget/FsLexYacc)](https://www.nuget.org/packages/FsLexYacc)
+
 Build the project
 -----------------
 
-* Unix: Run *build.sh*  [![Travis build status](https://travis-ci.org/fsprojects/FsLexYacc.svg)](https://travis-ci.org/fsprojects/FsLexYacc)
-* Windows: Run *build.cmd* [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/061nqkynrysnyiv7)](https://ci.appveyor.com/project/fsgit/fslexyacc)
+[![Build Status](https://sergeytihon.visualstudio.com/FsLexYacc/_apis/build/status/fsprojects.FsLexYacc?branchName=master)](https://sergeytihon.visualstudio.com/FsLexYacc/_build/latest?definitionId=5&branchName=master)
 
-* [![NuGet Badge](https://buildstats.info/nuget/FsLexYacc.Runtime)](https://www.nuget.org/packages/FsLexYacc.Runtime) - `FsLexYacc.Runtime`
-* [![NuGet Badge](https://buildstats.info/nuget/FsLexYacc)](https://www.nuget.org/packages/FsLexYacc) - `FsLexYacc`
-
+* Unix: Run *build.sh*
+* Windows: Run *build.cmd*
 
 ### Generating docs
 
 This is currently done manually:
 
-    fsi docsrc\generate.fsx
-    
+    fsi docs\generate.fsx // on Windows
+    fsharpi docs\generate.fsx // on Unix
+
+Site can be tested locally using local dev server
+
+    dotnet serve -d docs/output --path-base /FsLexYacc
+
 ### Releasing
 
     .\build.cmd --target NuGet

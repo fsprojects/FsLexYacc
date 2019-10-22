@@ -6,9 +6,6 @@
 // Binaries that have XML documentation (in a corresponding generated XML file)
 let referenceBinaries = [  __SOURCE_DIRECTORY__ + "/../src/FsLexYacc.Runtime/bin/Release/net46/FsLexYacc.Runtime.dll" ]
 
-// Web site location for the generated documentation
-let website = "/FsLexYacc"
-
 let githubLink = "http://github.com/fsprojects/FsLexYacc"
 
 // Specify more information about your project
@@ -26,14 +23,12 @@ let info =
 #load "../packages/FSharp.Formatting/FSharp.Formatting.fsx"
 //#I "../../packages/FAKE/tools/"
 //#r "FakeLib.dll"
-//open Fake
 open System.IO
-//open Fake.FileHelper
 open FSharp.Literate
 open FSharp.MetadataFormat
 
 // Paths with template/source/docs locations
-let output     = __SOURCE_DIRECTORY__ + "/../docs"
+let output     = __SOURCE_DIRECTORY__ + "/output"
 let contentIn  = __SOURCE_DIRECTORY__ + "/content"
 let files      = __SOURCE_DIRECTORY__ + "/files"
 let templates  = __SOURCE_DIRECTORY__ + "/templates"
@@ -44,11 +39,7 @@ let contentOut = output + "/content"
 
 // When called from 'build.fsx', use the public project URL as <root>
 // otherwise, use the current 'output' directory.
-#if RELEASE
-let root = website
-#else
-let root = "file://" + output
-#endif
+let root = "/FsLexYacc"
 
 // Where to look for *.csproj templates (in this order)
 let layoutRoots =
@@ -58,13 +49,14 @@ let layoutRoots =
 let rec copyRecursive dir1 dir2 = 
   Directory.CreateDirectory dir2 |> ignore
   for subdir1 in Directory.EnumerateDirectories dir1 do
-       let subdir2 = Path.Combine(dir2, Path.GetDirectoryName subdir1)
+       let subdir2 = Path.Combine(dir2, Path.GetFileName subdir1)
        copyRecursive subdir1 subdir2
-  for file in Directory.EnumerateFiles dir1 do
+  for file in Directory.GetFiles dir1 do
        File.Copy(file, file.Replace(dir1, dir2), true)
 
 // Copy static files and CSS + JS from F# Formatting
 let copyFiles () =
+  copyRecursive files output
   copyRecursive (formatting + "/styles") contentOut
 
 // Build documentation from `fsx` and `md` files in `docsrc/content` to `docs`
@@ -89,6 +81,7 @@ let buildReference () =
         publicOnly = true )
 
 // Generate
+Directory.Delete(output, true)
 copyFiles()
 buildDocumentation()
 buildReference()

@@ -8,7 +8,7 @@ See https://fsprojects.github.io/FsLexYacc.
 Build the project
 -----------------
 
-[![Build Status](https://sergeytihon.visualstudio.com/sergeytihon/_apis/build/status/fsprojects.FsLexYacc?branchName=master)](https://sergeytihon.visualstudio.com/sergeytihon/_build/latest?definitionId=4&branchName=master)
+[![Build Status](https://sergeytihon.visualstudio.com/FsLexYacc/_apis/build/status/fsprojects.FsLexYacc?branchName=master)](https://sergeytihon.visualstudio.com/FsLexYacc/_build/latest?definitionId=5&branchName=master)
 
 * Unix: Run *build.sh*
 * Windows: Run *build.cmd*

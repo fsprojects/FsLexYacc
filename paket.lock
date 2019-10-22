@@ -8,8 +8,3 @@ NUGET
       FSharpVSPowerTools.Core (>= 2.3 < 2.4)
     FSharpVSPowerTools.Core (2.3)
       FSharp.Compiler.Service (>= 2.0.0.3)
-    FsLexYacc (9.1)
-      FSharp.Core (>= 4.3.4)
-      FsLexYacc.Runtime (>= 9.1 < 9.2)
-    FsLexYacc.Runtime (9.1)
-      FSharp.Core (>= 4.3.4)

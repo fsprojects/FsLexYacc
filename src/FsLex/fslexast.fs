@@ -275,7 +275,12 @@ type internal NfaNodeIdSet(nodes: NfaNodeIdSetBuilder) =
 
     override x.Equals(y:obj) = 
         match y with 
-        | :? NfaNodeIdSet as y -> x.Representation = y.Representation
+        | :? NfaNodeIdSet as y ->
+            let xr = x.Representation
+            let yr = y.Representation
+            let n = yr.Length
+            let rec go i = (i >= n) || (xr.[i] = yr.[i] && go (i+1))
+            xr.Length = n && go 0
         | _ -> false
 
     override x.GetHashCode() = hash s

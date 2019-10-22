@@ -1,4 +1,4 @@
-#### 9.1.0 - 12 April, 2019
+#### 9.1.0 - 22 October, 2019
 * Make async lexing obsolete
 * Restart doc generation (manually)
 

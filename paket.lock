@@ -13,5 +13,3 @@ NUGET
       FsLexYacc.Runtime (>= 9.0.2 < 9.1)
     FsLexYacc.Runtime (9.0.2)
       FSharp.Core (>= 4.3.4)
-    NUnit (2.6.3)
-    NUnit.Runners (2.6.3)

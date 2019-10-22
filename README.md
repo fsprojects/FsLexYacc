@@ -5,6 +5,9 @@ FsLex and FsYacc tools, originally part of the "F# PowerPack"
 
 See https://fsprojects.github.io/FsLexYacc.
 
+* FsLexYacc.Runtime - [![NuGet Badge](https://buildstats.info/nuget/FsLexYacc.Runtime)](https://www.nuget.org/packages/FsLexYacc.Runtime)
+* FsLexYacc - [![NuGet Badge](https://buildstats.info/nuget/FsLexYacc)](https://www.nuget.org/packages/FsLexYacc)
+
 Build the project
 -----------------
 
@@ -13,15 +16,12 @@ Build the project
 * Unix: Run *build.sh*
 * Windows: Run *build.cmd*
 
-* [![NuGet Badge](https://buildstats.info/nuget/FsLexYacc.Runtime)](https://www.nuget.org/packages/FsLexYacc.Runtime) - FsLexYacc.Runtime
-* [![NuGet Badge](https://buildstats.info/nuget/FsLexYacc)](https://www.nuget.org/packages/FsLexYacc) - FsLexYacc
-
-
 ### Generating docs
 
 This is currently done manually:
 
-    fsi docs\generate.fsx
+    fsi docs\generate.fsx // on Windows
+    fsharpi docs\generate.fsx // on Unix
 
 Site can be tested locally using local dev server
 

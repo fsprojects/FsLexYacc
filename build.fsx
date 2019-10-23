@@ -105,14 +105,32 @@ Target.create "CleanDocs" (fun _ ->
 // Build library & test project
 
 Target.create "Build" (fun _ ->
-    for project in ["src/FsLex/fslex.fsproj"; "src/FsYacc/fsyacc.fsproj"] do
-      for framework in ["net46"; "netcoreapp2.0"] do 
-        DotNet.publish (fun opts -> { 
-            opts with 
-                Common = { opts.Common with CustomParams = Some "/v:n" }
-                Configuration = DotNet.BuildConfiguration.Release
-                Framework = Some framework 
-        }) project
+    for framework in ["net46"; "netcoreapp2.0"] do
+        [
+            "src/FsLex/fslexlex.fs"
+            "src/FsLex/fslexpars.fs"
+            "src/FsLex/fslexpars.fsi"
+            "src/FsYacc/fsyacclex.fs"
+            "src/FsYacc/fsyaccpars.fs"
+            "src/FsYacc/fsyaccpars.fsi"
+        ] |> File.deleteAll
+
+        for project in ["src/FsLex/fslex.fsproj"; "src/FsYacc/fsyacc.fsproj"] do
+            DotNet.publish (fun opts -> { 
+                opts with 
+                    Common = { opts.Common with CustomParams = Some "/v:n" }
+                    Configuration = DotNet.BuildConfiguration.Release
+                    Framework = Some framework 
+            }) project
+
+    [
+        "tests/JsonLexAndYaccExample/Lexer.fs"
+        "tests/JsonLexAndYaccExample/Parser.fs"
+        "tests/JsonLexAndYaccExample/Parser.fsi"
+        "tests/LexAndYaccMiniProject/Lexer.fs"
+        "tests/LexAndYaccMiniProject/Parser.fs"
+        "tests/LexAndYaccMiniProject/Parser.fsi"
+    ] |> File.deleteAll
 
     for project in [ "src/FsLexYacc.Runtime/FsLexYacc.Runtime.fsproj"
                      "tests/JsonLexAndYaccExample/JsonLexAndYaccExample.fsproj"

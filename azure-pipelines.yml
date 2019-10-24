@@ -11,16 +11,11 @@ pool:
   vmImage: $(imageName)
 
 steps:
-- task: UseDotNet@2 # we need it because we target netcoreapp2.0
-  displayName: Install .NET Core 2.2 SDK
-  inputs:
-    packageType: 'sdk'
-    version: '2.2.402'
 - task: UseDotNet@2
-  displayName: 'Install .NET Core 3.0 SDK'
+  displayName: 'Install .NET Core SDK (based on global.json)'
   inputs:
     packageType: 'sdk'
-    version: '3.0.100'
+    useGlobalJson: true
     installationPath: $(Agent.ToolsDirectory)/dotnet
 - bash: ./build.sh
   condition: or( eq( variables['Agent.OS'], 'Darwin' ), eq( variables['Agent.OS'], 'Linux' ))

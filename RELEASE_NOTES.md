@@ -1,3 +1,6 @@
+#### 10.0.0-beta - 22 October, 2019
+* Migration to netcoreapp3.0
+
 #### 9.1.0 - 22 October, 2019
 * Make async lexing obsolete
 * Restart doc generation (manually)

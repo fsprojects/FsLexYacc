@@ -13,9 +13,9 @@ tags
   F#, fsharp, yacc, fsyacc, lex, parsing, lexing, fslex
 files
   ../src/FsLex/bin/Release/net46/publish ==> build/fslex/net46
-  ../src/FsLex/bin/Release/netcoreapp2.0/publish ==> build/fslex/netcoreapp2.0
+  ../src/FsLex/bin/Release/netcoreapp3.0/publish ==> build/fslex/netcoreapp3.0
   ../src/FsYacc/bin/Release/net46/publish ==> build/fsyacc/net46
-  ../src/FsYacc/bin/Release/netcoreapp2.0/publish ==> build/fsyacc/netcoreapp2.0
+  ../src/FsYacc/bin/Release/netcoreapp3.0/publish ==> build/fsyacc/netcoreapp3.0
   ../src/FsLexYacc.Build.Tasks/FsLexYacc.targets ==> build
   ../src/FsLexYacc.Runtime/Lexing.fsi ==> src/fslex
   ../src/FsLexYacc.Runtime/Lexing.fs ==> src/fslex

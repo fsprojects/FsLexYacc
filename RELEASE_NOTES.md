@@ -1,4 +1,4 @@
-#### 10.0.0-beta - 22 October, 2019
+#### 10.0.0-beta2 - 22 October, 2019
 * Migration to netcoreapp3.0
 
 #### 9.1.0 - 22 October, 2019

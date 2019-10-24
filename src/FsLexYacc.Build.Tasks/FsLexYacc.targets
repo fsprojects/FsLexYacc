@@ -22,9 +22,9 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 		<FsYaccToolExe Condition="'$(FsYaccToolExe)' == '' AND '$(MSBuildRuntimeType)'!='Core'">fsyacc.exe</FsYaccToolExe>
 		<FsLexYaccToolRunner Condition="'$(UseFsLexYaccToolRunner)' != 'false' AND '$(FsLexYaccToolRunner)' == '' AND '$(MSBuildRuntimeType)'!='Core' AND '$(OS)' == 'Unix'">mono </FsLexYaccToolRunner>
 
-		<FsLexToolPath Condition="'$(FsLexToolPath)' == '' AND '$(MSBuildRuntimeType)'=='Core'">$(MSBuildThisFileDirectory)/fslex/netcoreapp2.0</FsLexToolPath>
+		<FsLexToolPath Condition="'$(FsLexToolPath)' == '' AND '$(MSBuildRuntimeType)'=='Core'">$(MSBuildThisFileDirectory)/fslex/netcoreapp3.0</FsLexToolPath>
 		<FsLexToolExe Condition="'$(FsLexToolExe)' == '' AND '$(MSBuildRuntimeType)'=='Core'">fslex.dll</FsLexToolExe>
-		<FsYaccToolPath Condition="'$(FsYaccToolPath)' == '' AND '$(MSBuildRuntimeType)'=='Core'">$(MSBuildThisFileDirectory)/fsyacc/netcoreapp2.0</FsYaccToolPath>
+		<FsYaccToolPath Condition="'$(FsYaccToolPath)' == '' AND '$(MSBuildRuntimeType)'=='Core'">$(MSBuildThisFileDirectory)/fsyacc/netcoreapp3.0</FsYaccToolPath>
 		<FsYaccToolExe Condition="'$(FsYaccToolExe)' == '' AND '$(MSBuildRuntimeType)'=='Core'">fsyacc.dll</FsYaccToolExe>
 		<FsLexYaccToolRunner Condition="'$(UseFsLexYaccToolRunner)' != 'false' AND '$(FsLexYaccToolRunner)' == '' AND '$(MSBuildRuntimeType)'=='Core'">dotnet </FsLexYaccToolRunner>
 	</PropertyGroup>

@@ -1,5 +1,5 @@
-#### 10.0.0-beta2 - 22 October, 2019
-* Migration to netcoreapp3.0
+#### 10.0.0 - 24 October, 2019
+* Migration to netcoreapp3.0 based versions of FxLex and FsYacc
 
 #### 9.1.0 - 22 October, 2019
 * Make async lexing obsolete

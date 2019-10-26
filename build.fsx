@@ -154,25 +154,22 @@ Target.create "Build" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Build a NuGet package
 
-let paketToolPath = __SOURCE_DIRECTORY__ + (if Environment.isWindows then "\\.paket\\paket.exe" else "/.paket/paket")
-
 Target.create "NuGet" (fun _ ->
+    let toolType = ToolType.CreateLocalTool()
     Paket.pack (fun p -> 
-        printfn "p.ToolPath = %A" p.ToolPath
         { p with 
+            ToolType = toolType
             TemplateFile = "nuget/FsLexYacc.Runtime.template"
             Version = release.NugetVersion
             OutputPath = "bin"
-            ToolPath = paketToolPath
             ReleaseNotes = String.toLines release.Notes })
     Paket.pack (fun p -> 
         { p with 
+            ToolType = toolType
             TemplateFile = "nuget/FsLexYacc.template"
             Version = release.NugetVersion
             OutputPath = "bin"
-            ToolPath = paketToolPath
             ReleaseNotes = String.toLines release.Notes })
-
 )
 
 // --------------------------------------------------------------------------------------

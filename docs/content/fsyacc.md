@@ -173,4 +173,4 @@ Notes on OCaml Compatibility
 
 For `FsYacc` you just add parentheses:
 
-    %type < (context -> context)) > toplevel
+    %type < (context -> context) > toplevel

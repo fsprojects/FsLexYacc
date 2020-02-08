@@ -66,11 +66,9 @@ let usage =
 
 let _ = ArgParser.Parse(usage,(fun x -> match !input with Some _ -> failwith "more than one input given" | None -> input := Some x),"fsyacc <filename>")
 
-let output_int (os: #TextWriter) (n:int) = os.Write(string n)
+let output_int os n = fprintf os "%d" n
 
-let outputCodedUInt16 (os: #TextWriter)  (n:int) = 
-  os.Write n;
-  os.Write "us; ";
+let outputCodedUInt16 os n = fprintf os "%dus; " n
 
 let shiftFlag = 0x0000
 let reduceFlag = 0x4000
@@ -453,7 +451,7 @@ let main() =
                       else None
                   | NonTerminal nt -> Some (getType nt) 
               match tyopt with 
-              | Some ty -> cprintfn cos "            let _%d = (let data = parseState.GetInput(%d) in (Microsoft.FSharp.Core.Operators.unbox data : %s)) in" (i+1) (i+1) ty
+              | Some ty -> cprintfn cos "            let _%d = parseState.GetInput(%d) :?> %s in" (i+1) (i+1) ty
               | None -> ())
           cprintfn cos "            Microsoft.FSharp.Core.Operators.box" 
           cprintfn cos "                (";
@@ -513,7 +511,7 @@ let main() =
           failwith ("a %type declaration is required for for start token "+id);
         let ty = types.[id] in 
         cprintfn cos "let %s lexer lexbuf : %s =" id ty;
-        cprintfn cos "    Microsoft.FSharp.Core.Operators.unbox tables.Interpret(lexer, lexbuf, %d))" startState
+        cprintfn cos "    engine lexer lexbuf %d :?> _" startState
 
   for id in spec.StartSymbols do
       if not (types.ContainsKey id) then 

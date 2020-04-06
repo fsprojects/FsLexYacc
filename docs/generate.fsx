@@ -3,18 +3,7 @@
 // (the generated documentation is stored in the 'docs/output' directory)
 // --------------------------------------------------------------------------------------
 
-#I __SOURCE_DIRECTORY__
-#I "../packages/FSharp.Formatting/lib/netstandard2.0"
-#r "FSharp.CodeFormat.dll"
-#r "FSharp.Literate.dll"
-#r "FSharp.Markdown.dll"
-#r "FSharp.MetadataFormat.dll"
-#r "FSharp.Formatting.Common.dll"
-#r "Microsoft.AspNetCore.Razor.dll"
-#r "Microsoft.AspNetCore.Razor.Runtime.dll"
-#r "Microsoft.AspNetCore.Razor.Language.dll"
-#r "RazorEngine.NetCore.dll"
-#r "FSharp.Formatting.Razor.dll"
+#load "../packages/FSharp.Formatting/FSharp.Formatting.fsx"
 
 open System.Collections.Generic
 open System.IO
@@ -37,25 +26,18 @@ let rec copyRecursive dir1 dir2 =
 // Settings
 // --------------------------------------------------------------------------------------
 
-// Web site location for the generated documentation
-#if TESTING
-let website = __SOURCE_DIRECTORY__ + "/../output" |> Path.GetFullPath |> Uri |> string
-#else
-let website = "/FSharp.Formatting"
-#endif
+// Binaries that have XML documentation (in a corresponding generated XML file)
+let referenceBinaries = [  __SOURCE_DIRECTORY__ + "/../src/FsLexYacc.Runtime/bin/Release/netstandard2.0/FsLexYacc.Runtime.dll" ]
 
-let githubLink = "http://github.com/fsprojects/FSharp.Formatting"
+let githubLink = "http://github.com/fsprojects/FsLexYacc"
 
 // Specify more information about your project
 let info =
-  [ "project-name", "FSharp.Formatting"
-    "project-author", "Tomas Petricek"
-    "project-summary", "A package for building great F# documentation, samples and blogs"
+  [ "project-name", "FsLexYacc"
+    "project-author", "FsLexYacc contributors"
+    "project-summary", "Lex and Yacc for F#"
     "project-github", githubLink
-    "project-nuget", "http://nuget.org/packages/FSharp.Formatting" ]
-
-let referenceBinaries =
-  [ "FSharp.CodeFormat.dll"; "FSharp.Literate.dll"; "FSharp.Markdown.dll"; "FSharp.MetadataFormat.dll"; "FSharp.Formatting.Common.dll" ]
+    "project-nuget", "https://www.nuget.org/packages/FsLexYacc/" ]
 
 // --------------------------------------------------------------------------------------
 // For typical project, no changes are needed below
@@ -63,23 +45,23 @@ let referenceBinaries =
 
 // When called from 'build.fsx', use the public project URL as <root>
 // otherwise, use the current 'output' directory.
-let root = website
+let root = "/FsLexYacc"
 
 Directory.SetCurrentDirectory (__SOURCE_DIRECTORY__)
 
 // Paths with template/source/output locations
-let bin        = "../../src/FSharp.Formatting/bin/Release/netstandard2.0"
-let content    = "../content"
-let output     = "../output"
-let files      = "../files"
-let templates  = "."
-let formatting = "../../misc/"
-let docTemplate = formatting + "/" + "templates/docpage.cshtml"
-let docTemplateSbS = templates + "/" + "docpage-sidebyside.cshtml"
-let referenceOut = (output + "/" + "reference")
+let bin        = __SOURCE_DIRECTORY__ + "/../src/FsLexYacc.Runtime/bin/Release/netstandard2.0"
+let output     = __SOURCE_DIRECTORY__ + "/output"
+let contentIn  = __SOURCE_DIRECTORY__ + "/content"
+let files      = __SOURCE_DIRECTORY__ + "/files"
+let templates  = __SOURCE_DIRECTORY__ + "/templates"
+let formatting = __SOURCE_DIRECTORY__ + "/../packages/FSharp.Formatting/"
+let docTemplate = formatting + "/templates/docpage.cshtml"
+let referenceOut = output + "/reference"
+let contentOut = output + "/content"
 
 // Where to look for *.csproj templates (in this order)
-let layoutRootsAll = new System.Collections.Generic.Dictionary<string, string list>()
+let layoutRootsAll = Dictionary<string, string list>()
 layoutRootsAll.Add("en",[ templates; formatting + "/" + "templates"
                           formatting + "/" + "templates/reference" ])
 subDirectories templates
@@ -91,50 +73,45 @@ subDirectories templates
                                    formatting + "/" + "templates/reference" ]))
 
 // Copy static files and CSS + JS from F# Formatting
-let copyFiles () = copyRecursive files output
-
-let binaries =
-    referenceBinaries
-    |> List.ofSeq
-    |> List.map (fun b -> bin + "/" + b)
+let copyFiles () =
+  copyRecursive files output
+  copyRecursive (formatting + "/styles") contentOut
 
 let libDirs = [bin]
 
 // Build API reference from XML comments
 let buildReference () =
-  printfn "building reference docs..."
-  if Directory.Exists referenceOut then Directory.Delete(referenceOut, true)
-  Directory.CreateDirectory referenceOut |> ignore
-  RazorMetadataFormat.Generate
-    ( binaries, output + "/" + "reference", layoutRootsAll.["en"],
-      parameters = ("root", root)::info,
-      sourceRepo = githubLink + "/" + "tree/master",
-      sourceFolder = __SOURCE_DIRECTORY__ + "/" + ".." + "/" + "..",
-      publicOnly = true, libDirs = libDirs)
+    printfn "building reference docs..."
+    if Directory.Exists referenceOut then Directory.Delete(referenceOut, true)
+    Directory.CreateDirectory referenceOut |> ignore
+    RazorMetadataFormat.Generate
+        ( referenceBinaries, output + "/" + "reference", layoutRootsAll.["en"],
+          parameters = ("root", root)::info,
+          sourceRepo = githubLink + "/" + "tree/master",
+          sourceFolder = __SOURCE_DIRECTORY__ + "/" + ".." + "/" + "..",
+          publicOnly = true, libDirs = libDirs)
 
 // Build documentation from `fsx` and `md` files in `docs/content`
 let buildDocumentation () =
-  printfn "building docs..."
-  let subdirs =
-    [ content + "/" + "sidebyside", docTemplateSbS
-      content, docTemplate; ]
-  for dir, template in subdirs do
-    let sub = "." // Everything goes into the same output directory here
-    let langSpecificPath(lang, path:string) =
-        path.Split([|'/'; '\\'|], System.StringSplitOptions.RemoveEmptyEntries)
-        |> Array.exists(fun i -> i = lang)
-    let layoutRoots =
-        let key = layoutRootsAll.Keys |> Seq.tryFind (fun i -> langSpecificPath(i, dir))
-        match key with
-        | Some lang -> layoutRootsAll.[lang]
-        | None -> layoutRootsAll.["en"] // "en" is the default language
-    RazorLiterate.ProcessDirectory
-      ( dir, template, output + "/" + sub, replacements = ("root", root)::info,
-        layoutRoots = layoutRoots,
-        generateAnchors = true,
-        processRecursive = false,
-        includeSource = true
-      )
+    printfn "building docs..."
+    let subdirs = [ (contentIn, docTemplate) ]
+    for dir, template in subdirs do
+        let sub = "." // Everything goes into the same output directory here
+        let langSpecificPath(lang, path:string) =
+            path.Split([|'/'; '\\'|], System.StringSplitOptions.RemoveEmptyEntries)
+            |> Array.exists(fun i -> i = lang)
+        let layoutRoots =
+            let key = layoutRootsAll.Keys |> Seq.tryFind (fun i -> langSpecificPath(i, dir))
+            match key with
+            | Some lang -> layoutRootsAll.[lang]
+            | None -> layoutRootsAll.["en"] // "en" is the default language
+        RazorLiterate.ProcessDirectory
+            ( dir, template, output + "/" + sub, replacements = ("root", root)::info,
+              layoutRoots = layoutRoots,
+              generateAnchors = true,
+              processRecursive = false,
+              includeSource = true
+            )
 
 // Generate
 copyFiles()

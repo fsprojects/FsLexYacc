@@ -105,7 +105,7 @@ Target.create "CleanDocs" (fun _ ->
 // Build library & test project
 
 Target.create "Build" (fun _ ->
-    for framework in ["net46"; "netcoreapp3.0"] do
+    for framework in ["net472"; "netcoreapp3.1"] do
         [
             "src/FsLex/fslexlex.fs"
             "src/FsLex/fslexpars.fs"

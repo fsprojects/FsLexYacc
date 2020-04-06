@@ -16,15 +16,15 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 	<PropertyGroup>
 		<CompileDependsOn>CallFsLex;CallFsYacc;$(CompileDependsOn)</CompileDependsOn>
 
-		<FsLexToolPath Condition="'$(FsLexToolPath)' == '' AND '$(MSBuildRuntimeType)'!='Core'">$(MSBuildThisFileDirectory)/fslex/net46</FsLexToolPath>
+		<FsLexToolPath Condition="'$(FsLexToolPath)' == '' AND '$(MSBuildRuntimeType)'!='Core'">$(MSBuildThisFileDirectory)/fslex/net472</FsLexToolPath>
 		<FsLexToolExe Condition="'$(FsLexToolExe)' == '' AND '$(MSBuildRuntimeType)'!='Core'">fslex.exe</FsLexToolExe>
-		<FsYaccToolPath Condition="'$(FsYaccToolPath)' == '' AND '$(MSBuildRuntimeType)'!='Core'">$(MSBuildThisFileDirectory)/fsyacc/net46</FsYaccToolPath>
+		<FsYaccToolPath Condition="'$(FsYaccToolPath)' == '' AND '$(MSBuildRuntimeType)'!='Core'">$(MSBuildThisFileDirectory)/fsyacc/net472</FsYaccToolPath>
 		<FsYaccToolExe Condition="'$(FsYaccToolExe)' == '' AND '$(MSBuildRuntimeType)'!='Core'">fsyacc.exe</FsYaccToolExe>
 		<FsLexYaccToolRunner Condition="'$(UseFsLexYaccToolRunner)' != 'false' AND '$(FsLexYaccToolRunner)' == '' AND '$(MSBuildRuntimeType)'!='Core' AND '$(OS)' == 'Unix'">mono </FsLexYaccToolRunner>
 
-		<FsLexToolPath Condition="'$(FsLexToolPath)' == '' AND '$(MSBuildRuntimeType)'=='Core'">$(MSBuildThisFileDirectory)/fslex/netcoreapp3.0</FsLexToolPath>
+		<FsLexToolPath Condition="'$(FsLexToolPath)' == '' AND '$(MSBuildRuntimeType)'=='Core'">$(MSBuildThisFileDirectory)/fslex/netcoreapp3.1</FsLexToolPath>
 		<FsLexToolExe Condition="'$(FsLexToolExe)' == '' AND '$(MSBuildRuntimeType)'=='Core'">fslex.dll</FsLexToolExe>
-		<FsYaccToolPath Condition="'$(FsYaccToolPath)' == '' AND '$(MSBuildRuntimeType)'=='Core'">$(MSBuildThisFileDirectory)/fsyacc/netcoreapp3.0</FsYaccToolPath>
+		<FsYaccToolPath Condition="'$(FsYaccToolPath)' == '' AND '$(MSBuildRuntimeType)'=='Core'">$(MSBuildThisFileDirectory)/fsyacc/netcoreapp3.1</FsYaccToolPath>
 		<FsYaccToolExe Condition="'$(FsYaccToolExe)' == '' AND '$(MSBuildRuntimeType)'=='Core'">fsyacc.dll</FsYaccToolExe>
 		<FsLexYaccToolRunner Condition="'$(UseFsLexYaccToolRunner)' != 'false' AND '$(FsLexYaccToolRunner)' == '' AND '$(MSBuildRuntimeType)'=='Core'">dotnet </FsLexYaccToolRunner>
 	</PropertyGroup>

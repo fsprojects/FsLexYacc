@@ -1,6 +1,6 @@
 source https://www.nuget.org/api/v2/
 
-frameworks: net46, netstandard2.0, netcoreapp3.0
+frameworks: net472, netstandard2.0, netcoreapp3.1
 
 nuget FSharp.Formatting
 nuget FsLexYacc 10.0.0

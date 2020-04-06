@@ -3,7 +3,7 @@
   <Import Project="..\..\netfx.props" />
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net46;netcoreapp3.0</TargetFrameworks>
+    <TargetFrameworks>net472;netcoreapp3.1</TargetFrameworks>
     <DefineConstants>INTERNALIZED_FSLEXYACC_RUNTIME;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>

@@ -7,6 +7,9 @@ strategy:
     windows:
       imageName: 'windows-latest'
 
+trigger:
+- master
+
 pool:
   vmImage: $(imageName)
 

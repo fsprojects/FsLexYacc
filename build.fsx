@@ -1,6 +1,8 @@
 #r @"paket:
-source https://nuget.org/api/v2
+source https://api.nuget.org/v3/index.json
+
 framework netstandard2.0
+
 nuget Fake.Core.Target
 nuget Fake.Core.ReleaseNotes
 nuget Fake.DotNet.Cli
@@ -105,7 +107,7 @@ Target.create "CleanDocs" (fun _ ->
 // Build library & test project
 
 Target.create "Build" (fun _ ->
-    for framework in ["net472"; "netcoreapp3.1"] do
+    for framework in ["netcoreapp3.1"] do
         [
             "src/FsLex/fslexlex.fs"
             "src/FsLex/fslexpars.fs"

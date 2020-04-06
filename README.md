@@ -20,8 +20,7 @@ Build the project
 
 This is currently done manually:
 
-    fsi docs\generate.fsx // on Windows
-    fsharpi docs\generate.fsx // on Unix
+    dotnet fsi docs\generate.fsx // on Windows
 
 Site can be tested locally using local dev server
 

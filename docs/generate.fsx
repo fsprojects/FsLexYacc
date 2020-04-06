@@ -4,7 +4,7 @@
 // --------------------------------------------------------------------------------------
 
 // Binaries that have XML documentation (in a corresponding generated XML file)
-let referenceBinaries = [  __SOURCE_DIRECTORY__ + "/../src/FsLexYacc.Runtime/bin/Release/net46/FsLexYacc.Runtime.dll" ]
+let referenceBinaries = [  __SOURCE_DIRECTORY__ + "/../src/FsLexYacc.Runtime/bin/Release/net472/FsLexYacc.Runtime.dll" ]
 
 let githubLink = "http://github.com/fsprojects/FsLexYacc"
 

@@ -5,8 +5,8 @@ open System
 open Fake.FscHelper
 open System.IO
 
-["../../src/FsLexYacc.Runtime/bin/Release/net46/FsLexYacc.Runtime.dll"
- "../../src/FsLex/bin/Release/net46/FSharp.Core.dll"]
+["../../src/FsLexYacc.Runtime/bin/Release/net472/FsLexYacc.Runtime.dll"
+ "../../src/FsLex/bin/Release/net472/FSharp.Core.dll"]
 |> FileHelper.CopyTo "./"
 
 let run exe args =
@@ -15,8 +15,8 @@ let run exe args =
         x.FileName <- exe
         x.Arguments <- args)
     then failwithf "'%s' failed '%s'" exe args
-let fsLex  = run "../../src/FsLex/bin/Release/net46/fslex.exe"
-let fsYacc = run "../../src/FsYacc/bin/Release/net46/fsyacc.exe"
+let fsLex  = run "../../src/FsLex/bin/Release/net472/fslex.exe"
+let fsYacc = run "../../src/FsYacc/bin/Release/net472/fsyacc.exe"
 
 let fsc output files =
     traceImportant <| sprintf "Building '%s' with from %A" output files
@@ -25,7 +25,7 @@ let fsc output files =
         { p with References = ["FsLexYacc.Runtime.dll"
                                "System.Runtime"
                                "System.IO"
-                               "../../src/FsLex/bin/Release/net46/FSharp.Core.dll"]
+                               "../../src/FsLex/bin/Release/net472/FSharp.Core.dll"]
                  Output = output; Debug = true; FscTarget = FscTarget.Exe })
     File.WriteAllText(output |> FileHelper.changeExt ".exe.config","""<?xml version="1.0" encoding="utf-8"?>
 <configuration>

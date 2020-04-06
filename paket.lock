@@ -1,4 +1,4 @@
-RESTRICTION: || (== net46) (== netcoreapp3.0) (== netstandard2.0)
+RESTRICTION: || (== net472) (== netcoreapp3.1) (== netstandard2.0)
 NUGET
   remote: https://www.nuget.org/api/v2
     FSharp.Compiler.Service (2.0.0.6)

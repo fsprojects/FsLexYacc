@@ -3,11 +3,11 @@
   <Import Project="..\..\netfx.props" />
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net46;netcoreapp3.0</TargetFrameworks>
-    <FsLexToolPath Condition="'$(MSBuildRuntimeType)'!='Core'">..\..\src\FsLex\bin\$(Configuration)\net46</FsLexToolPath>
-    <FsYaccToolPath Condition="'$(MSBuildRuntimeType)'!='Core'" >..\..\src\FsYacc\bin\$(Configuration)\net46</FsYaccToolPath>
-    <FsLexToolPath Condition="'$(MSBuildRuntimeType)'=='Core'">..\..\src\FsLex\bin\$(Configuration)\netcoreapp3.0</FsLexToolPath>
-    <FsYaccToolPath Condition="'$(MSBuildRuntimeType)'=='Core'" >..\..\src\FsYacc\bin\$(Configuration)\netcoreapp3.0</FsYaccToolPath>
+    <TargetFrameworks>net472;netcoreapp3.1</TargetFrameworks>
+    <FsLexToolPath Condition="'$(MSBuildRuntimeType)'!='Core'">..\..\src\FsLex\bin\$(Configuration)\net472</FsLexToolPath>
+    <FsYaccToolPath Condition="'$(MSBuildRuntimeType)'!='Core'" >..\..\src\FsYacc\bin\$(Configuration)\net472</FsYaccToolPath>
+    <FsLexToolPath Condition="'$(MSBuildRuntimeType)'=='Core'">..\..\src\FsLex\bin\$(Configuration)\netcoreapp3.1</FsLexToolPath>
+    <FsYaccToolPath Condition="'$(MSBuildRuntimeType)'=='Core'" >..\..\src\FsYacc\bin\$(Configuration)\netcoreapp3.1</FsYaccToolPath>
   </PropertyGroup>
   <ItemGroup>
     <FsYacc Include="Parser.fsy">

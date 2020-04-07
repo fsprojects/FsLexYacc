@@ -1,8 +1,4 @@
 #r @"paket:
-source https://api.nuget.org/v3/index.json
-
-framework netstandard2.0
-
 nuget Fake.Core.Target
 nuget Fake.Core.ReleaseNotes
 nuget Fake.DotNet.Cli

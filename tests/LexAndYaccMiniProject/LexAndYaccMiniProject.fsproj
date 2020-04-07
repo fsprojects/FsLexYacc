@@ -19,6 +19,9 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="4.7.1" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\src\FsLexYacc.Runtime\FsLexYacc.Runtime.fsproj" />
   </ItemGroup>
   <Import Project="..\..\src\FsLexYacc.Build.Tasks\FsLexYacc.targets"  />

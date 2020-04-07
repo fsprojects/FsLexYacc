@@ -1,8 +1,7 @@
 #r @"paket:
-source https://nuget.org/api/v2
-framework netstandard2.0
 nuget Fake.Core.Target
 nuget Fake.Core.ReleaseNotes
+nuget Fake.IO.FileSystem
 nuget Fake.DotNet.Cli
 nuget Fake.DotNet.AssemblyInfoFile
 nuget Fake.DotNet.Paket
@@ -27,6 +26,7 @@ open Fake.Core
 open Fake.Tools.Git
 open Fake.DotNet
 open Fake.IO
+open Fake.IO.FileSystemOperators
 open Fake.IO.Globbing.Operators
 open System
 open System.IO
@@ -105,7 +105,7 @@ Target.create "CleanDocs" (fun _ ->
 // Build library & test project
 
 Target.create "Build" (fun _ ->
-    for framework in ["net472"; "netcoreapp3.1"] do
+    for framework in ["netcoreapp3.1"] do
         [
             "src/FsLex/fslexlex.fs"
             "src/FsLex/fslexpars.fs"
@@ -175,9 +175,15 @@ Target.create "NuGet" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Generate the documentation
 
-//Target.create "GenerateDocs" (fun _ ->
-//    executeFSIWithArgs "docs/tools" "generate.fsx" ["--define:RELEASE"] [] |> ignore
-//)
+Target.create "GenerateDocs" (fun _ ->
+    let result =
+        DotNet.exec
+            (fun p -> { p with WorkingDirectory = __SOURCE_DIRECTORY__ @@ "docs" })
+            "fsi"
+            "--define:RELEASE --define:REFERENCE --define:HELP --exec generate.fsx"
+
+    if not result.OK then failwith "error generating docs"
+)
 
 // --------------------------------------------------------------------------------------
 // Release Scripts
@@ -207,10 +213,10 @@ Target.create "All" ignore
 //  =?> ("RunOldFsYaccTests", isWindows)
   ==> "All"
 
-//"All" 
-//  ==> "CleanDocs"
-//  ==> "GenerateDocs"
-//  ==> "ReleaseDocs"
+"All" 
+ ==> "CleanDocs"
+ ==> "GenerateDocs"
+ ==> "ReleaseDocs"
 
 "Build"
   ==> "NuGet"

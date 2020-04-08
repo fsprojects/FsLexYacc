@@ -145,11 +145,12 @@ Target.create "Build" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Run the unit tests using test runner
 
-//Target.create "RunOldFsYaccTests" (fun _ ->
-//    let result = executeFSIWithArgs @"tests\fsyacc" "OldFsYaccTests.fsx" ["--define:RELEASE"] []
-//    if not result then
-//        failwith "Old FsLexYacc tests were failed"
-//)
+Target.create "RunOldFsYaccTests" (fun _ ->
+    let script = Path.Combine(__SOURCE_DIRECTORY__, "tests", "fsyacc", "OldFsYaccTests.fsx")
+    let result = DotNet.exec id "fake" ("run " + script)
+    if not result.OK then
+        failwith "Old FsLexYacc tests were failed"
+)
 
 // --------------------------------------------------------------------------------------
 // Build a NuGet package
@@ -210,7 +211,7 @@ Target.create "All" ignore
 "Clean"
   ==>  "AssemblyInfo"
   ==>  "Build"
-//  =?> ("RunOldFsYaccTests", isWindows)
+  ==> "RunOldFsYaccTests"
   ==> "All"
 
 "All" 

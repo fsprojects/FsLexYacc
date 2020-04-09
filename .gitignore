@@ -197,4 +197,11 @@ tests/fsyacc/test1.input1.bsl.err
 tests/fsyacc/test1compat.exe.config
 tests/fsyacc/test2.exe.config
 tests/fsyacc/test2compat.exe.config
+tests/fsyacc/Test1/test1.fs
+tests/fsyacc/Test1/test1lex.fs
+
 .paket
+
+.idea/
+.vs/
+.ionide/

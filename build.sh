@@ -5,6 +5,5 @@ then
 else
   dotnet tool restore
   dotnet paket restore
-  dotnet tool install paket --tool-path .paket # TODO: remove in the future, but we need it for `Paket.pack` for now
   dotnet fake run build.fsx $@
 fi

@@ -15,16 +15,9 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup>
 		<CompileDependsOn>CallFsLex;CallFsYacc;$(CompileDependsOn)</CompileDependsOn>
-
-		<FsLexToolPath Condition="'$(FsLexToolPath)' == '' AND '$(MSBuildRuntimeType)'!='Core'">$(MSBuildThisFileDirectory)/fslex/net46</FsLexToolPath>
-		<FsLexToolExe Condition="'$(FsLexToolExe)' == '' AND '$(MSBuildRuntimeType)'!='Core'">fslex.exe</FsLexToolExe>
-		<FsYaccToolPath Condition="'$(FsYaccToolPath)' == '' AND '$(MSBuildRuntimeType)'!='Core'">$(MSBuildThisFileDirectory)/fsyacc/net46</FsYaccToolPath>
-		<FsYaccToolExe Condition="'$(FsYaccToolExe)' == '' AND '$(MSBuildRuntimeType)'!='Core'">fsyacc.exe</FsYaccToolExe>
-		<FsLexYaccToolRunner Condition="'$(UseFsLexYaccToolRunner)' != 'false' AND '$(FsLexYaccToolRunner)' == '' AND '$(MSBuildRuntimeType)'!='Core' AND '$(OS)' == 'Unix'">mono </FsLexYaccToolRunner>
-
-		<FsLexToolPath Condition="'$(FsLexToolPath)' == '' AND '$(MSBuildRuntimeType)'=='Core'">$(MSBuildThisFileDirectory)/fslex/netcoreapp2.0</FsLexToolPath>
+		<FsLexToolPath Condition="'$(FsLexToolPath)' == '' AND '$(MSBuildRuntimeType)'=='Core'">$(MSBuildThisFileDirectory)/fslex/netcoreapp3.1</FsLexToolPath>
 		<FsLexToolExe Condition="'$(FsLexToolExe)' == '' AND '$(MSBuildRuntimeType)'=='Core'">fslex.dll</FsLexToolExe>
-		<FsYaccToolPath Condition="'$(FsYaccToolPath)' == '' AND '$(MSBuildRuntimeType)'=='Core'">$(MSBuildThisFileDirectory)/fsyacc/netcoreapp2.0</FsYaccToolPath>
+		<FsYaccToolPath Condition="'$(FsYaccToolPath)' == '' AND '$(MSBuildRuntimeType)'=='Core'">$(MSBuildThisFileDirectory)/fsyacc/netcoreapp3.1</FsYaccToolPath>
 		<FsYaccToolExe Condition="'$(FsYaccToolExe)' == '' AND '$(MSBuildRuntimeType)'=='Core'">fsyacc.dll</FsYaccToolExe>
 		<FsLexYaccToolRunner Condition="'$(UseFsLexYaccToolRunner)' != 'false' AND '$(FsLexYaccToolRunner)' == '' AND '$(MSBuildRuntimeType)'=='Core'">dotnet </FsLexYaccToolRunner>
 	</PropertyGroup>
@@ -42,9 +35,9 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 		<!-- Call FsLex -->
 		<Exec Command="$(FsLexYaccToolRunner)&quot;$(FsLexToolPath)\$(FsLexToolExe)&quot;  -o &quot;$(FsLexOutputFolder)%(FsLex.Filename).fs&quot; %(FsLex.OtherFlags) %(FsLex.Identity)"/>
 		<!-- Make sure it will get cleaned  -->
-		<CreateItem Include="$(FsLexOutputFolder)%(FsLex.Filename).fs">
-			<Output TaskParameter="Include" ItemName="FileWrites"/>
-		</CreateItem>
+		<ItemGroup>
+			<FileWrites Include="$(FsLexOutputFolder)%(FsLex.Filename).fs"/>
+		</ItemGroup>
 	</Target>
 
 	<!-- Build FsYacc files. -->
@@ -60,9 +53,9 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 		<Exec Command="$(FsLexYaccToolRunner)&quot;$(FsYaccToolPath)\$(FsYaccToolExe)&quot;  -o &quot;$(FsYaccOutputFolder)%(FsYacc.Filename).fs&quot; %(FsYacc.OtherFlags) %(FsYacc.Identity)"/>
 
 		<!-- Make sure it will get cleaned  -->
-		<CreateItem Include="$(FsYaccOutputFolder)%(FsYacc.Filename).fs">
-			<Output TaskParameter="Include" ItemName="FileWrites"/>
-		</CreateItem>
+		<ItemGroup>
+			<FileWrites Include="$(FsLexOutputFolder)%(FsLex.Filename).fs"/>
+		</ItemGroup>
 	</Target>
 	<ItemGroup>
 		<AvailableItemName Include="FsLex">

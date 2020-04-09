@@ -1,8 +1,7 @@
 #r @"paket:
-source https://nuget.org/api/v2
-framework netstandard2.0
 nuget Fake.Core.Target
 nuget Fake.Core.ReleaseNotes
+nuget Fake.IO.FileSystem
 nuget Fake.DotNet.Cli
 nuget Fake.DotNet.AssemblyInfoFile
 nuget Fake.DotNet.Paket
@@ -27,6 +26,7 @@ open Fake.Core
 open Fake.Tools.Git
 open Fake.DotNet
 open Fake.IO
+open Fake.IO.FileSystemOperators
 open Fake.IO.Globbing.Operators
 open System
 open System.IO
@@ -105,14 +105,32 @@ Target.create "CleanDocs" (fun _ ->
 // Build library & test project
 
 Target.create "Build" (fun _ ->
-    for project in ["src/FsLex/fslex.fsproj"; "src/FsYacc/fsyacc.fsproj"] do
-      for framework in ["net46"; "netcoreapp2.0"] do 
-        DotNet.publish (fun opts -> { 
-            opts with 
-                Common = { opts.Common with CustomParams = Some "/v:n" }
-                Configuration = DotNet.BuildConfiguration.Release
-                Framework = Some framework 
-        }) project
+    for framework in ["netcoreapp3.1"] do
+        [
+            "src/FsLex/fslexlex.fs"
+            "src/FsLex/fslexpars.fs"
+            "src/FsLex/fslexpars.fsi"
+            "src/FsYacc/fsyacclex.fs"
+            "src/FsYacc/fsyaccpars.fs"
+            "src/FsYacc/fsyaccpars.fsi"
+        ] |> File.deleteAll
+
+        for project in ["src/FsLex/fslex.fsproj"; "src/FsYacc/fsyacc.fsproj"] do
+            DotNet.publish (fun opts -> { 
+                opts with 
+                    Common = { opts.Common with CustomParams = Some "/v:n" }
+                    Configuration = DotNet.BuildConfiguration.Release
+                    Framework = Some framework 
+            }) project
+
+    [
+        "tests/JsonLexAndYaccExample/Lexer.fs"
+        "tests/JsonLexAndYaccExample/Parser.fs"
+        "tests/JsonLexAndYaccExample/Parser.fsi"
+        "tests/LexAndYaccMiniProject/Lexer.fs"
+        "tests/LexAndYaccMiniProject/Parser.fs"
+        "tests/LexAndYaccMiniProject/Parser.fsi"
+    ] |> File.deleteAll
 
     for project in [ "src/FsLexYacc.Runtime/FsLexYacc.Runtime.fsproj"
                      "tests/JsonLexAndYaccExample/JsonLexAndYaccExample.fsproj"
@@ -127,42 +145,46 @@ Target.create "Build" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Run the unit tests using test runner
 
-//Target.create "RunOldFsYaccTests" (fun _ ->
-//    let result = executeFSIWithArgs @"tests\fsyacc" "OldFsYaccTests.fsx" ["--define:RELEASE"] []
-//    if not result then
-//        failwith "Old FsLexYacc tests were failed"
-//)
+Target.create "RunOldFsYaccTests" (fun _ ->
+    let script = Path.Combine(__SOURCE_DIRECTORY__, "tests", "fsyacc", "OldFsYaccTests.fsx")
+    let result = DotNet.exec id "fake" ("run " + script)
+    if not result.OK then
+        failwith "Old FsLexYacc tests were failed"
+)
 
 // --------------------------------------------------------------------------------------
 // Build a NuGet package
 
-let paketToolPath = __SOURCE_DIRECTORY__ + (if Environment.isWindows then "\\.paket\\paket.exe" else "/.paket/paket")
-
 Target.create "NuGet" (fun _ ->
+    let toolType = ToolType.CreateLocalTool()
     Paket.pack (fun p -> 
-        printfn "p.ToolPath = %A" p.ToolPath
         { p with 
+            ToolType = toolType
             TemplateFile = "nuget/FsLexYacc.Runtime.template"
             Version = release.NugetVersion
             OutputPath = "bin"
-            ToolPath = paketToolPath
             ReleaseNotes = String.toLines release.Notes })
     Paket.pack (fun p -> 
         { p with 
+            ToolType = toolType
             TemplateFile = "nuget/FsLexYacc.template"
             Version = release.NugetVersion
             OutputPath = "bin"
-            ToolPath = paketToolPath
             ReleaseNotes = String.toLines release.Notes })
-
 )
 
 // --------------------------------------------------------------------------------------
 // Generate the documentation
 
-//Target.create "GenerateDocs" (fun _ ->
-//    executeFSIWithArgs "docs/tools" "generate.fsx" ["--define:RELEASE"] [] |> ignore
-//)
+Target.create "GenerateDocs" (fun _ ->
+    let result =
+        DotNet.exec
+            (fun p -> { p with WorkingDirectory = __SOURCE_DIRECTORY__ @@ "docs" })
+            "fsi"
+            "--define:RELEASE --define:REFERENCE --define:HELP --exec generate.fsx"
+
+    if not result.OK then failwith "error generating docs"
+)
 
 // --------------------------------------------------------------------------------------
 // Release Scripts
@@ -189,13 +211,13 @@ Target.create "All" ignore
 "Clean"
   ==>  "AssemblyInfo"
   ==>  "Build"
-//  =?> ("RunOldFsYaccTests", isWindows)
+  ==> "RunOldFsYaccTests"
   ==> "All"
 
-//"All" 
-//  ==> "CleanDocs"
-//  ==> "GenerateDocs"
-//  ==> "ReleaseDocs"
+"All" 
+ ==> "CleanDocs"
+ ==> "GenerateDocs"
+ ==> "ReleaseDocs"
 
 "Build"
   ==> "NuGet"

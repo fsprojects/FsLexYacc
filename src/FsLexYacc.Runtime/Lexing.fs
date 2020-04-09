@@ -122,11 +122,9 @@ namespace FSharp.Text.Lexing
 
         /// Throw away all the input besides the lexeme      
         let discardInput () = 
-            let keep = Array.sub buffer bufferScanStart bufferScanLength
-            let nkeep = keep.Length 
-            Array.blit keep 0 buffer 0 nkeep
+            Array.blit buffer bufferScanStart buffer 0 bufferScanLength
             bufferScanStart <- 0
-            bufferMaxScanLength <- nkeep
+            bufferMaxScanLength <- bufferScanLength
                  
         member lexbuf.EndOfScan () : int =
             // Printf.eprintf "endOfScan, lexBuffer.lexemeLength = %d\n" lexBuffer.lexemeLength

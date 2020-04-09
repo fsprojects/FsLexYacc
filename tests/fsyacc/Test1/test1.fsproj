@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <OtherFlags>--mlcompatibility</OtherFlags>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../lexing.fs" />
+    <Compile Include="../parsing.fs" />
+    <Compile Include="../../../src/Common/Arg.fs" />
+    <Compile Include="../arg.fs" />
+    <Compile Include="../tree.ml" />
+    <Compile Include="test1.fsi" />
+    <Compile Include="test1.fs" />
+    <Compile Include="test1lex.fs" />
+    <Compile Include="../main.ml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\FsLexYacc.Runtime\FsLexYacc.Runtime.fsproj" />
+  </ItemGroup>
+  <Import Project="..\..\..\.paket\Paket.Restore.targets" />
+</Project>

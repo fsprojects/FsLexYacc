@@ -12,10 +12,8 @@ iconurl https://raw.githubusercontent.com/fsprojects/FsLexYacc/master/docs/files
 tags
   F#, fsharp, yacc, fsyacc, lex, parsing, lexing, fslex
 files
-  ../src/FsLex/bin/Release/net46/publish ==> build/fslex/net46
-  ../src/FsLex/bin/Release/netcoreapp2.0/publish ==> build/fslex/netcoreapp2.0
-  ../src/FsYacc/bin/Release/net46/publish ==> build/fsyacc/net46
-  ../src/FsYacc/bin/Release/netcoreapp2.0/publish ==> build/fsyacc/netcoreapp2.0
+  ../src/FsLex/bin/Release/netcoreapp3.1/publish ==> build/fslex/netcoreapp3.1
+  ../src/FsYacc/bin/Release/netcoreapp3.1/publish ==> build/fsyacc/netcoreapp3.1
   ../src/FsLexYacc.Build.Tasks/FsLexYacc.targets ==> build
   ../src/FsLexYacc.Runtime/Lexing.fsi ==> src/fslex
   ../src/FsLexYacc.Runtime/Lexing.fs ==> src/fslex
@@ -27,7 +25,6 @@ files
   ../src/FsLex/fslexpars.fs ==> src/fslex
   ../src/FsLex/fslexlex.fs ==> src/fslex
   ../src/FsLex/fslex.fs ==> src/fslex
-  ../src/FsLex/App.config ==> src/fslex
   ../src/FsLex/fslex.fsx ==> src/fslex
   ../src/FsLexYacc.Runtime/Lexing.fsi ==> src/fsyacc
   ../src/FsLexYacc.Runtime/Lexing.fs ==> src/fsyacc
@@ -39,7 +36,6 @@ files
   ../src/FsYacc/fsyaccpars.fs ==> src/fsyacc
   ../src/FsYacc/fsyacclex.fs ==> src/fsyacc
   ../src/FsYacc/fsyacc.fs ==> src/fsyacc
-  ../src/FsYacc/App.config ==> src/fsyacc
   ../src/FsYacc/fsyacc.fsx ==> src/fsyacc
   ../src/FsLexYacc.Build.Tasks/FsLexYacc.targets ==> src
 dependencies

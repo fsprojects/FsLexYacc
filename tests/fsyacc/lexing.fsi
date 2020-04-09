@@ -61,7 +61,7 @@ val from_bytearray: byte[] -> lexbuf
 
 /// Fuel a lexer from function that fills an array of bytes up to the given length, returning the
 /// number of bytes filled.
-val from_function: (byte[] -> int -> int) -> lexbuf
+val from_function: (byte[] * int * int -> int) -> lexbuf
 
 #if FX_NO_ASCII_ENCODING
 #else

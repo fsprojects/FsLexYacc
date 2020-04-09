@@ -122,11 +122,9 @@ namespace FSharp.Text.Lexing
 
         /// Throw away all the input besides the lexeme      
         let discardInput () = 
-            let keep = Array.sub buffer bufferScanStart bufferScanLength
-            let nkeep = keep.Length 
-            Array.blit keep 0 buffer 0 nkeep
+            Array.blit buffer bufferScanStart buffer 0 bufferScanLength
             bufferScanStart <- 0
-            bufferMaxScanLength <- nkeep
+            bufferMaxScanLength <- bufferScanLength
                  
         member lexbuf.EndOfScan () : int =
             // Printf.eprintf "endOfScan, lexBuffer.lexemeLength = %d\n" lexBuffer.lexemeLength
@@ -264,10 +262,10 @@ namespace FSharp.Text.Lexing
             LexBuffer<char>.FromChars (s.ToCharArray())
 
         static member FromTextReader (tr:System.IO.TextReader) : LexBuffer<char> = 
-           LexBuffer<char>.FromFunction(tr.Read) 
+           LexBuffer<char>.FromReadFunctions(Some tr.Read, Some (tr.ReadAsync >> Async.AwaitTask))
 
         static member FromBinaryReader (br:System.IO.BinaryReader) : LexBuffer<byte> = 
-           LexBuffer<byte>.FromFunction(br.Read) 
+           LexBuffer<byte>.FromFunction(br.Read)
 
         static member FromStream (stream:System.IO.Stream) : LexBuffer<byte> = 
            LexBuffer<byte>.FromReadFunctions(Some(stream.Read), Some(fun (buf, offset, len) -> stream.AsyncRead(buf, offset=offset, count=len))) 

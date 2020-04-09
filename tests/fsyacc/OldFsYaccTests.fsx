@@ -9,6 +9,8 @@ nuget Fake.DotNet.Cli //"
 #r "netstandard" // Temp fix for https://github.com/fsharp/FAKE/issues/1985
 #endif
 
+open System
+open System.Runtime.InteropServices
 open System.IO
 
 open Fake.DotNet
@@ -25,44 +27,65 @@ let run project args =
     Trace.traceImportant <| sprintf "Running '%s' with args %s" project args
 
     project
-    |> DotNet.build (fun opts -> { opts with Configuration = DotNet.BuildConfiguration.Release })
+    |> DotNet.build (fun opts ->
+        { opts with
+            Configuration = DotNet.BuildConfiguration.Release })
 
-    let res = DotNet.exec id "run" ("-p " + project + " " + args)
+    let res = DotNet.exec (fun opts -> { opts with RedirectOutput = true }) "run" ("-p " + project + " " + args)
 
     if not res.OK then
         failwithf "Process failed with code %d" res.ExitCode
 
 let test proj (args, baseLineOutput) =
-
     Trace.traceImportant <| sprintf "Running '%s' with args '%s'" proj args
 
-    let res = DotNet.exec id "run" ("-p " + proj + " " + args)
+    let res = DotNet.exec (fun opts -> { opts with RedirectOutput = true }) "run" ("-p " + proj + " " + args)
 
     if not res.OK then
         failwithf "Process failed with code %d on input %s" res.ExitCode args
 
-    // TODO: figure out a good way to compare with baseline outputs
-    //
-    // let output = messages |> List.rev |> Array.ofList
+    let output =
+        res.Results
+        |> Array.ofList
+        |> Array.map (fun cm -> cm.Message)
+        |> Array.map (fun line ->
+            if line.StartsWith("parsed") then
+                let pieces = line.Split(' ')
+                let pathPiece = pieces.[1]                
+                let idx =
+                    let value =
+                        if RuntimeInformation.IsOSPlatform(OSPlatform.Windows) then
+                            @"\"
+                        else
+                            "/"
+                    pathPiece.LastIndexOf(value)
+                let pathPiece =
+                    if idx >= 0 then
+                        pathPiece.[idx..]
+                    else
+                        pathPiece
+                pieces.[0] + " " + pathPiece + " " + pieces.[2]
+            else
+                line)
 
-    // if (not <| File.Exists baseLineOutput)
-    //     then failwithf "Baseline file '%s' does not exist" baseLineOutput
+    if (not <| File.Exists baseLineOutput)
+        then failwithf "Baseline file '%s' does not exist" baseLineOutput
 
-    // let expectedLines = File.ReadAllLines baseLineOutput
+    let expectedLines = File.ReadAllLines baseLineOutput
 
-    // if output.Length <> expectedLines.Length ||
-    //    Seq.map2 (=) output expectedLines |> Seq.exists not
-    //    then
-    //      printfn "Expected:"
-    //      for line in expectedLines do
-    //         printfn "\t%s" line
-    //      printfn "Output:"
-    //      for line in output do
-    //         printfn "\t%s" line
-    //      File.WriteAllLines(baseLineOutput+".err", output)
-    //      failwithf "Output is not equal to expected base line '%s'" baseLineOutput
-    // else
-    //     Trace.traceImportant <| sprintf "OK: Output is equal to base line '%s'" baseLineOutput
+    if output.Length <> expectedLines.Length ||
+       Seq.map2 (=) output expectedLines |> Seq.exists not
+       then
+         printfn "Expected:"
+         for line in expectedLines do
+            printfn "\t%s" line
+
+         printfn "Output:"
+         for line in output do
+            printfn "\t%s" line
+
+         File.WriteAllLines(baseLineOutput+".err", output)
+         failwithf "Output is not equal to expected base line '%s'" baseLineOutput
 
 let fslexProject = Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "FsLex", "fslex.fsproj")
 let fsYaccProject = Path.Combine(__SOURCE_DIRECTORY__ , "..", "..", "src", "FsYacc", "fsyacc.fsproj")
@@ -83,6 +106,7 @@ let test1lexMll = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1lex.mll")
 let test1Fs = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1.fs")
 let test1Mly = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1.mly")
 let test1Input1 = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1.input1")
+let test1Input1Bsl = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1.input1.bsl")
 let test1Input1TokensBsl = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1.input1.tokens.bsl")
 let test1Input2Variation1 = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1.input2.variation1")
 let test1Input2Variation2 = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1.input2.variation2")
@@ -97,7 +121,7 @@ let runTest1Tests () =
     |> DotNet.build (fun opts -> { opts with Configuration = DotNet.BuildConfiguration.Release })
 
     [sprintf "--tokens %s" test1Input1, test1Input1TokensBsl
-     test1Input1, test1Input1TokensBsl
+     test1Input1, test1Input1Bsl
      sprintf "%s %s" test1Input2Variation1 test1Input2Variation2, test1Input2Bsl]
     |> List.iter (test ("-p " + test1Proj))
 

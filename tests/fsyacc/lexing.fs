@@ -14,8 +14,8 @@ type position = Position
 
 type lexbuf =  LexBuffer<byte>
 
-let from_function (f: byte[] -> int -> int)  = 
-    LexBuffer<byte>.FromByteFunction f
+let from_function (f: byte[] * int * int -> int)  = 
+    LexBuffer<byte>.FromFunction f
 
 
 let from_text_reader (enc: System.Text.Encoding) (tr: TextReader) =

@@ -12,7 +12,7 @@ exception SyntaxError of string
 let lexeme = LexBuffer<_>.LexemeString
 
 let newline (lexbuf: LexBuffer<_>) = 
-  lexbuf.StartPos <- lexbuf.StartPos.NextLine
+  lexbuf.EndPos <- lexbuf.EndPos.NextLine
 }
 
 let int = ['-' '+']? ['0'-'9']+
@@ -41,7 +41,7 @@ rule read =
   | ':'      { COLON }
   | ','      { COMMA }
   | eof      { EOF }
-  | _ { raise (Exception (sprintf "SyntaxError: Unexpected char: '%s' Line: %d Column: %d" (lexeme lexbuf) (lexbuf.StartPos.Line+1) lexbuf.StartPos.Column)) }
+  | _ { raise (Exception (sprintf "SyntaxError: Unexpected char: '%s' Line: %d Column: %d" (lexeme lexbuf) (lexbuf.StartPos.Line+1) (lexbuf.StartPos.Column+1))) }
 
 
 and read_string str ignorequote =

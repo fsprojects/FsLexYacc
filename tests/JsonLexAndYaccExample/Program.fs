@@ -32,7 +32,7 @@ let main argv =
 
     //test lexing error 
     try
-        let simpleJson = "{\"f\" ;"
+        let simpleJson = "{\"f\"\n" + "\n" + ";"
         let parseResult = simpleJson |> parse 
         printfn "%s" (JsonValue.print parseResult.Value)
     with 

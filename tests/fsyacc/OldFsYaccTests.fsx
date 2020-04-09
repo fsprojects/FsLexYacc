@@ -61,7 +61,7 @@ let test proj (args, baseLineOutput) =
                     pathPiece.LastIndexOf(value)
                 let pathPiece =
                     if idx >= 0 then
-                        pathPiece.[idx..]
+                        pathPiece.[idx+1 ..]
                     else
                         pathPiece
                 pieces.[0] + " " + pathPiece + " " + pieces.[2]

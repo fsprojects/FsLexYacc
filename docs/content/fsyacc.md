@@ -1,14 +1,18 @@
 Overview
 ========
 
-`fsyacc.exe` is a `LALR` parser generator. It follows a similar specification to the `OCamlYacc` parser generator (especially when used with the `ml compatibility` switch)
+`fsyacc` is a `LALR` parser generator. It follows a similar specification to the `OCamlYacc` parser generator (especially when used with the `ml compatibility` switch)
 
 Getting Started
 ---------------
 
-Add an `FsLexYacc` package reference to your project
+Build the tool by cloning this project and running  /build.sh or build.cmd
 
-    <PackageReference Include="FsLexYacc" Version="9.0.2" />
+Add a reference in your project to `FsLexYacc` package via Nuget or paket.
+
+You can run the parser generator directly:
+   dotnet fsyacc.dll inputFile -o outputFile
+   
 
 
 Sample input

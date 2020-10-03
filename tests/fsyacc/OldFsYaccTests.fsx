@@ -111,21 +111,38 @@ let test1Input1TokensBsl = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1.in
 let test1Input2Variation1 = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1.input2.variation1")
 let test1Input2Variation2 = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1.input2.variation2")
 let test1Input2Bsl = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1.input2.bsl")
+let test1Input3 = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1.input3")
+let test1Input3Bsl = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1.input3.bsl")
+let test1Input3TokensBsl = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1.input3.tokens.bsl")
 let test1Proj = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1.fsproj")
+let test1Input4 = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1.input4")
+let test1Input4Bsl = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1.input4.bsl")
+let test1Input4TokensBsl = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1.input4.tokens.bsl")
 
 fsLex ("--light-off -o " + test1lexFs + " " + test1lexMll)
 fsYacc ("--light-off --module TestParser -o " + test1Fs + " " + test1Mly)
 
-let runTest1Tests () =    
+let runTest1Tests xs =    
     test1Proj
     |> DotNet.build (fun opts -> { opts with Configuration = DotNet.BuildConfiguration.Release })
 
-    [sprintf "--tokens %s" test1Input1, test1Input1TokensBsl
-     test1Input1, test1Input1Bsl
-     sprintf "%s %s" test1Input2Variation1 test1Input2Variation2, test1Input2Bsl]
-    |> List.iter (test ("-p " + test1Proj))
+    xs |> List.iter (test ("-p " + test1Proj))
 
-runTest1Tests ()
+runTest1Tests [
+     sprintf "--tokens %s" test1Input1, test1Input1TokensBsl
+     test1Input1, test1Input1Bsl
+     sprintf "%s %s" test1Input2Variation1 test1Input2Variation2, test1Input2Bsl
+     sprintf "--tokens %s" test1Input3, test1Input3TokensBsl
+     test1Input3, test1Input3Bsl
+     ]
+
+// Case insensitive option test
+fsLex ("--light-off -i -o " + test1lexFs + " " + test1lexMll)
+runTest1Tests [
+    sprintf "--tokens %s" test1Input4, test1Input4TokensBsl
+    sprintf "--tokens %s" test1Input3, test1Input4TokensBsl
+    sprintf "%s %s" test1Input3 test1Input4, test1Input4Bsl
+    ]
 
 // All other tests have missing files. It's not clear if they ever existed.
 

@@ -4,10 +4,7 @@ module internal FsLexYacc.FsLex.AST
 
 open System.Collections.Generic
 open System.Globalization
-open Microsoft.FSharp.Collections
 open Internal.Utilities.Text.Lexing
-
-let (|KeyValue|) (kvp:KeyValuePair<_,_>) = kvp.Key,kvp.Value
 
 type Ident = string
 type Code = string * Position
@@ -18,6 +15,7 @@ let Eof : Alphabet = 0xFFFFFFFEu
 let Epsilon : Alphabet = 0xFFFFFFFFu
 
 let unicode = ref false
+let caseInsensitive = ref false
 
 let unicodeCategories =
  dict
@@ -69,9 +67,10 @@ let IsUnicodeCategory(x:Alphabet) = (encodedUnicodeCategoryBase <= x) && (x < en
 let UnicodeCategoryIndex(x:Alphabet) = (x - encodedUnicodeCategoryBase)
 
 let numLowUnicodeChars = 128
-let _ = assert (numLowUnicodeChars = 128) // see table interpreter
+assert (numLowUnicodeChars = 128) // see table interpreter
 let specificUnicodeChars = new Dictionary<_,_>()
 let specificUnicodeCharsDecode = new Dictionary<_,_>()
+
 let EncodeChar(c:char) =
      let x = System.Convert.ToUInt32 c
      if !unicode then
@@ -85,6 +84,7 @@ let EncodeChar(c:char) =
      else
          if x >= 256u then failwithf "the Unicode character '%x' may not be used unless --unicode is specified" <| int c
          x
+
 let DecodeChar(x:Alphabet) =
      if !unicode then
          if x < uint32 numLowUnicodeChars then System.Convert.ToChar x
@@ -192,7 +192,17 @@ let LexerStateToNfa (macros: Map<string,_>) (clauses: Clause list) =
         | Seq res ->
             List.foldBack (CompileRegexp) res dest
         | Inp (Alphabet c) ->
-            nfaNodeMap.NewNfaNode([(c, dest)],[])
+            if !caseInsensitive && c <> Eof then
+                let x = DecodeChar c
+                let lowerCase = System.Char.ToLowerInvariant x
+                let upperCase = System.Char.ToUpperInvariant x
+                if lowerCase <> upperCase then
+                    let encodedLowerCase = EncodeChar lowerCase
+                    let encodedUpperCase = EncodeChar upperCase
+                    nfaNodeMap.NewNfaNode([(encodedLowerCase, dest); (encodedUpperCase, dest)],[])
+                else
+                    nfaNodeMap.NewNfaNode([(c, dest)],[]) 
+            else nfaNodeMap.NewNfaNode([(c, dest)],[])
 
         | Star re ->
             let nfaNode = nfaNodeMap.NewNfaNode([(Epsilon, dest)],[])

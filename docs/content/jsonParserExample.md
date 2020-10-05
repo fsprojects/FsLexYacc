@@ -180,7 +180,7 @@ Reload/Open project and add below code to ``Lexer.fsl:``
     
     exception SyntaxError of string
     
-    let lexeme = LexBuffer.LexemeString
+    let lexeme = LexBuffer<_>.LexemeString
     
     let newline (lexbuf: LexBuffer<_>) = 
       lexbuf.StartPos <- lexbuf.StartPos.NextLine
@@ -251,7 +251,7 @@ The last piece of the puzzle is to write program which will user parser. Look at
     [<EntryPoint>]
     let main argv =
         let parse json = 
-            let lexbuf = LexBuffer<char<.FromString json
+            let lexbuf = LexBuffer<char>.FromString json
             let res = Parser.start Lexer.read lexbuf
             res
         let simpleJson = @"{

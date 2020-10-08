@@ -14,8 +14,8 @@ type Alphabet = uint32
 let Eof : Alphabet = 0xFFFFFFFEu
 let Epsilon : Alphabet = 0xFFFFFFFFu
 
-let unicode = ref false
-let caseInsensitive = ref false
+let mutable unicode = false
+let mutable caseInsensitive = false
 
 let unicodeCategories =
  dict
@@ -56,7 +56,7 @@ assert (NumUnicodeCategories = 30) // see table interpreter
 let encodedUnicodeCategoryBase = 0xFFFFFF00u
 let EncodeUnicodeCategoryIndex(idx:int) = encodedUnicodeCategoryBase + uint32 idx
 let EncodeUnicodeCategory s =
-    if not (!unicode) then
+    if not unicode then
         failwith "unicode category classes may only be used if --unicode is specified"
     if unicodeCategories.ContainsKey(s) then
         EncodeUnicodeCategoryIndex (int32 unicodeCategories.[s])
@@ -73,7 +73,7 @@ let specificUnicodeCharsDecode = new Dictionary<_,_>()
 
 let EncodeChar(c:char) =
      let x = System.Convert.ToUInt32 c
-     if !unicode then
+     if unicode then
          if x < uint32 numLowUnicodeChars then x
          else
              if not(specificUnicodeChars.ContainsKey(c)) then
@@ -86,7 +86,7 @@ let EncodeChar(c:char) =
          x
 
 let DecodeChar(x:Alphabet) =
-     if !unicode then
+     if unicode then
          if x < uint32 numLowUnicodeChars then System.Convert.ToChar x
          else specificUnicodeCharsDecode.[x]
      else
@@ -102,13 +102,13 @@ let GetSpecificUnicodeChars() =
         |> Seq.map (fun (KeyValue(k,v)) -> k)
 
 let GetSingleCharAlphabet() =
-    if !unicode
+    if unicode
     then Set.ofList [ yield! { char 0 .. char <| numLowUnicodeChars-1 }
                       yield! GetSpecificUnicodeChars() ]
     else Set.ofList [ char 0 .. char 255 ]
 
 let GetAlphabet() =
-    if !unicode
+    if unicode
     then Set.ofList [ for c in GetSingleCharAlphabet() do yield EncodeChar c
                       for uc in 0 .. NumUnicodeCategories-1 do yield EncodeUnicodeCategoryIndex uc ]
     else GetSingleCharAlphabet() |> Seq.map EncodeChar |> set
@@ -192,7 +192,7 @@ let LexerStateToNfa (macros: Map<string,_>) (clauses: Clause list) =
         | Seq res ->
             List.foldBack (CompileRegexp) res dest
         | Inp (Alphabet c) ->
-            if !caseInsensitive && c <> Eof then
+            if caseInsensitive && c <> Eof then
                 let x = DecodeChar c
                 let lowerCase = System.Char.ToLowerInvariant x
                 let upperCase = System.Char.ToUpperInvariant x
@@ -240,7 +240,7 @@ let LexerStateToNfa (macros: Map<string,_>) (clauses: Clause list) =
                            // Include all unicode categories
                            // That is, negations _only_ exclude precisely the given set of characters. You can't
                            // exclude whole classes of characters as yet
-                           if !unicode then
+                           if unicode then
                                let ucs = chars |> Set.map(DecodeChar >> System.Char.GetUnicodeCategory)
                                for KeyValue(nm,uc) in unicodeCategories do
                                    //if ucs.Contains(uc) then

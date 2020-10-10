@@ -55,7 +55,8 @@ let usage =
     ArgInfo ("--light", ArgType.Unit (fun () ->  light := Some true), "(ignored)")
     ArgInfo ("--light-off", ArgType.Unit (fun () ->  light := Some false), "Add #light \"off\" to the top of the generated file")
     ArgInfo ("--lexlib", ArgType.String (fun s ->  lexlib <- s), "Specify the namespace for the implementation of the lexer table interpreter (default FSharp.Text.Lexing)")
-    ArgInfo ("--unicode", ArgType.Set unicode, "Produce a lexer for use with 16-bit unicode characters.")  
+    ArgInfo ("--unicode", ArgType.Unit (fun () -> unicode <- true), "Produce a lexer for use with 16-bit unicode characters.")  
+    ArgInfo ("-i", ArgType.Unit (fun () -> caseInsensitive <- true), "Produce a case-insensitive lexer.")  
   ]
 
 let _ = ArgParser.Parse(usage, (fun x -> match !input with Some _ -> failwith "more than one input given" | None -> input := Some x), "fslex <filename>")
@@ -74,7 +75,7 @@ let cfprintfn (os: #TextWriter) fmt = Printf.kfprintf (fun () -> incr lineCount;
 let main() = 
   try 
     let filename = (match !input with Some x -> x | None -> failwith "no input given") 
-    let domain = if !unicode then "Unicode" else "Ascii" 
+    let domain = if unicode then "Unicode" else "Ascii" 
     let spec = 
       let stream,reader,lexbuf = UnicodeFileAsLexbuf(filename, !inputCodePage) 
       use stream = stream
@@ -123,7 +124,7 @@ let main() =
     
     cfprintfn os "let trans : uint16[] array = "
     cfprintfn os "    [| "
-    if !unicode then 
+    if unicode then 
         let specificUnicodeChars = GetSpecificUnicodeChars()
         // This emits a (numLowUnicodeChars+NumUnicodeCategories+(2*#specificUnicodeChars)+1) * #states array of encoded UInt16 values
         

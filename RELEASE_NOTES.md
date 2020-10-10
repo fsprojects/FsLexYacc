@@ -1,3 +1,6 @@
+#### 10.1.0 - 04 October, 2020
+* Add caseInsensitive option
+
 #### 10.0.0 - 24 October, 2019
 * Migration to netcoreapp3.0 based versions of FxLex and FsYacc
 

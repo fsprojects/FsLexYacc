@@ -1,16 +1,20 @@
 Overview
 ========
 
-The `fslex.exe` tool is a lexer generator for byte and Unicode character input.
+The `fslex` tool is a lexer generator for byte and Unicode character input.
 
 Getting Started
 ---------------
 
-Add an `FsLexYacc` package reference to your project
+Build the tool by cloning this project and running  /build.sh or build.cmd
 
-    <PackageReference Include="FsLexYacc" Version="9.0.2" />
+Add a reference to `FsLexYacc` package via Nuget or paket.
+
+You can run the lexer directly:
+   dotnet fslex.dll inputFile -o outputFile
+
     
-You then add `FsLex` and `FsYacc` entries like this:
+Or you can add it to your build project via entries like this:
 
     <FsYacc Include="..\LexAndYaccMiniProject\Parser.fsy">
       <OtherFlags>--module Parser</OtherFlags>
@@ -18,6 +22,9 @@ You then add `FsLex` and `FsYacc` entries like this:
     <FsLex Include="..\LexAndYaccMiniProject\Lexer.fsl">
       <OtherFlags>--module Lexer --unicode</OtherFlags>
     </FsLex>
+    
+    <Import Project="FsLexYacc.Build.Tasks\FsLexYacc.targets" />
+
 
 Lexer syntax
 ------------

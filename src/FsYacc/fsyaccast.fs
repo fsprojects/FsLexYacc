@@ -9,7 +9,6 @@ open System
 open System.Collections.Generic
 open Printf
 open Microsoft.FSharp.Collections
-open Internal.Utilities
 open Internal.Utilities.Text.Lexing
 
 /// An active pattern that should be in the F# standard library
@@ -18,17 +17,17 @@ let (|KeyValue|) (kvp:KeyValuePair<_,_>) = kvp.Key,kvp.Value
 
 type Identifier = string
 type Code = string * Position
+type Associativity = LeftAssoc | RightAssoc | NonAssoc
+type Rule = Rule of Identifier list * Identifier option * Code option
 
 type ParserSpec= 
     { Header         : Code;
       Tokens         : (Identifier * string option) list;
       Types          : (Identifier * string) list;
-      Associativities: (Identifier * Associativity) list list;
+      Associativities: (Identifier * Associativity) list list; // suggest to do: (Associativity * Identifier list) list
       StartSymbols   : Identifier list;
       Rules          : (Identifier * Rule list) list }
       
-and Rule = Rule of Identifier list * Identifier option * Code option
-and Associativity = LeftAssoc | RightAssoc | NonAssoc
 
 type Terminal = string
 type NonTerminal = string
@@ -75,7 +74,7 @@ type ProcessedParserSpec =
 let ProcessParserSpecAst (spec: ParserSpec) = 
     let explicitPrecInfo = 
         spec.Associativities 
-        |> List.mapi (fun n precSpecs -> precSpecs |> List.map (fun (precSym, assoc) -> precSym,ExplicitPrec (assoc, 10000 - n)))
+        |> List.mapi (fun n precSpecs -> precSpecs |> List.map (fun (precSym, assoc) -> precSym,ExplicitPrec (assoc, 9999 - n)))
         |> List.concat
     
     for (key,_) in explicitPrecInfo |> Seq.countBy fst |> Seq.filter (fun (_,n) -> n > 1)  do
@@ -85,7 +84,7 @@ let ProcessParserSpecAst (spec: ParserSpec) =
         explicitPrecInfo |> Map.ofList
 
     let implicitSymPrecInfo = NoPrecedence
-    let terminals = List.map fst spec.Tokens @ ["error"]in 
+    let terminals = List.map fst spec.Tokens @ ["error"]
     let terminalSet = Set.ofList terminals
     let IsTerminal z = terminalSet.Contains(z)
     let prec_of_terminal sym implicitPrecInfo = 
@@ -101,7 +100,7 @@ let ProcessParserSpecAst (spec: ParserSpec) =
                     let implicitPrecInfo = NoPrecedence
                     match precsym with 
                     | None -> implicitPrecInfo 
-                    | Some sym -> if explicitPrecInfo.ContainsKey(sym) then explicitPrecInfo.[sym] else implicitPrecInfo
+                    | Some sym -> prec_of_terminal sym None
                 Production(nonterm, precInfo, List.map mkSym syms, code)))
          |> List.concat
     let nonTerminals = List.map fst spec.Rules
@@ -176,7 +175,7 @@ type NonTerminalIndex = int
 type SymbolIndex = int
 let PTerminal(i:TerminalIndex) : SymbolIndex = -i-1
 let PNonTerminal(i:NonTerminalIndex) : SymbolIndex = i
-let (|PTerminal|PNonTerminal|) x = if x < 0 then PTerminal (-(x+1)) else PNonTerminal x
+let (|PTerminal|PNonTerminal|) x = if x < 0 then PTerminal (-x-1) else PNonTerminal x
 
 type SymbolIndexes = SymbolIndex list
 

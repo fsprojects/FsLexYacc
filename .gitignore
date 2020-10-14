@@ -201,7 +201,6 @@ tests/fsyacc/Test1/test1.fs
 tests/fsyacc/Test1/test1lex.fs
 
 .paket
-
 .idea/
 .vs/
 .ionide/

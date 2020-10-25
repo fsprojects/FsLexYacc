@@ -153,7 +153,7 @@ Each action in an fsyacc parser has access to a parseState value through which y
 
 You must set the initial position when you create the lexbuf:
 
-    let setInitialPos (lexbuf:lexbuf) filename =
+    let setInitialPos (lexbuf:LexBuffer<_>) filename =
          lexbuf.EndPos <- { pos_bol = 0;
                             pos_fname=filename;
                             pos_cnum=0;

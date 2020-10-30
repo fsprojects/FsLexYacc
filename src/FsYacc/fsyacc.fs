@@ -66,6 +66,9 @@ let usage =
 
 let _ = ArgParser.Parse(usage,(fun x -> match !input with Some _ -> failwith "more than one input given" | None -> input := Some x),"fsyacc <filename>")
 
+// This is to avoid name conflicts against keywords.
+let generic_nt_name nt = "'gentype_" + nt
+
 let output_int os n = fprintf os "%d" n
 
 let outputCodedUInt16 os n = fprintf os "%dus; " n
@@ -433,7 +436,7 @@ let main() =
       cprintfn cos "|]" ;
   end;
   
-  let getType nt = if types.ContainsKey nt then  types.[nt] else "'"+nt 
+  let getType nt = if types.ContainsKey nt then  types.[nt] else generic_nt_name nt
   begin 
       cprintf cos "let _fsyacc_reductions ()  =" ;
       cprintfn cos "    [| " ;
@@ -478,7 +481,7 @@ let main() =
           match code with 
           | Some (_,pos) -> cprintfn cos "# %d \"%s\"" pos.pos_lnum pos.pos_fname
           | None -> ()
-          cprintfn cos "                 : %s));" (if types.ContainsKey nt then  types.[nt] else "'"+nt);
+          cprintfn cos "                 : %s));" (if types.ContainsKey nt then  types.[nt] else generic_nt_name nt);
       done;
       cprintfn cos "|]" ;
   end;

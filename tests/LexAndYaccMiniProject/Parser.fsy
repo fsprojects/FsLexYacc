@@ -20,8 +20,13 @@
 
 // These are the rules of the grammar along with the F# code of the 
 // actions executed as rules are reduced.  
-start: File EOF { $1 }
+start: File end { $1 }
+     | end      { $1 }
 
 File:
 	| HELLO						{ 1 }
-	| HELLO HELLO				    { 2 }
+	| HELLO HELLO				{ 2 }
+
+
+// Using F# keywords for nonterminal names is okay.
+end: EOF { 3 }

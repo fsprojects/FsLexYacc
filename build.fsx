@@ -1,4 +1,5 @@
 #r @"paket:
+nuget FSharp.Core 4.7.2
 nuget Fake.Core.Target
 nuget Fake.Core.ReleaseNotes
 nuget Fake.IO.FileSystem

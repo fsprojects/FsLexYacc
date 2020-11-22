@@ -1,6 +1,4 @@
 source https://api.nuget.org/v3/index.json
 
-nuget FSharp.Core >= 4.5.2
-
-nuget FSharp.Formatting 4.0.0-rc1
+nuget FSharp.Core 4.5.2
 nuget FsLexYacc

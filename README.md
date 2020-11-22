@@ -11,7 +11,7 @@ See https://fsprojects.github.io/FsLexYacc.
 Build the project
 -----------------
 
-[![Build Status](https://sergeytihon.visualstudio.com/FsLexYacc/_apis/build/status/fsprojects.FsLexYacc?branchName=master)](https://sergeytihon.visualstudio.com/FsLexYacc/_build/latest?definitionId=5&branchName=master)
+[![Build Status](https://github.com/fsprojects/FsLexYacc/workflows/Build%20and%20test/badge.svg?branch=master)](https://github.com/fsprojects/FsLexYacc/actions?query=branch%3Amaster)
 
 * Unix: Run *build.sh*
 * Windows: Run *build.cmd*

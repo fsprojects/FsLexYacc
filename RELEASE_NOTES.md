@@ -1,5 +1,9 @@
+#### 10.2.0 - 22 November, 2020
+* Enable running tools under .net 5.0
+
 #### 10.1.0 - 04 October, 2020
 * Add caseInsensitive option
+* Migration to netcoreapp3.1
 
 #### 10.0.0 - 24 October, 2019
 * Migration to netcoreapp3.0 based versions of FxLex and FsYacc

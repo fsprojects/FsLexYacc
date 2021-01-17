@@ -2,26 +2,16 @@
 
 #nowarn "47" // recursive initialization of LexBuffer
 
-#if INTERNALIZED_FSLEXYACC_RUNTIME
-namespace Internal.Utilities.Text.Lexing
-#else
 namespace FSharp.Text.Lexing 
-#endif
 
     open System.Collections.Generic
 
     // REVIEW: This type showed up on a parsing-intensive performance measurement. Consider whether it can be a struct-record later when we have this feature. -jomo
     [<Struct>]
-#if INTERNALIZED_FSLEXYACC_RUNTIME
-    type internal Position = 
-#else
     type Position = 
-#endif
         { pos_fname : string
           pos_lnum : int
-#if INTERNALIZED_FSLEXYACC_RUNTIME
           pos_orig_lnum : int
-#endif
           pos_bol : int
           pos_cnum : int }
 
@@ -29,9 +19,7 @@ namespace FSharp.Text.Lexing
 
         member pos.Line = pos.pos_lnum
 
-#if INTERNALIZED_FSLEXYACC_RUNTIME
         member pos.OriginalLine = pos.pos_orig_lnum
-#endif
 
         member pos.Char = pos.pos_cnum
 
@@ -46,9 +34,7 @@ namespace FSharp.Text.Lexing
         member pos.NextLine = 
             let pos = pos
             { pos with 
-#if INTERNALIZED_FSLEXYACC_RUNTIME
                     pos_orig_lnum = pos.OriginalLine + 1
-#endif
                     pos_lnum = pos.Line+1 
                     pos_bol = pos.AbsoluteOffset }
 
@@ -65,35 +51,23 @@ namespace FSharp.Text.Lexing
         static member Empty = 
             { pos_fname="" 
               pos_lnum= 0 
-#if INTERNALIZED_FSLEXYACC_RUNTIME
               pos_orig_lnum = 0
-#endif
               pos_bol= 0 
               pos_cnum=0 }
 
         static member FirstLine(filename) = 
             { pos_fname=filename 
-#if INTERNALIZED_FSLEXYACC_RUNTIME
               pos_orig_lnum = 1
-#endif
               pos_lnum= 1 
               pos_bol= 0 
               pos_cnum=0 }
 
-#if INTERNALIZED_FSLEXYACC_RUNTIME
-    type internal LexBufferFiller<'char> = 
-#else
     type LexBufferFiller<'char> = 
-#endif
         { fillSync : (LexBuffer<'char> -> unit) option
           fillAsync : (LexBuffer<'char> -> Async<unit>) option } 
         
     and [<Sealed>]
-#if INTERNALIZED_FSLEXYACC_RUNTIME
-        internal LexBuffer<'char>(filler: LexBufferFiller<'char>) as this = 
-#else
         LexBuffer<'char>(filler: LexBufferFiller<'char>) as this = 
-#endif
         let context = new Dictionary<string, obj>(1) in 
         let extendBufferSync = (fun () -> match filler.fillSync with Some refill -> refill this | None -> invalidOp "attempt to read synchronously from an asynchronous lex buffer")
         let extendBufferAsync = (fun () -> match filler.fillAsync with Some refill -> refill this | None -> invalidOp "attempt to read asynchronously from a synchronous lex buffer")
@@ -299,11 +273,7 @@ namespace FSharp.Text.Lexing
     open GenericImplFragments
 
     [<Sealed>]
-#if INTERNALIZED_FSLEXYACC_RUNTIME
-    type internal AsciiTables(trans: uint16[] array, accept: uint16[]) =
-#else
     type AsciiTables(trans: uint16[] array, accept: uint16[]) =
-#endif
         let rec scanUntilSentinel(lexBuffer, state) =
             let sentinel = 255 * 256 + 255 
             // Return an endOfScan after consuming the input 
@@ -370,11 +340,7 @@ namespace FSharp.Text.Lexing
         static member Create(trans, accept) = new AsciiTables(trans, accept)
 
     [<Sealed>]
-#if INTERNALIZED_FSLEXYACC_RUNTIME
-    type internal UnicodeTables(trans: uint16[] array, accept: uint16[]) = 
-#else
     type UnicodeTables(trans: uint16[] array, accept: uint16[]) = 
-#endif
         let sentinel = 255 * 256 + 255 
         let numUnicodeCategories = 30 
         let numLowUnicodeChars = 128 

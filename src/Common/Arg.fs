@@ -1,11 +1,6 @@
 // (c) Microsoft Corporation 2005-2009. 
 
-#if INTERNALIZED_FSLEXYACC_RUNTIME
-namespace Internal.Utilities
-#else
 namespace FSharp.Text
-#endif
-
 
 type ArgType = 
   | ClearArg of bool ref

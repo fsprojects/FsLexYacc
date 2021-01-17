@@ -1,13 +1,16 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <OutputType>Library</OutputType>
   </PropertyGroup>
+
   <ItemGroup>
-    <Compile Include="AssemblyInfo.fs">
-      <Link>AssemblyInfo.fs</Link>
-    </Compile>
+    <FsYacc Include="fslexpars.fsy">
+      <OtherFlags>--module FsLexYacc.FsLex.Parser --lexlib FSharp.Text.Lexing --parslib FSharp.Text.Parsing</OtherFlags>
+    </FsYacc>
+    <FsLex Include="fslexlex.fsl">
+      <OtherFlags>--unicode --lexlib FSharp.Text.Lexing</OtherFlags>
+    </FsLex>
     <Compile Include="..\FsLexYacc.Runtime\Lexing.fsi">
       <Link>lexing.fsi</Link>
     </Compile>
@@ -20,6 +23,14 @@
     <Compile Include="..\FsLexYacc.Runtime\Parsing.fs">
       <Link>parsing.fs</Link>
     </Compile>
+    <Compile Include="fslexast.fs" />
+    <Compile Include="fslexpars.fs" />
+    <Compile Include="fslexlex.fs" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FsLexYacc.Runtime\FsLexYacc.Runtime.fsproj" />
+  </ItemGroup>
+
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

@@ -44,7 +44,12 @@ open System.IO
 
 // The name of the project 
 // (used by attributes in AssemblyInfo, name of a NuGet package and directory in 'src')
-let projects = [ "FsLex"; "FsYacc"; ]
+let projects = [
+    "FsLex"
+    "FsLex.Core"
+    "FsYacc"
+    "FsYacc.Core"
+]
 let runtimeProjects = [ "FsLexYacc.Runtime" ]
 let project = "FsLexYacc"
 // Short summary of the project
@@ -108,12 +113,12 @@ Target.create "CleanDocs" (fun _ ->
 Target.create "Build" (fun _ ->
     for framework in ["netcoreapp3.1"] do
         [
-            "src/FsLex/fslexlex.fs"
-            "src/FsLex/fslexpars.fs"
-            "src/FsLex/fslexpars.fsi"
-            "src/FsYacc/fsyacclex.fs"
-            "src/FsYacc/fsyaccpars.fs"
-            "src/FsYacc/fsyaccpars.fsi"
+            "src/FsLex.Core/fslexlex.fs"
+            "src/FsLex.Core/fslexpars.fs"
+            "src/FsLex.Core/fslexpars.fsi"
+            "src/FsYacc.Core/fsyacclex.fs"
+            "src/FsYacc.Core/fsyaccpars.fs"
+            "src/FsYacc.Core/fsyaccpars.fsi"
         ] |> File.deleteAll
 
         for project in ["src/FsLex/fslex.fsproj"; "src/FsYacc/fsyacc.fsproj"] do

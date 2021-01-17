@@ -1,10 +1,10 @@
 (* (c) Microsoft Corporation 2005-2008.  *)
 
-module internal FsLexYacc.FsLex.AST
+module FsLexYacc.FsLex.AST
 
 open System.Collections.Generic
 open System.Globalization
-open Internal.Utilities.Text.Lexing
+open FSharp.Text.Lexing
 
 type Ident = string
 type Code = string * Position
@@ -135,6 +135,7 @@ type Regexp =
   | Star of Regexp
   | Macro of Ident
 type Clause = Regexp * Code
+
 type Spec =
     { TopCode: Code
       Macros: (Ident * Regexp) list
@@ -264,9 +265,9 @@ let LexerStateToNfa (macros: Map<string,_>) (clauses: Clause list) =
     nfaStartNode,(actions |> Seq.readonly), nfaNodeMap
 
 // TODO: consider a better representation here.
-type internal NfaNodeIdSetBuilder = HashSet<NodeId>
+type NfaNodeIdSetBuilder = HashSet<NodeId>
 
-type internal NfaNodeIdSet(nodes: NfaNodeIdSetBuilder) =
+type NfaNodeIdSet(nodes: NfaNodeIdSetBuilder) =
     // BEWARE: the next line is performance critical
     let s = nodes |> Seq.toArray
     do Array.sortInPlaceWith compare s // 19

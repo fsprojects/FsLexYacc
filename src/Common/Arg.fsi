@@ -1,11 +1,7 @@
 // (c) Microsoft Corporation 2005-2009. 
 
 /// A simple command-line argument processor.
-#if INTERNALIZED_FSLEXYACC_RUNTIME
-namespace Internal.Utilities
-#else
 namespace FSharp.Text
-#endif
 
 /// The spec value describes the action of the argument,
 /// and whether it expects a following parameter.

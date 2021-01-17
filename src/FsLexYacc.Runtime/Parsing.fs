@@ -1,24 +1,12 @@
 // (c) Microsoft Corporation 2005-2009. 
 
-#if INTERNALIZED_FSLEXYACC_RUNTIME
-
-namespace  Internal.Utilities.Text.Parsing
-open Internal.Utilities
-open Internal.Utilities.Text.Lexing
-
-#else
 namespace FSharp.Text.Parsing
 open FSharp.Text.Lexing
-#endif
 
 open System
 open System.Collections.Generic
 
-#if INTERNALIZED_FSLEXYACC_RUNTIME
-type internal IParseState = 
-#else
 type IParseState = 
-#endif
     abstract InputRange: int -> Position * Position
 
     abstract InputEndPosition: int -> Position 
@@ -37,11 +25,7 @@ type IParseState =
 // This context is passed to the error reporter when a syntax error occurs
 
 [<Sealed>]
-#if INTERNALIZED_FSLEXYACC_RUNTIME
-type internal ParseErrorContext<'tok>
-#else
 type ParseErrorContext<'tok>
-#endif
          (//lexbuf: LexBuffer<_>,
           stateStack:int list,
           parseState: IParseState, 
@@ -69,11 +53,7 @@ type ParseErrorContext<'tok>
 //-------------------------------------------------------------------------
 // This is the data structure emitted as code by FSYACC.  
 
-#if INTERNALIZED_FSLEXYACC_RUNTIME
-type internal Tables<'tok> = 
-#else
 type Tables<'tok> = 
-#endif
     { reductions: (IParseState -> obj)[]
       endOfInputTag: int
       tagOfToken: 'tok -> int
@@ -100,11 +80,7 @@ type Tables<'tok> =
 // This type is in System.dll so for the moment we can't use it in FSharp.Core.dll
 //type Stack<'a> = System.Collections.Generic.Stack<'a>
 
-#if INTERNALIZED_FSLEXYACC_RUNTIME
-type Stack<'a>(n)  = 
-#else
 type internal Stack<'a>(n)  = 
-#endif
     let mutable contents = Array.zeroCreate<'a>(n)
     let mutable count = 0
 
@@ -142,11 +118,7 @@ module Flags =
     let mutable debug = false
 #endif
 
-#if INTERNALIZED_FSLEXYACC_RUNTIME
-module internal Implementation = 
-#else
 module Implementation = 
-#endif
     
     // Definitions shared with fsyacc 
     let anyMarker = 0xffff
@@ -522,18 +494,10 @@ module Implementation =
         // OK, we're done - read off the overall generated value
         valueStack.Peep().value
 
-#if INTERNALIZED_FSLEXYACC_RUNTIME
-type internal Tables<'tok> with
-#else
 type Tables<'tok> with
-#endif
     member tables.Interpret (lexer,lexbuf,initialState) = 
         Implementation.interpret tables lexer lexbuf initialState
     
-#if INTERNALIZED_FSLEXYACC_RUNTIME
-module internal ParseHelpers = 
-#else
 module ParseHelpers = 
-#endif
     let parse_error (_s:string) = ()
     let parse_error_rich = (None : (ParseErrorContext<_> -> unit) option)

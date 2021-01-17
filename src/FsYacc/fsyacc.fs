@@ -5,8 +5,8 @@ module internal FsLexYacc.FsYacc.Driver
 open System.IO 
 open System.Collections.Generic
 open Printf
-open Internal.Utilities
-open Internal.Utilities.Text.Lexing
+open FSharp.Text
+open FSharp.Text.Lexing
 
 open FsLexYacc.FsYacc
 open FsLexYacc.FsYacc.AST

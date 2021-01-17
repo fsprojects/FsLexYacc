@@ -1,12 +1,12 @@
 {
 (* (c) Microsoft Corporation 2005-2008.  *)
   
-module internal FsLexYacc.FsLex.Lexer
+module FsLexYacc.FsLex.Lexer
   
 open FsLexYacc.FsLex.AST
 open FsLexYacc.FsLex.Parser
-open Internal.Utilities
-open Internal.Utilities.Text.Lexing
+open FSharp.Text
+open FSharp.Text.Lexing
 open System.Text
 
 let escape c = 

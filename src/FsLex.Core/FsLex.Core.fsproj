@@ -11,18 +11,6 @@
     <FsLex Include="fslexlex.fsl">
       <OtherFlags>--unicode --lexlib FSharp.Text.Lexing</OtherFlags>
     </FsLex>
-    <Compile Include="..\FsLexYacc.Runtime\Lexing.fsi">
-      <Link>lexing.fsi</Link>
-    </Compile>
-    <Compile Include="..\FsLexYacc.Runtime\Lexing.fs">
-      <Link>lexing.fs</Link>
-    </Compile>
-    <Compile Include="..\FsLexYacc.Runtime\Parsing.fsi">
-      <Link>parsing.fsi</Link>
-    </Compile>
-    <Compile Include="..\FsLexYacc.Runtime\Parsing.fs">
-      <Link>parsing.fs</Link>
-    </Compile>
     <Compile Include="fslexast.fs" />
     <Compile Include="fslexpars.fs" />
     <Compile Include="fslexlex.fs" />

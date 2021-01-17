@@ -1,6 +1,6 @@
 // (c) Microsoft Corporation 2005-2007.
 
-module internal FsLexYacc.FsYacc.AST
+module FsLexYacc.FsYacc.AST
 
 #nowarn "62" // This construct is for ML compatibility.
 
@@ -9,7 +9,7 @@ open System
 open System.Collections.Generic
 open Printf
 open Microsoft.FSharp.Collections
-open Internal.Utilities.Text.Lexing
+open FSharp.Text.Lexing
 
 /// An active pattern that should be in the F# standard library
 let (|KeyValue|) (kvp:KeyValuePair<_,_>) = kvp.Key,kvp.Value

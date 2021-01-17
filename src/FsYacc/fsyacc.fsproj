@@ -6,26 +6,8 @@
     <RollForward>Major</RollForward>
   </PropertyGroup>
   <ItemGroup>
-    <FsLex Include="fsyacclex.fsl">
-      <OtherFlags>--unicode --lexlib FSharp.Text.Lexing</OtherFlags>
-    </FsLex>
-    <FsYacc Include="fsyaccpars.fsy">
-      <OtherFlags>--module FsLexYacc.FsYacc.Parser --lexlib FSharp.Text.Lexing --parslib FSharp.Text.Parsing</OtherFlags>
-    </FsYacc>
     <Compile Include="AssemblyInfo.fs">
       <Link>AssemblyInfo.fs</Link>
-    </Compile>
-    <Compile Include="..\FsLexYacc.Runtime\Lexing.fsi">
-      <Link>lexing.fsi</Link>
-    </Compile>
-    <Compile Include="..\FsLexYacc.Runtime\Lexing.fs">
-      <Link>lexing.fs</Link>
-    </Compile>
-    <Compile Include="..\FsLexYacc.Runtime\Parsing.fsi">
-      <Link>parsing.fsi</Link>
-    </Compile>
-    <Compile Include="..\FsLexYacc.Runtime\Parsing.fs">
-      <Link>parsing.fs</Link>
     </Compile>
     <Compile Include="..\Common\Arg.fsi">
       <Link>arg.fsi</Link>
@@ -33,13 +15,7 @@
     <Compile Include="..\Common\Arg.fs">
       <Link>arg.fs</Link>
     </Compile>
-    <Compile Include="fsyaccast.fs" />
-    <Compile Include="fsyaccpars.fs" />
-    <Compile Include="fsyacclex.fs" />
     <Compile Include="fsyacc.fs" />
-    <Content Include="..\FsLexYacc.Build.Tasks\FsLexYacc.targets">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FsYacc.Core\FsYacc.Core.fsproj" />

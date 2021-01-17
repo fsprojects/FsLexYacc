@@ -1,12 +1,12 @@
 {
 (* (c) Microsoft Corporation 2005-2008.  *)
 
-module internal FsLexYacc.FsYacc.Lexer
+module FsLexYacc.FsYacc.Lexer
   
 open FsLexYacc.FsYacc.AST
 open FsLexYacc.FsYacc.Parser
 open System.Text
-open Internal.Utilities.Text.Lexing
+open FSharp.Text.Lexing
 
 let lexeme  (lexbuf : LexBuffer<char>) = new System.String(lexbuf.Lexeme)
 let newline (lexbuf:LexBuffer<_>) = lexbuf.EndPos <- lexbuf.EndPos.NextLine

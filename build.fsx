@@ -162,21 +162,19 @@ Target.create "RunOldFsYaccTests" (fun _ ->
 // Build a NuGet package
 
 Target.create "NuGet" (fun _ ->
-    let toolType = ToolType.CreateLocalTool()
-    Paket.pack (fun p -> 
+    DotNet.pack (fun p -> 
         { p with 
-            ToolType = toolType
-            TemplateFile = "nuget/FsLexYacc.Runtime.template"
-            Version = release.NugetVersion
-            OutputPath = "bin"
-            ReleaseNotes = String.toLines release.Notes })
-    Paket.pack (fun p -> 
-        { p with 
-            ToolType = toolType
-            TemplateFile = "nuget/FsLexYacc.template"
-            Version = release.NugetVersion
-            OutputPath = "bin"
-            ReleaseNotes = String.toLines release.Notes })
+            Configuration = DotNet.BuildConfiguration.Release
+            MSBuildParams = {
+                p.MSBuildParams with
+                                Properties = [
+                                    "PackageReleaseNotes", String.toLines release.Notes
+                                    "PackageVersion", release.NugetVersion
+                                ]
+            }
+            OutputPath = Some "bin"
+        }
+    ) "FsLexYacc.sln"
 )
 
 // --------------------------------------------------------------------------------------

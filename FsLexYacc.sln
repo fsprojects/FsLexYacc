@@ -6,7 +6,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{BF60
 	ProjectSection(SolutionItems) = preProject
 		build.fsx = build.fsx
 		nuget\FsLexYacc.template = nuget\FsLexYacc.template
-		nuget\FsLexYacc.Runtime.template = nuget\FsLexYacc.Runtime.template
 		README.md = README.md
 		RELEASE_NOTES.md = RELEASE_NOTES.md
 	EndProjectSection

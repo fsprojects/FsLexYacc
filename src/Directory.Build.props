@@ -1,5 +1,16 @@
 <Project>
  <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IsPackable>true</IsPackable>
+    <Authors>Microsoft Corporation, Don Syme, F# Software Foundation contributors</Authors>
+    <PackageTags>F#, fsharp, yacc, fsyacc, lex, parsing, lexing, fslex</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>logo.png</PackageIcon>
+    <PackageIconUrl>https://raw.githubusercontent.com/fsprojects/FsLexYacc/master/docs/files/img/logo.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/fsprojects/FsLexYacc</PackageProjectUrl>
+    <DebugType>embedded</DebugType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.xml</AllowedOutputExtensionsInPackageBuildOutputFolder>
  </PropertyGroup>
 </Project>

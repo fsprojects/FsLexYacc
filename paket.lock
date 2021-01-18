@@ -8,3 +8,8 @@ NUGET
       FsLexYacc.Runtime (>= 10.2 < 10.3)
     FsLexYacc.Runtime (10.2) - copy_local: false
       FSharp.Core (>= 4.5.2)
+    Microsoft.Build.Tasks.Git (1.0) - copy_local: false
+    Microsoft.SourceLink.Common (1.0) - copy_local: false
+    Microsoft.SourceLink.GitHub (1.0) - copy_local: false
+      Microsoft.Build.Tasks.Git (>= 1.0)
+      Microsoft.SourceLink.Common (>= 1.0)

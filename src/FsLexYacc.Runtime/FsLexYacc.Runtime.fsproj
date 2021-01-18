@@ -5,7 +5,6 @@
     <OutputType>Library</OutputType>
     <Description>Runtime for FsLex/FsYacc lexer/parser generation tools</Description>
   </PropertyGroup>
-  
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Lexing.fsi" />
@@ -14,5 +13,5 @@
     <Compile Include="Parsing.fs" />
     <Content Include="../../docs/files/img/logo.png" PackagePath="logo.png" />
   </ItemGroup>
-  <Import Project="../../.paket/Paket.Restore.targets" />
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

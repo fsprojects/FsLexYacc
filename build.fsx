@@ -162,6 +162,7 @@ Target.create "RunOldFsYaccTests" (fun _ ->
 // Build a NuGet package
 
 Target.create "NuGet" (fun _ ->
+    // project-specific packages
     DotNet.pack (fun p -> 
         { p with 
             Configuration = DotNet.BuildConfiguration.Release
@@ -175,6 +176,15 @@ Target.create "NuGet" (fun _ ->
             OutputPath = Some "bin"
         }
     ) "FsLexYacc.sln"
+
+    // the meta-package
+    Paket.pack (fun p ->
+        { p with
+            ToolType = ToolType.CreateLocalTool()
+            TemplateFile = "nuget/FsLexYacc.template"
+            Version = release.NugetVersion
+            OutputPath = "bin"
+            ReleaseNotes = String.toLines release.Notes })
 )
 
 // --------------------------------------------------------------------------------------

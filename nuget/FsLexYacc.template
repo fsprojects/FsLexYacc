@@ -38,6 +38,3 @@ files
   ../src/FsYacc/fsyacc.fs ==> src/fsyacc
   ../src/FsYacc/fsyacc.fsx ==> src/fsyacc
   ../src/FsLexYacc.Build.Tasks/FsLexYacc.targets ==> src
-dependencies
-  FsLexYacc.Runtime ~> CURRENTVERSION
-  FSharp.Core >= LOCKEDVERSION

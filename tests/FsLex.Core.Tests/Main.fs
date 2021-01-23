@@ -3,6 +3,9 @@
 open Expecto
 open FsLex.Core
 
+let parse file = 
+    FsLexYacc.FsLex.AST.Compile 
+
 
 [<EntryPoint>]
 let main argv =

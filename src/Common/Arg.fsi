@@ -33,7 +33,7 @@ type ArgParser =
     [<System.Obsolete("This method should not be used directly as it will be removed in a future revision of this library")>]
     static member ParsePartial: cursor: int ref * argv: string[] * arguments:seq<ArgInfo> * ?otherArgs: (string -> unit) * ?usageText:string -> unit
 
-    /// Parse the arguments given by System.Environment.GetEnvironmentVariables()
+    /// Parse the arguments given by System.Environment.GetCommandLineArgs()
     /// according to the argument processing specifications "specs".
     /// Args begin with "-". Non-arguments are passed to "f" in
     /// order.  "use" is printed as part of the usage line if an error occurs.

@@ -136,10 +136,13 @@ type Regexp =
   | Macro of Ident
 type Clause = Regexp * Code
 
+type Rule = (Ident * Ident list * Clause list)
+type Macro = Ident * Regexp
+
 type Spec =
     { TopCode: Code
-      Macros: (Ident * Regexp) list
-      Rules: (Ident * Ident list * Clause list) list
+      Macros: Macro list
+      Rules: Rule list
       BottomCode: Code }
 
 type NodeId = int

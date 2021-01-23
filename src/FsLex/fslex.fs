@@ -36,13 +36,23 @@ let UnicodeFileAsLexbuf (filename,codePage : int option) : FileStream * StreamRe
 //------------------------------------------------------------------
 // This is the program proper
 
+type Domain = Unicode | ASCII
+type GeneratorState = 
+    { inputFileName: string
+      outputFileName: string
+      inputCodePage: System.Text.Encoding
+      generatedModuleName: string option
+      disableLightMode: bool option
+      generateInternalModule: bool
+      lexerLibraryName: string
+      domain : Domain }
+
 let input = ref None
 let out = ref None
 let inputCodePage = ref None
 let light = ref None
 let modname = ref None
 let internal_module = ref false
-
 let mutable lexlib = "FSharp.Text.Lexing"
 
 let usage =
@@ -61,68 +71,71 @@ let _ = ArgParser.Parse(usage, (fun x -> match !input with Some _ -> failwith "m
 
 let outputInt (os: TextWriter) (n:int) = os.Write(string n)
 
-let outputCodedUInt16 (os: #TextWriter)  (n:int) = 
-  os.Write n
-  os.Write "us; "
-
 let sentinel = 255 * 256 + 255 
 
-let lineCount = ref 0
-let cfprintfn (os: #TextWriter) fmt = Printf.kfprintf (fun () -> incr lineCount; os.WriteLine()) os fmt
-
-let main() = 
+let readSpecFromFile fileName codePage = 
+  let stream,reader,lexbuf = UnicodeFileAsLexbuf(fileName, codePage) 
+  use stream = stream
+  use reader = reader
   try 
-    let filename = (match !input with Some x -> x | None -> failwith "no input given") 
-    let domain = if unicode then "Unicode" else "Ascii" 
-    let spec = 
-      let stream,reader,lexbuf = UnicodeFileAsLexbuf(filename, !inputCodePage) 
-      use stream = stream
-      use reader = reader
-      try 
-          Parser.spec FsLexYacc.FsLex.Lexer.token lexbuf 
-      with e -> 
-          eprintf "%s(%d,%d): error: %s" filename lexbuf.StartPos.Line lexbuf.StartPos.Column 
-              (match e with 
-               | Failure s -> s 
-               | _ -> e.Message)
-          exit 1
-    printfn "compiling to dfas (can take a while...)"
-    let perRuleData, dfaNodes = AST.Compile spec
-    let dfaNodes = dfaNodes |> List.sortBy (fun n -> n.Id) 
+      let spec = Parser.spec FsLexYacc.FsLex.Lexer.token lexbuf
+      Ok spec
+  with e ->
+      (e, lexbuf.StartPos.Line, lexbuf.StartPos.Column)
+      |> Error
 
-    printfn "%d states" dfaNodes.Length
-    printfn "writing output" 
+type PerRuleData = list<DfaNode * seq<Code>>
+type DfaNodes = list<DfaNode>
+
+type Writer(fileName) = 
+    let os = System.IO.File.CreateText fileName
+    let mutable lineCount = 0
+    let incr () = 
+        lineCount <- lineCount + 1
     
-    let output = 
-        match !out with 
-        | Some x -> x 
-        | _ -> 
-            Path.Combine (Path.GetDirectoryName filename,Path.GetFileNameWithoutExtension(filename)) + ".fs"
-    use os = System.IO.File.CreateText output
-
-    if (!light = Some(false)) || (!light = None && (Path.HasExtension(output) && Path.GetExtension(output) = ".ml")) then
-        cfprintfn os "#light \"off\""
-
-    match !modname with
-    | None -> ()
-    | Some s ->
-        let internal_tag = if !internal_module then "internal " else ""
-        cfprintfn os "module %s%s" internal_tag s
+    member x.writeLine fmt = 
+        Printf.kfprintf (fun () -> incr(); os.WriteLine()) os fmt
     
-    let printLinesIfCodeDefined (code,pos:Position) =
+    member x.write fmt = 
+        Printf.fprintf os fmt
+
+    member x.writeCode (code, pos: Position) = 
         if pos <> Position.Empty  // If bottom code is unspecified, then position is empty.        
         then 
-            cfprintfn os "# %d \"%s\"" pos.Line pos.FileName
-            cfprintfn os "%s" code
-
-    printLinesIfCodeDefined spec.TopCode
-    let code = fst spec.TopCode
-    lineCount := !lineCount + code.Replace("\r","").Split([| '\n' |]).Length
-    cfprintfn os "# %d \"%s\"" !lineCount output
+            x.writeLine "# %d \"%s\"" pos.Line pos.FileName
+            x.writeLine "%s" code
+            let numLines = code.Replace("\r","").Split([| '\n' |]).Length
+            lineCount  <- lineCount + numLines
+            x.writeLine "# %d \"%s\"" lineCount fileName
     
-    cfprintfn os "let trans : uint16[] array = "
-    cfprintfn os "    [| "
-    if unicode then 
+    member x.LineCount = lineCount
+
+    member x.WriteUint16 (n: int) = 
+        os.Write n;
+        os.Write "us;"
+
+    interface IDisposable with 
+        member x.Dispose() = os.Dispose()
+
+let writeLightMode lightModeDisabled (fileName: string) (writer: Writer) = 
+    if lightModeDisabled = Some false || (lightModeDisabled = None && (Path.HasExtension(fileName) && Path.GetExtension(fileName) = ".ml"))
+    then
+        writer.write "#light \"off\""
+
+let writeModuleExpression genModuleName isInternal (writer: Writer) = 
+    match genModuleName with
+    | None -> ()
+    | Some s ->
+        let internal_tag = if isInternal then "internal " else ""
+        writer.writeLine "module %s%s" internal_tag s
+
+let writeTopCode (code) (writer: Writer) = writer.writeCode code
+
+let writeUnicodeTranslationArray dfaNodes domain (writer: Writer) = 
+    writer.writeLine "let trans : uint16[] array = "
+    writer.writeLine "    [| "
+    match domain with
+    | Unicode -> 
         let specificUnicodeChars = GetSpecificUnicodeChars()
         // This emits a (numLowUnicodeChars+NumUnicodeCategories+(2*#specificUnicodeChars)+1) * #states array of encoded UInt16 values
         
@@ -136,30 +149,30 @@ let main() =
         //
         // For the SpecificUnicodeChars the entries are char/next-state pairs.
         for state in dfaNodes do
-            cfprintfn os "    (* State %d *)" state.Id
-            fprintf os "     [| "
+            writer.writeLine "    (* State %d *)" state.Id
+            writer.write  "     [| "
             let trans = 
                 let dict = new Dictionary<_,_>()
                 state.Transitions |> List.iter dict.Add
                 dict
             let emit n = 
                 if trans.ContainsKey(n) then 
-                  outputCodedUInt16 os trans.[n].Id 
+                  writer.WriteUint16 trans.[n].Id 
                 else
-                  outputCodedUInt16 os sentinel
+                  writer.WriteUint16 sentinel
             for i = 0 to numLowUnicodeChars-1 do 
                 let c = char i
                 emit (EncodeChar c)
             for c in specificUnicodeChars do 
-                outputCodedUInt16 os (int c) 
+                writer.WriteUint16 (int c) 
                 emit (EncodeChar c)
             for i = 0 to NumUnicodeCategories-1 do 
                 emit (EncodeUnicodeCategoryIndex i)
             emit Eof
-            cfprintfn os "|];"
+            writer.writeLine  "|];"
         done
     
-    else
+    | ASCII ->
         // Each row for the ASCII table has format 
         //      256 entries for ASCII characters
         //      1 entry for EOF
@@ -168,61 +181,118 @@ let main() =
 
         // This emits a (256+1) * #states array of encoded UInt16 values
         for state in dfaNodes do
-            cfprintfn os "   (* State %d *)" state.Id
-            fprintf os " [|"
+            writer.writeLine "   (* State %d *)" state.Id
+            writer.write " [|"
             let trans = 
                 let dict = new Dictionary<_,_>()
                 state.Transitions |> List.iter dict.Add
                 dict
             let emit n = 
                 if trans.ContainsKey(n) then 
-                  outputCodedUInt16 os trans.[n].Id 
+                  writer.WriteUint16 trans.[n].Id 
                 else
-                  outputCodedUInt16 os sentinel
+                  writer.WriteUint16 sentinel
             for i = 0 to 255 do 
                 let c = char i
                 emit (EncodeChar c)
             emit Eof
-            cfprintfn os "|];"
+            writer.writeLine "|];"
         done
     
-    cfprintfn os "    |] "
-    
-    fprintf os "let actions : uint16[] = [|"
+    writer.writeLine "    |] "
+
+let writeUnicodeActionsArray dfaNodes (writer: Writer) = 
+    writer.write "let actions : uint16[] = [|"
     for state in dfaNodes do
         if state.Accepted.Length > 0 then 
-          outputCodedUInt16 os (snd state.Accepted.Head)
+          writer.WriteUint16 (snd state.Accepted.Head)
         else
-          outputCodedUInt16 os sentinel
+          writer.WriteUint16 sentinel
     done
-    cfprintfn os "|]"
-    cfprintfn os "let _fslex_tables = %s.%sTables.Create(trans,actions)" lexlib domain
-    
-    cfprintfn os "let rec _fslex_dummy () = _fslex_dummy() "
+    writer.writeLine  "|]"
+
+let writeUnicodeTables lexerLibraryName domain dfaNodes (writer: Writer) = 
+    writeUnicodeTranslationArray dfaNodes domain writer
+    writeUnicodeActionsArray dfaNodes writer
+    writer.writeLine  "let _fslex_tables = %s.%sTables.Create(trans,actions)" lexerLibraryName (match domain with | Unicode -> "Unicode" | ASCII -> "ASCII")
+
+let writeRules (rules: Rule list) (perRuleData: PerRuleData) outputFileName (writer: Writer) = 
+    writer.writeLine  "let rec _fslex_dummy () = _fslex_dummy() "
 
     // These actions push the additional start state and come first, because they are then typically inlined into later
     // rules. This means more tailcalls are taken as direct branches, increasing efficiency and 
     // improving stack usage on platforms that do not take tailcalls.
-    for ((startNode, actions),(ident,args,_)) in List.zip perRuleData spec.Rules do
-        cfprintfn os "// Rule %s" ident
-        cfprintfn os "and %s %s lexbuf =" ident (String.Join(" ",Array.ofList args))
-        cfprintfn os "  match _fslex_tables.Interpret(%d,lexbuf) with" startNode.Id
+    for ((startNode, actions),(ident,args,_)) in List.zip perRuleData rules do
+        writer.writeLine "// Rule %s" ident
+        writer.writeLine "and %s %s lexbuf =" ident (String.Join(" ", Array.ofList args))
+        writer.writeLine "  match _fslex_tables.Interpret(%d,lexbuf) with" startNode.Id
         actions |> Seq.iteri (fun i (code:string, pos) -> 
-            cfprintfn os "  | %d -> ( " i
-            cfprintfn os "# %d \"%s\"" pos.Line pos.FileName
+            writer.writeLine "  | %d -> ( " i
+            writer.writeLine "# %d \"%s\"" pos.Line pos.FileName
             let lines = code.Split([| '\r'; '\n' |], StringSplitOptions.RemoveEmptyEntries)
             for line in lines do
-                cfprintfn os "               %s" line
-            cfprintfn os "# %d \"%s\"" !lineCount output
-            cfprintfn os "          )")
-        cfprintfn os "  | _ -> failwith \"%s\"" ident
+                writer.writeLine "               %s" line
+            writer.writeLine "# %d \"%s\"" writer.LineCount outputFileName
+            writer.writeLine "          )")
+        writer.writeLine "  | _ -> failwith \"%s\"" ident
     
+    writer.writeLine ""
 
-    cfprintfn os ""
-        
-    printLinesIfCodeDefined spec.BottomCode
-    cfprintfn os "# 3000000 \"%s\"" output
+let writeBottomCode code (writer: Writer) = writer.writeCode code
+
+let writeFooter outputFileName (writer: Writer) = writer.writeLine "# 3000000 \"%s\"" outputFileName
+
+let writeSpecToFile (state: GeneratorState) (spec: Spec) (perRuleData: PerRuleData) (dfaNodes: DfaNodes) = 
+    use writer = new Writer(state.outputFileName)
+    writeLightMode state.disableLightMode state.outputFileName writer
+    writeModuleExpression state.generatedModuleName state.generateInternalModule writer
+    writeTopCode spec.TopCode writer
+    writeUnicodeTables state.lexerLibraryName state.domain dfaNodes writer
+    writeRules spec.Rules perRuleData state.outputFileName writer
+    writeBottomCode spec.BottomCode writer
+    writeFooter state.outputFileName writer
+    ()
+
+let compileSpec (spec: Spec) = 
+    let perRuleData, dfaNodes = AST.Compile spec
+    let dfaNodes = dfaNodes |> List.sortBy (fun n -> n.Id) 
+    perRuleData, dfaNodes
+
+let main() = 
+  try 
+    let filename = (match !input with Some x -> x | None -> failwith "no input given") 
+    let spec = 
+        match readSpecFromFile filename !inputCodePage with
+        | Ok spec -> spec
+        | Error (e, line, column) -> 
+            eprintf "%s(%d,%d): error: %s" filename line column
+              (match e with 
+               | Failure s -> s 
+               | _ -> e.Message)
+            exit 1
+          
+    printfn "compiling to dfas (can take a while...)"
+    let perRuleData, dfaNodes = compileSpec spec
+
+    printfn "%d states" dfaNodes.Length
+    printfn "writing output" 
     
+    let output = 
+        match !out with 
+        | Some x -> x 
+        | _ -> Path.ChangeExtension(filename, ".fs")
+    
+    let state : GeneratorState = 
+        { inputFileName = filename
+          outputFileName = output
+          inputCodePage = !inputCodePage |> Option.map System.Text.Encoding.GetEncoding |> Option.defaultValue System.Text.Encoding.UTF8
+          generatedModuleName = !modname
+          disableLightMode = !light
+          generateInternalModule = !internal_module
+          lexerLibraryName = lexlib
+          domain = if unicode then Unicode else ASCII }
+    writeSpecToFile state spec perRuleData dfaNodes
+
   with e -> 
     eprintf "FSLEX: error FSL000: %s" (match e with Failure s -> s | e -> e.ToString())
     exit 1

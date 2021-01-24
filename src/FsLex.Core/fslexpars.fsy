@@ -68,24 +68,24 @@ clause:
 | regexp CODE { $1, $2 }
 
 regexp:
-| CHAR { Inp(Alphabet(EncodeChar $1)) }
-| UNICODE_CATEGORY { Inp(UnicodeCategory $1) }
-| EOF { Inp(Alphabet(Eof)) }
+| CHAR { Inp(Alphabet(EncodeChar $1))}
+| UNICODE_CATEGORY { Inp(UnicodeCategory $1)}
+| EOF { Inp(Alphabet(fun ctx -> Eof))}
 | UNDERSCORE { Inp Any }
-| STRING { Seq([ for n in 0 .. $1.Length - 1 -> Inp(Alphabet(EncodeChar $1.[n]))]) }
+| STRING { Seq([ for n in 0 .. $1.Length - 1 -> Inp(Alphabet(EncodeChar $1.[n]))])}
 | IDENT { Macro($1) }
 | regexp regexp %prec regexp_seq  { Seq[$1;$2] }
 | regexp PLUS %prec regexp_plus  { Seq[$1;Star $1] }
 | regexp STAR %prec regexp_star  { Star $1 }
-| regexp QMARK %prec regexp_opt  { Alt[Seq[];$1] }
-| regexp BAR regexp %prec regexp_alt  { Alt[$1;$3] }
+| regexp QMARK %prec regexp_opt  { Alt(fun ctx -> [Seq[];$1])}
+| regexp BAR regexp %prec regexp_alt { Alt(fun ctx -> [$1;$3])}
 | LPAREN regexp RPAREN  { $2 }
-| LBRACK charset RBRACK   { Alt [ for c in $2 -> Inp(Alphabet(c)) ] }
-| LBRACK HAT charset RBRACK   { Inp(NotCharSet($3)) }
+| LBRACK charset RBRACK   { Alt (fun ctx -> [ for c in ($2 ctx) -> Inp(Alphabet(fun ctx -> c)) ])}
+| LBRACK HAT charset RBRACK   { Inp(NotCharSet(fun ctx -> $3 ctx))}
 
 charset:
- | CHAR { Set.singleton(EncodeChar $1) }
- | CHAR DASH CHAR { Set.ofSeq [ for c in $1 .. $3 -> EncodeChar c ] }
- | charset charset { Set.union $1 $2  }
+ | CHAR { fun ctx -> Set.singleton(EncodeChar $1 ctx)}
+ | CHAR DASH CHAR { fun ctx -> Set.ofSeq [ for c in $1 .. $3 -> EncodeChar c ctx ]}
+ | charset charset { fun ctx -> Set.union ($1 ctx) ($2 ctx)}
 
 

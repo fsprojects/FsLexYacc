@@ -447,7 +447,7 @@ let _fsyacc_reductions ()  =    [|
                 (
                    (
 # 71 "fslexpars.fsy"
-                              Inp(Alphabet(EncodeChar _1)) 
+                              Inp(Alphabet(EncodeChar _1))
                    )
 # 71 "fslexpars.fsy"
                  : 'gentype_regexp));
@@ -458,7 +458,7 @@ let _fsyacc_reductions ()  =    [|
                 (
                    (
 # 72 "fslexpars.fsy"
-                                          Inp(UnicodeCategory _1) 
+                                          Inp(UnicodeCategory _1)
                    )
 # 72 "fslexpars.fsy"
                  : 'gentype_regexp));
@@ -468,7 +468,7 @@ let _fsyacc_reductions ()  =    [|
                 (
                    (
 # 73 "fslexpars.fsy"
-                             Inp(Alphabet(Eof)) 
+                             Inp(Alphabet(fun ctx -> Eof))
                    )
 # 73 "fslexpars.fsy"
                  : 'gentype_regexp));
@@ -489,7 +489,7 @@ let _fsyacc_reductions ()  =    [|
                 (
                    (
 # 75 "fslexpars.fsy"
-                                Seq([ for n in 0 .. _1.Length - 1 -> Inp(Alphabet(EncodeChar _1.[n]))]) 
+                                Seq([ for n in 0 .. _1.Length - 1 -> Inp(Alphabet(EncodeChar _1.[n]))])
                    )
 # 75 "fslexpars.fsy"
                  : 'gentype_regexp));
@@ -545,7 +545,7 @@ let _fsyacc_reductions ()  =    [|
                 (
                    (
 # 80 "fslexpars.fsy"
-                                                        Alt[Seq[];_1] 
+                                                        Alt(fun ctx -> [Seq[];_1])
                    )
 # 80 "fslexpars.fsy"
                  : 'gentype_regexp));
@@ -557,7 +557,7 @@ let _fsyacc_reductions ()  =    [|
                 (
                    (
 # 81 "fslexpars.fsy"
-                                                             Alt[_1;_3] 
+                                                            Alt(fun ctx -> [_1;_3])
                    )
 # 81 "fslexpars.fsy"
                  : 'gentype_regexp));
@@ -579,7 +579,7 @@ let _fsyacc_reductions ()  =    [|
                 (
                    (
 # 83 "fslexpars.fsy"
-                                                 Alt [ for c in _2 -> Inp(Alphabet(c)) ] 
+                                                 Alt (fun ctx -> [ for c in (_2 ctx) -> Inp(Alphabet(fun ctx -> c)) ])
                    )
 # 83 "fslexpars.fsy"
                  : 'gentype_regexp));
@@ -590,7 +590,7 @@ let _fsyacc_reductions ()  =    [|
                 (
                    (
 # 84 "fslexpars.fsy"
-                                                     Inp(NotCharSet(_3)) 
+                                                     Inp(NotCharSet(fun ctx -> _3 ctx))
                    )
 # 84 "fslexpars.fsy"
                  : 'gentype_regexp));
@@ -601,7 +601,7 @@ let _fsyacc_reductions ()  =    [|
                 (
                    (
 # 87 "fslexpars.fsy"
-                               Set.singleton(EncodeChar _1) 
+                               fun ctx -> Set.singleton(EncodeChar _1 ctx)
                    )
 # 87 "fslexpars.fsy"
                  : 'gentype_charset));
@@ -613,7 +613,7 @@ let _fsyacc_reductions ()  =    [|
                 (
                    (
 # 88 "fslexpars.fsy"
-                                         Set.ofSeq [ for c in _1 .. _3 -> EncodeChar c ] 
+                                         fun ctx -> Set.ofSeq [ for c in _1 .. _3 -> EncodeChar c ctx ]
                    )
 # 88 "fslexpars.fsy"
                  : 'gentype_charset));
@@ -625,7 +625,7 @@ let _fsyacc_reductions ()  =    [|
                 (
                    (
 # 89 "fslexpars.fsy"
-                                          Set.union _1 _2  
+                                          fun ctx -> Set.union (_1 ctx) (_2 ctx)
                    )
 # 89 "fslexpars.fsy"
                  : 'gentype_charset));

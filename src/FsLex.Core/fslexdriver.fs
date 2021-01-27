@@ -167,7 +167,7 @@ let writeUnicodeActionsArray dfaNodes (writer: Writer) =
 let writeUnicodeTables lexerLibraryName domain dfaNodes (writer: Writer) =
     writeUnicodeTranslationArray dfaNodes domain writer
     writeUnicodeActionsArray dfaNodes writer
-    writer.writeLine  "let _fslex_tables = %s.%sTables.Create(trans,actions)" lexerLibraryName (match domain with | Unicode -> "Unicode" | ASCII -> "ASCII")
+    writer.writeLine  "let _fslex_tables = %s.%sTables.Create(trans,actions)" lexerLibraryName (match domain with | Unicode -> "Unicode" | ASCII -> "Ascii")
 
 let writeRules (rules: Rule list) (perRuleData: PerRuleData) outputFileName (writer: Writer) =
     writer.writeLine  "let rec _fslex_dummy () = _fslex_dummy() "

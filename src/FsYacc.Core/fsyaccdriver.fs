@@ -77,8 +77,10 @@ type FileLogger (outputFileLog) =
 
 type NullLogger () =
     interface Logger with
-        member x.LogStream f = Unchecked.defaultof<'a>
-        member x.Log f = Unchecked.defaultof<'a>
+        member x.LogStream f = 
+            f  TextWriter.Null
+        member x.Log f = 
+            fprintfn TextWriter.Null f
         member x.LogString msg = ()
 
     interface System.IDisposable with member _.Dispose () = ()
@@ -229,10 +231,10 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
           for id,typ in spec.Tokens do 
                writer.WriteLine          "    | TOKEN_%s" id;
                writer.WriteLineInterface "    | TOKEN_%s" id;
-               writer.WriteLine          "    | TOKEN_end_of_input";
-               writer.WriteLineInterface "    | TOKEN_%s" id;
-               writer.WriteLine          "    | TOKEN_error";
-               writer.WriteLineInterface "    | TOKEN_error";
+      writer.WriteLine          "    | TOKEN_end_of_input";
+      writer.WriteLineInterface "    | TOKEN_end_of_input";
+      writer.WriteLine          "    | TOKEN_error";
+      writer.WriteLineInterface "    | TOKEN_error";
 
       writer.WriteLine "// This type is used to give symbolic names to token indexes, useful for error messages";
       writer.WriteLine          "type nonTerminalId = ";
@@ -255,8 +257,7 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
       writer.WriteLine "// This function maps integer indexes to symbolic token ids";
       writer.WriteLine "let tokenTagToTokenId (tokenIdx:int) = ";
       writer.WriteLine "  match tokenIdx with";
-      spec.Tokens |> List.iteri (fun i (id,typ) -> 
-          writer.WriteLine "  | %d -> TOKEN_%s " i id)
+      spec.Tokens |> List.iteri (fun i (id,typ) ->  writer.WriteLine "  | %d -> TOKEN_%s " i id)
       writer.WriteLine "  | %d -> TOKEN_end_of_input" compiledSpec.endOfInputTerminalIdx;
       writer.WriteLine "  | %d -> TOKEN_error" compiledSpec.errorTerminalIdx;
       writer.WriteLine "  | _ -> failwith \"tokenTagToTokenId: bad token\""
@@ -269,8 +270,7 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
       writer.WriteLine "/// This function maps production indexes returned in syntax errors to strings representing the non terminal that would be produced by that production";
       writer.WriteLine "let prodIdxToNonTerminal (prodIdx:int) = ";
       writer.WriteLine "  match prodIdx with";
-      compiledSpec.prods |> Array.iteri (fun i (nt,ntIdx,syms,code) -> 
-          writer.WriteLine "    | %d -> NONTERM_%s " i nt);
+      compiledSpec.prods |> Array.iteri (fun i (nt,ntIdx,syms,code) ->  writer.WriteLine "    | %d -> NONTERM_%s " i nt);
       writer.WriteLine "    | _ -> failwith \"prodIdxToNonTerminal: bad production index\""
 
       writer.WriteLineInterface "";
@@ -284,8 +284,7 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
       writer.WriteLine "// This function gets the name of a token as a string";
       writer.WriteLine "let token_to_string (t:token) = ";
       writer.WriteLine "  match t with ";
-      spec.Tokens |> List.iteri (fun i (id,typ) -> 
-          writer.WriteLine "  | %s %s -> \"%s\" " id (match typ with Some _ -> "_" | None -> "") id);
+      spec.Tokens |> List.iteri (fun i (id,typ) ->  writer.WriteLine "  | %s %s -> \"%s\" " id (match typ with Some _ -> "_" | None -> "") id);
 
       writer.WriteLineInterface "";
       writer.WriteLineInterface "/// This function gets the name of a token as a string";
@@ -347,7 +346,7 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
                     writer.WriteUInt16 n
           writer.WriteLine "|]" ;
           (* Output offsets into gotos table where the gotos for a particular nonterminal begin *)
-          writer.WriteLine "let _fsyacc_sparseGotoTableRowOffsets = [|" ;
+          writer.Write "let _fsyacc_sparseGotoTableRowOffsets = [|" ;
           for j = 0 to numGotoNonTerminals-1 do  
               writer.WriteUInt16 gotoIndexes.[j]
           writer.WriteLine "|]"

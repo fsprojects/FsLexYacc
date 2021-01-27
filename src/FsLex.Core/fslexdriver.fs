@@ -6,6 +6,7 @@ open System
 open System.IO
 open FSharp.Text.Lexing
 open System.Collections.Generic
+open FSharp.Text.Lexing
 
 type Domain = Unicode | ASCII
 
@@ -54,25 +55,6 @@ type Writer(fileName) =
         member x.Dispose() = os.Dispose()
 
 let sentinel = 255 * 256 + 255
-
-
-/// Standard utility to create a Unicode LexBuffer
-///
-/// One small annoyance is that LexBuffers and not IDisposable. This means
-/// we can't just return the LexBuffer object, since the file it wraps wouldn't
-/// get closed when we're finished with the LexBuffer. Hence we return the stream,
-/// the reader and the LexBuffer. The caller should dispose the first two when done.
-let UnicodeFileAsLexbuf (filename,codePage : int option) : FileStream * StreamReader * LexBuffer<char> =
-    // Use the .NET functionality to auto-detect the unicode encoding
-    // It also presents the bytes read to the lexer in UTF8 decoded form
-    let stream  = new FileStream(filename,FileMode.Open,FileAccess.Read,FileShare.Read)
-    let reader =
-        match codePage with
-        | None -> new  StreamReader(stream,true)
-        | Some n -> new  StreamReader(stream,System.Text.Encoding.GetEncoding(n))
-    let lexbuf = LexBuffer.FromFunction(reader.Read)
-    lexbuf.EndPos <- Position.FirstLine(filename)
-    stream, reader, lexbuf
 
 let readSpecFromFile fileName codePage =
   let stream,reader,lexbuf = UnicodeFileAsLexbuf(fileName, codePage)

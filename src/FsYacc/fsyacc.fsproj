@@ -4,29 +4,11 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RollForward>Major</RollForward>
-    <DefineConstants>INTERNALIZED_FSLEXYACC_RUNTIME;$(DefineConstants)</DefineConstants>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <FsLex Include="fsyacclex.fsl">
-      <OtherFlags>--unicode --lexlib Internal.Utilities.Text.Lexing</OtherFlags>
-    </FsLex>
-    <FsYacc Include="fsyaccpars.fsy">
-      <OtherFlags>--internal --module FsLexYacc.FsYacc.Parser --lexlib Internal.Utilities.Text.Lexing --parslib Internal.Utilities.Text.Parsing</OtherFlags>
-    </FsYacc>
     <Compile Include="AssemblyInfo.fs">
       <Link>AssemblyInfo.fs</Link>
-    </Compile>
-    <Compile Include="..\FsLexYacc.Runtime\Lexing.fsi">
-      <Link>lexing.fsi</Link>
-    </Compile>
-    <Compile Include="..\FsLexYacc.Runtime\Lexing.fs">
-      <Link>lexing.fs</Link>
-    </Compile>
-    <Compile Include="..\FsLexYacc.Runtime\Parsing.fsi">
-      <Link>parsing.fsi</Link>
-    </Compile>
-    <Compile Include="..\FsLexYacc.Runtime\Parsing.fs">
-      <Link>parsing.fs</Link>
     </Compile>
     <Compile Include="..\Common\Arg.fsi">
       <Link>arg.fsi</Link>
@@ -34,13 +16,10 @@
     <Compile Include="..\Common\Arg.fs">
       <Link>arg.fs</Link>
     </Compile>
-    <Compile Include="fsyaccast.fs" />
-    <Compile Include="fsyaccpars.fs" />
-    <Compile Include="fsyacclex.fs" />
     <Compile Include="fsyacc.fs" />
-    <Content Include="..\FsLexYacc.Build.Tasks\FsLexYacc.targets">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FsYacc.Core\FsYacc.Core.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

@@ -21,9 +21,9 @@ files
   ../src/FsLexYacc.Runtime/Parsing.fs ==> src/fslex
   ../src/Common/Arg.fsi ==> src/fslex
   ../src/Common/Arg.fs ==> src/fslex
-  ../src/FsLex/fslexast.fs ==> src/fslex
-  ../src/FsLex/fslexpars.fs ==> src/fslex
-  ../src/FsLex/fslexlex.fs ==> src/fslex
+  ../src/FsLex.Core/fslexast.fs ==> src/fslex
+  ../src/FsLex.Core/fslexpars.fs ==> src/fslex
+  ../src/FsLex.Core/fslexlex.fs ==> src/fslex
   ../src/FsLex/fslex.fs ==> src/fslex
   ../src/FsLex/fslex.fsx ==> src/fslex
   ../src/FsLexYacc.Runtime/Lexing.fsi ==> src/fsyacc
@@ -32,12 +32,9 @@ files
   ../src/FsLexYacc.Runtime/Parsing.fs ==> src/fsyacc
   ../src/Common/Arg.fsi ==> src/fsyacc
   ../src/Common/Arg.fs ==> src/fsyacc
-  ../src/FsYacc/fsyaccast.fs ==> src/fsyacc
-  ../src/FsYacc/fsyaccpars.fs ==> src/fsyacc
-  ../src/FsYacc/fsyacclex.fs ==> src/fsyacc
+  ../src/FsYacc.Core/fsyaccast.fs ==> src/fsyacc
+  ../src/FsYacc.Core/fsyaccpars.fs ==> src/fsyacc
+  ../src/FsYacc.Core/fsyacclex.fs ==> src/fsyacc
   ../src/FsYacc/fsyacc.fs ==> src/fsyacc
   ../src/FsYacc/fsyacc.fsx ==> src/fsyacc
   ../src/FsLexYacc.Build.Tasks/FsLexYacc.targets ==> src
-dependencies
-  FsLexYacc.Runtime ~> CURRENTVERSION
-  FSharp.Core >= LOCKEDVERSION

@@ -1,21 +1,30 @@
 (* (c) Microsoft Corporation 2005-2008.  *)
 
-module internal FsLexYacc.FsLex.AST
+module FsLexYacc.FsLex.AST
 
 open System.Collections.Generic
 open System.Globalization
-open Internal.Utilities.Text.Lexing
+open FSharp.Text.Lexing
 
 type Ident = string
 type Code = string * Position
+
+
+type ParseContext = {
+    unicode : bool
+    caseInsensitive: bool
+}
+
+type Parser<'t> = ParseContext -> 't
 
 type Alphabet = uint32
 
 let Eof : Alphabet = 0xFFFFFFFEu
 let Epsilon : Alphabet = 0xFFFFFFFFu
 
-let mutable unicode = false
-let mutable caseInsensitive = false
+// let mutable unicode = false
+// let mutable caseInsensitive = false
+
 
 let unicodeCategories =
  dict
@@ -54,9 +63,10 @@ let unicodeCategories =
 let NumUnicodeCategories = unicodeCategories.Count
 assert (NumUnicodeCategories = 30) // see table interpreter
 let encodedUnicodeCategoryBase = 0xFFFFFF00u
+
 let EncodeUnicodeCategoryIndex(idx:int) = encodedUnicodeCategoryBase + uint32 idx
-let EncodeUnicodeCategory s =
-    if not unicode then
+let EncodeUnicodeCategory s: Parser<uint32> = fun ctx ->
+    if not ctx.unicode then
         failwith "unicode category classes may only be used if --unicode is specified"
     if unicodeCategories.ContainsKey(s) then
         EncodeUnicodeCategoryIndex (int32 unicodeCategories.[s])
@@ -71,9 +81,9 @@ assert (numLowUnicodeChars = 128) // see table interpreter
 let specificUnicodeChars = new Dictionary<_,_>()
 let specificUnicodeCharsDecode = new Dictionary<_,_>()
 
-let EncodeChar(c:char) =
+let EncodeChar(c:char): Parser<uint32> = fun ctx ->
      let x = System.Convert.ToUInt32 c
-     if unicode then
+     if ctx.unicode then
          if x < uint32 numLowUnicodeChars then x
          else
              if not(specificUnicodeChars.ContainsKey(c)) then
@@ -85,8 +95,8 @@ let EncodeChar(c:char) =
          if x >= 256u then failwithf "the Unicode character '%x' may not be used unless --unicode is specified" <| int c
          x
 
-let DecodeChar(x:Alphabet) =
-     if unicode then
+let DecodeChar(x:Alphabet): Parser<char> = fun ctx ->
+     if ctx.unicode then
          if x < uint32 numLowUnicodeChars then System.Convert.ToChar x
          else specificUnicodeCharsDecode.[x]
      else
@@ -101,17 +111,17 @@ let GetSpecificUnicodeChars() =
         |> Seq.sortBy (fun (KeyValue(k,v)) -> v)
         |> Seq.map (fun (KeyValue(k,v)) -> k)
 
-let GetSingleCharAlphabet() =
-    if unicode
+let GetSingleCharAlphabet: Parser<Set<char>> = fun ctx ->
+    if ctx.unicode
     then Set.ofList [ yield! { char 0 .. char <| numLowUnicodeChars-1 }
                       yield! GetSpecificUnicodeChars() ]
     else Set.ofList [ char 0 .. char 255 ]
 
-let GetAlphabet() =
-    if unicode
-    then Set.ofList [ for c in GetSingleCharAlphabet() do yield EncodeChar c
+let GetAlphabet: Parser<Set<uint32>> = fun ctx ->
+    if ctx.unicode
+    then Set.ofList [ for c in GetSingleCharAlphabet ctx do yield EncodeChar c ctx
                       for uc in 0 .. NumUnicodeCategories-1 do yield EncodeUnicodeCategoryIndex uc ]
-    else GetSingleCharAlphabet() |> Seq.map EncodeChar |> set
+    else GetSingleCharAlphabet ctx |> Seq.map (fun c -> EncodeChar c ctx) |> set
 
 
 //let DecodeAlphabet (x:Alphabet) = System.Convert.ToChar(x)
@@ -124,21 +134,25 @@ for i in 0 .. 65535 do
 *)
 
 type Input =
-  | Alphabet of Alphabet
+  | Alphabet of Parser<Alphabet>
   | UnicodeCategory of string
   | Any
-  | NotCharSet of Set<Alphabet>
+  | NotCharSet of Parser<Set<Alphabet>>
 type Regexp =
-  | Alt of Regexp list
+  | Alt of Parser<Regexp list>
   | Seq of Regexp list
   | Inp of Input
   | Star of Regexp
   | Macro of Ident
 type Clause = Regexp * Code
+
+type Rule = (Ident * Ident list * Clause list)
+type Macro = Ident * Regexp
+
 type Spec =
     { TopCode: Code
-      Macros: (Ident * Regexp) list
-      Rules: (Ident * Ident list * Clause list) list
+      Macros: Macro list
+      Rules: Rule list
       BottomCode: Code }
 
 type NodeId = int
@@ -178,7 +192,7 @@ type NfaNodeMap() =
         map.[nodeId] <-node
         node
 
-let LexerStateToNfa (macros: Map<string,_>) (clauses: Clause list) =
+let LexerStateToNfa ctx (macros: Map<string,_>) (clauses: Clause list) =
 
     /// Table allocating node ids
     let nfaNodeMap = new NfaNodeMap()
@@ -187,18 +201,19 @@ let LexerStateToNfa (macros: Map<string,_>) (clauses: Clause list) =
     let rec CompileRegexp re dest =
         match re with
         | Alt res ->
-            let trs = res |> List.map (fun re -> (Epsilon,CompileRegexp re dest))
+            let trs = res ctx |> List.map (fun re -> (Epsilon,CompileRegexp re dest))
             nfaNodeMap.NewNfaNode(trs,[])
         | Seq res ->
             List.foldBack (CompileRegexp) res dest
         | Inp (Alphabet c) ->
-            if caseInsensitive && c <> Eof then
-                let x = DecodeChar c
+            let c = c ctx
+            if ctx.caseInsensitive && c <> Eof then
+                let x = DecodeChar c ctx
                 let lowerCase = System.Char.ToLowerInvariant x
                 let upperCase = System.Char.ToUpperInvariant x
                 if lowerCase <> upperCase then
-                    let encodedLowerCase = EncodeChar lowerCase
-                    let encodedUpperCase = EncodeChar upperCase
+                    let encodedLowerCase = EncodeChar lowerCase ctx
+                    let encodedUpperCase = EncodeChar upperCase ctx
                     nfaNodeMap.NewNfaNode([(encodedLowerCase, dest); (encodedUpperCase, dest)],[])
                 else
                     nfaNodeMap.NewNfaNode([(c, dest)],[]) 
@@ -219,35 +234,41 @@ let LexerStateToNfa (macros: Map<string,_>) (clauses: Clause list) =
         // Note we've delayed the expension of these until we've worked out all the 'special' Unicode characters
         // mentioned in the entire lexer spec, i.e. we wait until GetAlphabet returns a reliable and stable answer.
         | Inp (UnicodeCategory uc) ->
-            let re = Alt([ yield Inp(Alphabet(EncodeUnicodeCategory uc))
-                           // Also include any specific characters in this category
-                           for c in GetSingleCharAlphabet() do
-                               if System.Char.GetUnicodeCategory(c) = unicodeCategories.[uc] then
-                                    yield Inp(Alphabet(EncodeChar(c))) ])
+            let re = Alt(fun ctx -> 
+                [ yield Inp(Alphabet(EncodeUnicodeCategory uc))
+                  // Also include any specific characters in this category
+                  for c in GetSingleCharAlphabet ctx do
+                       if System.Char.GetUnicodeCategory(c) = unicodeCategories.[uc] then
+                            yield Inp(Alphabet(EncodeChar c)) ])
             CompileRegexp re dest
 
         | Inp Any ->
-            let re = Alt([ for n in GetAlphabet() do yield Inp(Alphabet(n)) ])
+            let re = Alt(fun ctx ->
+                [ for n in GetAlphabet ctx do yield Inp(Alphabet(fun ctx -> n)) ]
+            )
             CompileRegexp re dest
 
         | Inp (NotCharSet chars) ->
-            let re = Alt [ // Include any characters from those in the alphabet besides those that are not immediately excluded
-                           for c in GetSingleCharAlphabet() do
-                               let ec = EncodeChar c
-                               if not (chars.Contains(ec)) then
-                                   yield Inp(Alphabet(ec))
+            let chars = chars ctx
+            let re = Alt(fun ctx -> 
+                [ // Include any characters from those in the alphabet besides those that are not immediately excluded
+                   for c in GetSingleCharAlphabet ctx do
+                       let ec = EncodeChar c ctx
+                       if not (chars.Contains(ec)) then
+                           yield Inp(Alphabet(fun ctx -> ec))
 
-                           // Include all unicode categories
-                           // That is, negations _only_ exclude precisely the given set of characters. You can't
-                           // exclude whole classes of characters as yet
-                           if unicode then
-                               let ucs = chars |> Set.map(DecodeChar >> System.Char.GetUnicodeCategory)
-                               for KeyValue(nm,uc) in unicodeCategories do
-                                   //if ucs.Contains(uc) then
-                                   //    printfn "warning: the unicode category '\\%s' ('%O') is automatically excluded by this character set negation. Consider adding this to the negation." nm uc
-                                   //else
-                                       yield Inp(Alphabet(EncodeUnicodeCategory nm))
-                         ]
+                   // Include all unicode categories
+                   // That is, negations _only_ exclude precisely the given set of characters. You can't
+                   // exclude whole classes of characters as yet
+                   if ctx.unicode then
+                       let ucs = chars |> Set.map(fun c -> DecodeChar c ctx |> System.Char.GetUnicodeCategory)
+                       for KeyValue(nm,uc) in unicodeCategories do
+                           //if ucs.Contains(uc) then
+                           //    printfn "warning: the unicode category '\\%s' ('%O') is automatically excluded by this character set negation. Consider adding this to the negation." nm uc
+                           //else
+                               yield Inp(Alphabet(EncodeUnicodeCategory nm))
+                 ]
+             )
             CompileRegexp re dest
 
     let actions = new System.Collections.Generic.List<_>()
@@ -264,9 +285,9 @@ let LexerStateToNfa (macros: Map<string,_>) (clauses: Clause list) =
     nfaStartNode,(actions |> Seq.readonly), nfaNodeMap
 
 // TODO: consider a better representation here.
-type internal NfaNodeIdSetBuilder = HashSet<NodeId>
+type NfaNodeIdSetBuilder = HashSet<NodeId>
 
-type internal NfaNodeIdSet(nodes: NfaNodeIdSetBuilder) =
+type NfaNodeIdSet(nodes: NfaNodeIdSetBuilder) =
     // BEWARE: the next line is performance critical
     let s = nodes |> Seq.toArray
     do Array.sortInPlaceWith compare s // 19
@@ -385,11 +406,11 @@ let NfaToDfa (nfaNodeMap:NfaNodeMap) nfaStartNode =
         |> List.sortBy (fun s -> s.Id)
     ruleStartNode,ruleNodes
 
-let Compile spec =
+let Compile ctx spec =
     let macros = Map.ofList spec.Macros
     List.foldBack
         (fun (name,args,clauses) (perRuleData,dfaNodes) ->
-            let nfa, actions, nfaNodeMap = LexerStateToNfa macros clauses
+            let nfa, actions, nfaNodeMap = LexerStateToNfa ctx macros clauses
             let ruleStartNode, ruleNodes = NfaToDfa nfaNodeMap nfa
             //printfn "name = %s, ruleStartNode = %O" name ruleStartNode.Id
             (ruleStartNode,actions) :: perRuleData, ruleNodes @ dfaNodes)

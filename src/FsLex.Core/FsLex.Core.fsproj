@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FsYacc Include="fslexpars.fsy">
+      <OtherFlags>--module FsLexYacc.FsLex.Parser --lexlib FSharp.Text.Lexing --parslib FSharp.Text.Parsing</OtherFlags>
+    </FsYacc>
+    <FsLex Include="fslexlex.fsl">
+      <OtherFlags>--unicode --lexlib FSharp.Text.Lexing</OtherFlags>
+    </FsLex>
+    <Compile Include="fslexast.fs" />
+    <Compile Include="fslexpars.fs" />
+    <Compile Include="fslexlex.fs" />
+    <Compile Include="fslexdriver.fs" />
+    <Content Include="../../docs/files/img/logo.png" PackagePath="logo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FsLexYacc.Runtime\FsLexYacc.Runtime.fsproj" />
+  </ItemGroup>
+
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
+</Project>

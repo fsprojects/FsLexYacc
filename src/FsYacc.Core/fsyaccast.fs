@@ -1,6 +1,6 @@
 // (c) Microsoft Corporation 2005-2007.
 
-module internal FsLexYacc.FsYacc.AST
+module FsLexYacc.FsYacc.AST
 
 #nowarn "62" // This construct is for ML compatibility.
 
@@ -9,7 +9,7 @@ open System
 open System.Collections.Generic
 open Printf
 open Microsoft.FSharp.Collections
-open Internal.Utilities.Text.Lexing
+open FSharp.Text.Lexing
 
 /// An active pattern that should be in the F# standard library
 let (|KeyValue|) (kvp:KeyValuePair<_,_>) = kvp.Key,kvp.Value
@@ -345,8 +345,23 @@ type PropagateTable() =
     member table.Count  = t.Count
 
 
+type Prod = NonTerminal * int * Symbols * option<Code>
+type ActionTable = (PrecedenceInfo * Action) array array
+
+type CompiledSpec = 
+    { prods: Prod []
+      states: int list []
+      startStates: int list
+      actionTable: ActionTable
+      immediateActionTable: Action option []
+      gotoTable: int option [] []
+      endOfInputTerminalIdx: int
+      errorTerminalIdx: int
+      nonTerminals: string list
+    }
+
 /// Compile a pre-processed LALR parser spec to tables following the Dragon book algorithm
-let CompilerLalrParserSpec logf (spec : ProcessedParserSpec) =
+let CompilerLalrParserSpec logf (spec : ProcessedParserSpec): CompiledSpec =
     let stopWatch = new System.Diagnostics.Stopwatch()
     let reportTime() = printfn "        time: %A" stopWatch.Elapsed; stopWatch.Reset(); stopWatch.Start()
     stopWatch.Start()
@@ -896,11 +911,15 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec) =
         OutputLalrTables logStream     (prods, states, startKernelIdxs, actionTable, immediateActionTable, gotoTable, (termTab.ToIndex endOfInputTerminal), errorTerminalIdx));
 
     let states = states |> Array.map (Set.toList >> List.map prodIdx_of_item0)
-    (prods, states, startKernelIdxs, 
-     actionTable, immediateActionTable, gotoTable, 
-     (termTab.ToIndex endOfInputTerminal), 
-     errorTerminalIdx, nonTerminals)
-
+    { prods = prods
+      states = states
+      startStates = startKernelIdxs
+      actionTable = actionTable
+      immediateActionTable = immediateActionTable
+      gotoTable = gotoTable
+      endOfInputTerminalIdx = termTab.ToIndex endOfInputTerminal
+      errorTerminalIdx = errorTerminalIdx
+      nonTerminals = nonTerminals }
   
 (* Some examples for testing *)  
 

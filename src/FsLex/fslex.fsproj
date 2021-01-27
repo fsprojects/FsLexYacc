@@ -4,40 +4,21 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RollForward>Major</RollForward>
-    <DefineConstants>INTERNALIZED_FSLEXYACC_RUNTIME;$(DefineConstants)</DefineConstants>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <FsYacc Include="fslexpars.fsy">
-      <OtherFlags>--internal --module FsLexYacc.FsLex.Parser --lexlib Internal.Utilities.Text.Lexing --parslib Internal.Utilities.Text.Parsing</OtherFlags>
-    </FsYacc>
-    <FsLex Include="fslexlex.fsl">
-      <OtherFlags>--unicode --lexlib Internal.Utilities.Text.Lexing</OtherFlags>
-    </FsLex>
-    <Compile Include="AssemblyInfo.fs">
-      <Link>AssemblyInfo.fs</Link>
-    </Compile>
-    <Compile Include="..\FsLexYacc.Runtime\Lexing.fsi">
-      <Link>lexing.fsi</Link>
-    </Compile>
-    <Compile Include="..\FsLexYacc.Runtime\Lexing.fs">
-      <Link>lexing.fs</Link>
-    </Compile>
-    <Compile Include="..\FsLexYacc.Runtime\Parsing.fsi">
-      <Link>parsing.fsi</Link>
-    </Compile>
-    <Compile Include="..\FsLexYacc.Runtime\Parsing.fs">
-      <Link>parsing.fs</Link>
-    </Compile>
+    <Compile Include="AssemblyInfo.fs" />
     <Compile Include="..\Common\Arg.fsi">
       <Link>arg.fsi</Link>
     </Compile>
     <Compile Include="..\Common\Arg.fs">
       <Link>arg.fs</Link>
     </Compile>
-    <Compile Include="fslexast.fs" />
-    <Compile Include="fslexpars.fs" />
-    <Compile Include="fslexlex.fs" />
     <Compile Include="fslex.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FsLex.Core\FsLex.Core.fsproj" />
+    <ProjectReference Include="..\FsLexYacc.Runtime\FsLexYacc.Runtime.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

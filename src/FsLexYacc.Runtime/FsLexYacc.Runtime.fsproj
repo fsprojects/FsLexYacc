@@ -3,24 +3,15 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <OutputType>Library</OutputType>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Description>Runtime for FsLex/FsYacc lexer/parser generation tools</Description>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AssemblyInfo.fs">
-      <Link>AssemblyInfo.fs</Link>
-    </Compile>
-    <Compile Include="..\FsLexYacc.Runtime\Lexing.fsi">
-      <Link>lexing.fsi</Link>
-    </Compile>
-    <Compile Include="..\FsLexYacc.Runtime\Lexing.fs">
-      <Link>lexing.fs</Link>
-    </Compile>
-    <Compile Include="..\FsLexYacc.Runtime\Parsing.fsi">
-      <Link>parsing.fsi</Link>
-    </Compile>
-    <Compile Include="..\FsLexYacc.Runtime\Parsing.fs">
-      <Link>parsing.fs</Link>
-    </Compile>
+    <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="Lexing.fsi" />
+    <Compile Include="Lexing.fs" />
+    <Compile Include="Parsing.fsi" />
+    <Compile Include="Parsing.fs" />
+    <Content Include="../../docs/files/img/logo.png" PackagePath="logo.png" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

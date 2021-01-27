@@ -34,6 +34,8 @@ Site can be tested locally using local dev server
     set APIKEY=...
     ..\FSharp.TypeProviders.SDK\.nuget\nuget.exe push bin\FsLexYacc.Runtime.9.0.3.nupkg %APIKEY% -Source https://nuget.org
     ..\FSharp.TypeProviders.SDK\.nuget\nuget.exe push bin\FsLexYacc.9.0.3.nupkg %APIKEY% -Source https://nuget.org
+    ..\FSharp.TypeProviders.SDK\.nuget\nuget.exe push bin\FsLex.Core.9.0.3.nupkg %APIKEY% -Source https://nuget.org
+    ..\FSharp.TypeProviders.SDK\.nuget\nuget.exe push bin\FsYacc.Core.9.0.3.nupkg %APIKEY% -Source https://nuget.org
 
 ### Maintainer(s)
 

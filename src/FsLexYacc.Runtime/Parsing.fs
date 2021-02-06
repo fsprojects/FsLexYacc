@@ -7,13 +7,13 @@ open System
 open System.Collections.Generic
 
 type IParseState = 
-    abstract InputRange: int -> Position * Position
+    abstract InputRange: int -> Range
 
     abstract InputEndPosition: int -> Position 
 
     abstract InputStartPosition: int -> Position 
 
-    abstract ResultRange: Position * Position
+    abstract ResultRange: Range
 
     abstract GetInput: int -> obj 
 
@@ -254,11 +254,11 @@ module Implementation =
 
         let parseState =                                                                                            
             { new IParseState with 
-                member __.InputRange(n) = ruleStartPoss.[n-1], ruleEndPoss.[n-1] 
+                member __.InputRange(n) = { startPos = ruleStartPoss.[n-1]; endPos = ruleEndPoss.[n-1] }
                 member __.InputStartPosition(n) = ruleStartPoss.[n-1]
                 member __.InputEndPosition(n) = ruleEndPoss.[n-1] 
                 member __.GetInput(n)    = ruleValues.[n-1]        
-                member __.ResultRange    = (lhsPos.[0], lhsPos.[1])  
+                member __.ResultRange    = { startPos = lhsPos.[0]; endPos = lhsPos.[1] }
                 member __.ParserLocalStore = (localStore :> IDictionary<_,_>) 
                 member __.RaiseError()  = raise RecoverableParseError  (* NOTE: this binding tests the fairly complex logic associated with an object expression implementing a generic abstract method *)
             }       

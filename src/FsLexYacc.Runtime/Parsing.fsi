@@ -10,7 +10,7 @@ open System.Collections.Generic
 /// The information accessible via the <c>parseState</c> value within parser actions.
 type IParseState = 
     /// Get the start and end position for the terminal or non-terminal at a given index matched by the production
-    abstract InputRange: index:int -> Position * Position
+    abstract InputRange: index:int -> Range
 
     /// Get the end position for the terminal or non-terminal at a given index matched by the production
     abstract InputEndPosition: int -> Position 
@@ -19,7 +19,7 @@ type IParseState =
     abstract InputStartPosition: int -> Position 
 
     /// Get the full range of positions matched by the production
-    abstract ResultRange: Position * Position
+    abstract ResultRange: Range
 
     /// Get the value produced by the terminal or non-terminal at the given position
     abstract GetInput   : int -> obj 

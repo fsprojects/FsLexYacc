@@ -26,9 +26,12 @@ spec:
     { TopCode=$1;Macros=$2;Rules=$4;BottomCode=$5 }
 }
 
+ident:
+| IDENT { $1, parseState.InputRange 1 }
+
 codeopt:
 | CODE { $1 }
-| { "", (parseState.ResultRange |> fst) }
+| { "", parseState.ResultRange }
 
 Macros:
 | { [] }
@@ -37,8 +40,8 @@ Macros:
 }
 
 macro:
-| LET IDENT EQUALS regexp {
-    ($2, $4)
+| LET ident EQUALS regexp {
+    { Name = $2; Matcher = $4 }
 }
 
 Rules:
@@ -48,13 +51,13 @@ Rules:
 | rule { [$1] }
 
 rule:
-| IDENT args EQUALS PARSE optbar clauses {
-    ($1,$2,$6)
+| ident args EQUALS PARSE optbar clauses {
+    { Name = $1; Arguments = $2; Clauses = $6 }
 }
 
 args:
 |  { [] }
-| IDENT args { $1 :: $2 }
+| ident args { $1 :: $2 }
 
 optbar:
 | { }
@@ -65,7 +68,7 @@ clauses:
 | clause { [$1] }
 
 clause:
-| regexp CODE { $1, $2 }
+| regexp CODE { { Matcher = $1; Code = $2 } }
 
 regexp:
 | CHAR { Inp(Alphabet(EncodeChar $1))}
@@ -73,7 +76,7 @@ regexp:
 | EOF { Inp(Alphabet(fun ctx -> Eof))}
 | UNDERSCORE { Inp Any }
 | STRING { Seq([ for n in 0 .. $1.Length - 1 -> Inp(Alphabet(EncodeChar $1.[n]))])}
-| IDENT { Macro($1) }
+| ident { Macro($1) }
 | regexp regexp %prec regexp_seq  { Seq[$1;$2] }
 | regexp PLUS %prec regexp_plus  { Seq[$1;Star $1] }
 | regexp STAR %prec regexp_star  { Star $1 }

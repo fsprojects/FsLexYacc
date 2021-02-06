@@ -6,6 +6,7 @@ module FSharp.Text.Lexing
 open System.Collections.Generic
 
 // REVIEW: This type showed up on a parsing-intensive performance measurement. Consider whether it can be a struct-record later when we have this feature. -jomo
+
 [<Struct>]
 type Position = 
     { pos_fname : string
@@ -61,6 +62,7 @@ type Position =
           pos_bol= 0 
           pos_cnum=0 }
 
+type [<Struct>] Range = { startPos: Position; endPos: Position }
 type LexBufferFiller<'char> = 
     { fillSync : (LexBuffer<'char> -> unit) option
       fillAsync : (LexBuffer<'char> -> Async<unit>) option } 

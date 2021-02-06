@@ -6,8 +6,8 @@ open System.Collections.Generic
 open System.Globalization
 open FSharp.Text.Lexing
 
-type Ident = string
-type Code = string * Position
+type Ident = string * Range
+type Code = string * Range
 
 
 type ParseContext = {
@@ -144,10 +144,11 @@ type Regexp =
   | Inp of Input
   | Star of Regexp
   | Macro of Ident
-type Clause = Regexp * Code
 
-type Rule = (Ident * Ident list * Clause list)
-type Macro = Ident * Regexp
+type Clause = { Matcher: Regexp; Code: Code }
+
+type Rule = { Name: Ident; Arguments: Ident list; Clauses: Clause list }
+type Macro = { Name: Ident; Matcher: Regexp }
 
 type Spec =
     { TopCode: Code
@@ -192,7 +193,7 @@ type NfaNodeMap() =
         map.[nodeId] <-node
         node
 
-let LexerStateToNfa ctx (macros: Map<string,_>) (clauses: Clause list) =
+let LexerStateToNfa ctx (macros: Map<string,Macro>) (clauses: Clause list) =
 
     /// Table allocating node ids
     let nfaNodeMap = new NfaNodeMap()
@@ -201,7 +202,7 @@ let LexerStateToNfa ctx (macros: Map<string,_>) (clauses: Clause list) =
     let rec CompileRegexp re dest =
         match re with
         | Alt res ->
-            let trs = res ctx |> List.map (fun re -> (Epsilon,CompileRegexp re dest))
+            let trs = res ctx |> List.map (fun re -> (Epsilon, CompileRegexp re dest))
             nfaNodeMap.NewNfaNode(trs,[])
         | Seq res ->
             List.foldBack (CompileRegexp) res dest
@@ -224,9 +225,9 @@ let LexerStateToNfa ctx (macros: Map<string,_>) (clauses: Clause list) =
             let sre = CompileRegexp re nfaNode
             AddToMultiMap nfaNode.Transitions Epsilon sre
             nfaNodeMap.NewNfaNode([(Epsilon,sre); (Epsilon,dest)],[])
-        | Macro m ->
-            if not <| macros.ContainsKey(m) then failwithf "The macro %s is not defined" m
-            CompileRegexp macros.[m] dest
+        | Macro (name, _) as m ->
+            if not <| macros.ContainsKey(name) then failwithf "The macro %s is not defined" name
+            CompileRegexp macros.[name].Matcher dest
 
         // These cases unwind the difficult cases in the syntax that rely on knowing the
         // entire alphabet.
@@ -274,13 +275,13 @@ let LexerStateToNfa ctx (macros: Map<string,_>) (clauses: Clause list) =
     let actions = new System.Collections.Generic.List<_>()
 
     /// Compile an acceptance of a regular expression into the NFA
-    let sTrans macros nodeId (regexp,code) =
+    let sTrans macros nodeId { Matcher = regexp; Code = code } =
         let actionId = actions.Count
         actions.Add(code)
-        let sAccept = nfaNodeMap.NewNfaNode([],[(nodeId,actionId)])
+        let sAccept = nfaNodeMap.NewNfaNode([], [(nodeId, actionId)])
         CompileRegexp regexp sAccept
 
-    let trs = clauses |> List.mapi (fun n x -> (Epsilon,sTrans macros n x))
+    let trs = clauses |> List.mapi (fun n x -> (Epsilon, sTrans macros n x))
     let nfaStartNode = nfaNodeMap.NewNfaNode(trs,[])
     nfaStartNode,(actions |> Seq.readonly), nfaNodeMap
 
@@ -407,10 +408,10 @@ let NfaToDfa (nfaNodeMap:NfaNodeMap) nfaStartNode =
     ruleStartNode,ruleNodes
 
 let Compile ctx spec =
-    let macros = Map.ofList spec.Macros
+    let macros = Map.ofList (spec.Macros |> List.map (fun m -> fst m.Name, m))
     List.foldBack
-        (fun (name,args,clauses) (perRuleData,dfaNodes) ->
-            let nfa, actions, nfaNodeMap = LexerStateToNfa ctx macros clauses
+        (fun rule (perRuleData,dfaNodes) ->
+            let nfa, actions, nfaNodeMap = LexerStateToNfa ctx macros rule.Clauses
             let ruleStartNode, ruleNodes = NfaToDfa nfaNodeMap nfa
             //printfn "name = %s, ruleStartNode = %O" name ruleStartNode.Id
             (ruleStartNode,actions) :: perRuleData, ruleNodes @ dfaNodes)

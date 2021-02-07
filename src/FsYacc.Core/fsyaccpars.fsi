@@ -46,6 +46,7 @@ type nonTerminalId =
     | NONTERM_headeropt
     | NONTERM_decls
     | NONTERM_decl
+    | NONTERM_ident
     | NONTERM_idents
     | NONTERM_rules
     | NONTERM_rule

@@ -116,8 +116,8 @@ let ProcessParserSpecAst (spec: ParserSpec) =
            match sym with 
            | NonTerminal nt -> 
                checkNonTerminal nt 
-           | Terminal (name, range) as t ->  
-               if not (IsTerminal t) then failwith (sprintf "token %s is not declared" name)
+           | Terminal t ->  
+               if not (IsTerminal t) then failwith (sprintf "token %s is not declared" (fst t))
            
     if spec.StartSymbols = [] then (failwith "at least one start declaration is required");
 

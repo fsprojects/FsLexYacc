@@ -53,6 +53,7 @@ type tokenId =
 type nonTerminalId = 
     | NONTERM__startspec
     | NONTERM_spec
+    | NONTERM_ident
     | NONTERM_codeopt
     | NONTERM_Macros
     | NONTERM_macro

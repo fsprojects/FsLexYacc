@@ -15,8 +15,8 @@ open FSharp.Text.Lexing
 let (|KeyValue|) (kvp:KeyValuePair<_,_>) = kvp.Key,kvp.Value
 
 
-type Identifier = string
-type Code = string * Position
+type Identifier = string * Range
+type Code = string * Range
 type Associativity = LeftAssoc | RightAssoc | NonAssoc
 type Rule = Rule of Identifier list * Identifier option * Code option
 
@@ -29,8 +29,8 @@ type ParserSpec=
       Rules          : (Identifier * Rule list) list }
       
 
-type Terminal = string
-type NonTerminal = string
+type Terminal = string * Range
+type NonTerminal = string * Range
 type Symbol = Terminal of Terminal | NonTerminal of NonTerminal
 type Symbols = Symbol list
 
@@ -38,7 +38,7 @@ type Symbols = Symbol list
 //---------------------------------------------------------------------
 // Output Raw Parser Spec AST
 
-let StringOfSym sym = match sym with Terminal s -> "'" ^ s ^ "'" | NonTerminal s -> s
+let StringOfSym sym = match sym with Terminal (name, range) -> "'" ^ name ^ "'" | NonTerminal (name, range) -> name
 
 let OutputSym os sym = fprintf os "%s" (StringOfSym sym)
 
@@ -77,14 +77,14 @@ let ProcessParserSpecAst (spec: ParserSpec) =
         |> List.mapi (fun n precSpecs -> precSpecs |> List.map (fun (precSym, assoc) -> precSym,ExplicitPrec (assoc, 9999 - n)))
         |> List.concat
     
-    for (key,_) in explicitPrecInfo |> Seq.countBy fst |> Seq.filter (fun (_,n) -> n > 1)  do
+    for ((key,_),_) in explicitPrecInfo |> Seq.countBy fst |> Seq.filter (fun (_,n) -> n > 1)  do
         failwithf "%s is given two associativities" key
     
     let explicitPrecInfo = 
         explicitPrecInfo |> Map.ofList
 
     let implicitSymPrecInfo = NoPrecedence
-    let terminals = List.map fst spec.Tokens @ ["error"]
+    let terminals = List.map fst spec.Tokens @ [ "error", Range.Empty ]
     let terminalSet = Set.ofList terminals
     let IsTerminal z = terminalSet.Contains(z)
     let prec_of_terminal sym implicitPrecInfo = 
@@ -96,7 +96,9 @@ let ProcessParserSpecAst (spec: ParserSpec) =
         spec.Rules |> List.mapi (fun i (nonterm,rules) -> 
             rules |> List.mapi (fun j (Rule(syms,precsym,code)) -> 
                 let precInfo = 
-                    let precsym = List.foldBack (fun x acc -> match acc with Some _ -> acc | None -> match x with z when IsTerminal z -> Some z | _ -> acc) syms precsym
+                    let precsym = 
+                        (syms, precsym)
+                        ||> List.foldBack (fun x acc -> match acc with Some _ -> acc | None -> match x with z when IsTerminal z -> Some z | _ -> acc) 
                     let implicitPrecInfo = NoPrecedence
                     match precsym with 
                     | None -> implicitPrecInfo 
@@ -105,19 +107,19 @@ let ProcessParserSpecAst (spec: ParserSpec) =
          |> List.concat
     let nonTerminals = List.map fst spec.Rules
     let nonTerminalSet = Set.ofList nonTerminals
-    let checkNonTerminal nt =  
-        if nt <> "error" && not (nonTerminalSet.Contains(nt)) then 
-            failwith (sprintf "NonTerminal '%s' has no productions" nt)
+    let checkNonTerminal ((name, range) as nt) =  
+        if name <> "error" && not (nonTerminalSet.Contains(nt)) then 
+            failwith (sprintf "NonTerminal '%s'(%d,%d)-(%d,%d) has no productions" name range.startPos.Line range.startPos.Column range.endPos.Line range.endPos.Column)
 
     for (Production(nt,_,syms,_)) in prods do
         for sym in syms do 
            match sym with 
            | NonTerminal nt -> 
                checkNonTerminal nt 
-           | Terminal t ->  
-               if not (IsTerminal t) then failwith (sprintf "token %s is not declared" t)
+           | Terminal (name, range) as t ->  
+               if not (IsTerminal t) then failwith (sprintf "token %s is not declared" name)
            
-    if spec.StartSymbols= [] then (failwith "at least one %start declaration is required");
+    if spec.StartSymbols = [] then (failwith "at least one start declaration is required");
 
     for (nt,_) in spec.Types do 
         checkNonTerminal nt;
@@ -242,7 +244,7 @@ type NonTerminalTable(nonTerminals:NonTerminal list) =
     let nonterminalsWithIdxs = List.mapi (fun (i:NonTerminalIndex) n -> (i,n)) nonTerminals
     let nonterminalIdxs = List.map fst nonterminalsWithIdxs
     let a = Array.ofList nonTerminals
-    let b = CreateDictionary [ for i,x in nonterminalsWithIdxs -> x,i ];
+    let b = CreateDictionary [ for i,(name, range) in nonterminalsWithIdxs -> name,i ];
     member table.OfIndex(i) = a.[i]
     member table.ToIndex(i) = b.[i]
     member table.Indexes = nonterminalIdxs
@@ -253,7 +255,7 @@ type TerminalTable(terminals:(Terminal * PrecedenceInfo) list) =
     let terminalIdxs = List.map fst terminalsWithIdxs
     let a = Array.ofList (List.map fst terminals)
     let b = Array.ofList (List.map snd terminals)
-    let c = CreateDictionary [ for i,x in terminalsWithIdxs -> x,i ]
+    let c = CreateDictionary [ for i, (name, range) in terminalsWithIdxs -> name, i ]
 
     member table.OfIndex(i) = a.[i]
     member table.PrecInfoOfIndex(i) = b.[i]
@@ -261,7 +263,7 @@ type TerminalTable(terminals:(Terminal * PrecedenceInfo) list) =
     member table.Indexes = terminalIdxs
 
 /// Allocate indexes for each production
-type ProductionTable(ntTab:NonTerminalTable, termTab:TerminalTable, nonTerminals:string list, prods: Production list) =
+type ProductionTable(ntTab: NonTerminalTable, termTab: TerminalTable, nonTerminals: NonTerminal list, prods: Production list) =
     let prodsWithIdxs = List.mapi (fun i n -> (i,n)) prods
     let a =  
         prodsWithIdxs
@@ -269,14 +271,14 @@ type ProductionTable(ntTab:NonTerminalTable, termTab:TerminalTable, nonTerminals
               syms 
               |> Array.ofList  
               |> Array.map (function 
-                            | Terminal t -> PTerminal (termTab.ToIndex t) 
-                            | NonTerminal nt -> PNonTerminal (ntTab.ToIndex nt )) )
+                            | Terminal (name, _) -> PTerminal (termTab.ToIndex name) 
+                            | NonTerminal (name, _) -> PNonTerminal (ntTab.ToIndex name )) )
         |> Array.ofList
-    let b = Array.ofList (List.map (fun (_,Production(nt,_,_,_)) -> ntTab.ToIndex nt) prodsWithIdxs)
+    let b = Array.ofList (List.map (fun (_,Production((name, _),_,_,_)) -> ntTab.ToIndex name) prodsWithIdxs)
     let c = Array.ofList (List.map (fun (_,Production(_,prec,_,_)) -> prec) prodsWithIdxs)
     let productions = 
         nonTerminals
-        |> List.map(fun nt -> (ntTab.ToIndex nt, List.choose (fun (i,Production(nt2,prec,syms,_)) -> if nt2=nt then Some i else None) prodsWithIdxs))
+        |> List.map(fun (name1, range1) -> (ntTab.ToIndex name1, List.choose (fun (i, Production((name2, range2),prec,syms,_)) -> if name2 = name1 then Some i else None) prodsWithIdxs))
         |> CreateDictionary
 
     member prodTab.Symbols(i) = a.[i]
@@ -357,7 +359,7 @@ type CompiledSpec =
       gotoTable: int option [] []
       endOfInputTerminalIdx: int
       errorTerminalIdx: int
-      nonTerminals: string list
+      nonTerminals: NonTerminal list
     }
 
 /// Compile a pre-processed LALR parser spec to tables following the Dragon book algorithm
@@ -367,21 +369,24 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec): CompiledSpec =
     stopWatch.Start()
 
     // Augment the grammar 
-    let fakeStartNonTerminals = spec.StartSymbols |> List.map(fun nt -> "_start"^nt) 
-    let nonTerminals = fakeStartNonTerminals@spec.NonTerminals
-    let endOfInputTerminal = "$$"
-    let dummyLookahead = "#"
+    let fakeStartNonTerminals = spec.StartSymbols |> List.map(fun (name, r) -> "_start" ^ name, r) 
+    let nonTerminals = fakeStartNonTerminals @ spec.NonTerminals
+    let endOfInputTerminal = "$$", Range.Empty
+    let dummyLookahead = "#", Range.Empty
     let dummyPrec = NoPrecedence
-    let terminals = spec.Terminals @ [(dummyLookahead,dummyPrec); (endOfInputTerminal,dummyPrec)]
-    let prods = List.map2 (fun a b -> Production(a, dummyPrec,[NonTerminal b],None)) fakeStartNonTerminals spec.StartSymbols @ spec.Productions
+    let terminals = 
+        spec.Terminals @ [(dummyLookahead, dummyPrec); (endOfInputTerminal, dummyPrec)]
+    let prods = 
+        List.map2 (fun a b -> Production(a, dummyPrec, [NonTerminal b], None)) fakeStartNonTerminals spec.StartSymbols
+        @ spec.Productions
     let startNonTerminalIdx_to_prodIdx (i:int) = i
 
     // Build indexed tables 
     let ntTab = NonTerminalTable(nonTerminals)
     let termTab = TerminalTable(terminals)
-    let prodTab = ProductionTable(ntTab,termTab,nonTerminals,prods)
-    let dummyLookaheadIdx = termTab.ToIndex dummyLookahead
-    let endOfInputTerminalIdx = termTab.ToIndex endOfInputTerminal
+    let prodTab = ProductionTable(ntTab, termTab, nonTerminals, prods)
+    let dummyLookaheadIdx = termTab.ToIndex (fst dummyLookahead)
+    let endOfInputTerminalIdx = termTab.ToIndex (fst endOfInputTerminal)
 
     let errorTerminalIdx = termTab.ToIndex "error"
 
@@ -475,12 +480,13 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec): CompiledSpec =
         let prodIdx = prodIdx_of_item0 item0
         let dotIdx = dotIdx_of_item0 item0
         mkItem0(prodIdx,dotIdx+1)
-    let fakeStartNonTerminalsSet = Set.ofList (fakeStartNonTerminals |> List.map ntTab.ToIndex)
+    
+    let fakeStartNonTerminalsSet = Set.ofList (fakeStartNonTerminals |> List.map (fst >> ntTab.ToIndex))
 
     let IsStartItem item0 = fakeStartNonTerminalsSet.Contains(ntIdx_of_item0 item0)
     let IsKernelItem item0 = (IsStartItem item0 || dotIdx_of_item0 item0 <> 0)
 
-    let StringOfSym sym = match sym with PTerminal s -> "'" ^ termTab.OfIndex s ^ "'" | PNonTerminal s -> ntTab.OfIndex s
+    let StringOfSym sym = match sym with PTerminal s -> "'" ^ fst (termTab.OfIndex s) ^ "'" | PNonTerminal s -> fst (ntTab.OfIndex s)
 
     let OutputSym os sym = fprintf os "%s" (StringOfSym sym)
 
@@ -489,7 +495,7 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec): CompiledSpec =
 
     // Print items and other stuff 
     let OutputItem0 os item0 =
-        fprintf os "    %s -> %a . %a" (ntTab.OfIndex (ntIdx_of_item0 item0)) (* outputPrecInfo precInfo *) OutputSyms (lsyms_of_item0 item0) OutputSyms (rsyms_of_item0 item0) 
+        fprintf os "    %s -> %a . %a" (fst (ntTab.OfIndex (ntIdx_of_item0 item0))) (* outputPrecInfo precInfo *) OutputSyms (lsyms_of_item0 item0) OutputSyms (rsyms_of_item0 item0) 
         
     let OutputItem0Set os s = 
         Set.iter (fun item -> fprintfn os "%a" OutputItem0 item) s
@@ -503,12 +509,12 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec): CompiledSpec =
     let OutputAction os m = 
         match m with 
         | Shift n -> fprintf os "  shift %d" n 
-        | Reduce prodIdx ->  fprintf os "  reduce %s --> %a" (ntTab.OfIndex (prodTab.NonTerminal prodIdx)) OutputSyms (prodTab.Symbols prodIdx)
+        | Reduce prodIdx ->  fprintf os "  reduce %s --> %a" (fst (ntTab.OfIndex (prodTab.NonTerminal prodIdx))) OutputSyms (prodTab.Symbols prodIdx)
         | Error ->  fprintf os "  error"
         | Accept -> fprintf os "  accept" 
     
     let OutputActions os m = 
-        Array.iteri (fun i (prec,action) -> let term = termTab.OfIndex i in fprintfn os "    action '%s' (%a): %a" term outputPrecInfo prec OutputAction action) m
+        Array.iteri (fun i (prec,action) -> let (name, range) = termTab.OfIndex i in fprintfn os "    action '%s' (%a): %a" name outputPrecInfo prec OutputAction action) m
 
     let OutputActionTable os m = 
         Array.iteri (fun i n -> fprintfn os "state %d:" i; fprintfn os "%a" OutputActions n) m
@@ -519,7 +525,7 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec): CompiledSpec =
         | Some a -> OutputAction os a
     
     let OutputGotos os m = 
-        Array.iteri (fun ntIdx s -> let nonterm = ntTab.OfIndex ntIdx in match s with Some st -> fprintfn os "    goto %s: %d" nonterm st | None -> ()) m
+        Array.iteri (fun ntIdx s -> let (name, range) = ntTab.OfIndex ntIdx in match s with Some st -> fprintfn os "    goto %s: %d" name st | None -> ()) m
     
     let OutputCombined os m = 
         Array.iteri (fun i (a,b,c,d) -> 
@@ -760,7 +766,7 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec): CompiledSpec =
                                 "reduce", prodTab.Symbols x
                                 |> Array.map StringOfSym
                                 |> String.concat " "
-                                |> sprintf "reduce(%s:%s)" (ntTab.OfIndex nt)
+                                |> sprintf "reduce(%s:%s)" (fst (ntTab.OfIndex nt))
                             | _ -> "", ""
                         let pstr = 
                             match p with 
@@ -776,7 +782,7 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec): CompiledSpec =
                         an, "{" + pstr + " " + astr + "}"
                     let a1n, astr1 = reportAction x1
                     let a2n, astr2 = reportAction x2
-                    printfn "        %s/%s error at state %d on terminal %s between %s and %s - assuming the former because %s" a1n a2n kernelIdx (termTab.OfIndex termIdx) astr1 astr2 reason
+                    printfn "        %s/%s error at state %d on terminal %s between %s and %s - assuming the former because %s" a1n a2n kernelIdx (fst (termTab.OfIndex termIdx)) astr1 astr2 reason
                 match itemSoFar,itemNew with 
                 | (_,Shift s1),(_, Shift s2) -> 
                    if actionSoFar <> actionNew then 
@@ -904,11 +910,11 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec): CompiledSpec =
 
     /// The final results
     let states = kernels |> Array.ofList 
-    let prods = Array.ofList (List.map (fun (Production(nt,prec,syms,code)) -> (nt, ntTab.ToIndex nt, syms,code)) prods)
+    let prods = Array.ofList (List.map (fun (Production((name, range) as nt, prec, syms, code)) -> (nt, ntTab.ToIndex name, syms,code)) prods)
 
     logf (fun logStream -> 
         printfn  "writing tables to log"; stdout.Flush();
-        OutputLalrTables logStream     (prods, states, startKernelIdxs, actionTable, immediateActionTable, gotoTable, (termTab.ToIndex endOfInputTerminal), errorTerminalIdx));
+        OutputLalrTables logStream (prods, states, startKernelIdxs, actionTable, immediateActionTable, gotoTable, (termTab.ToIndex (fst endOfInputTerminal)), errorTerminalIdx));
 
     let states = states |> Array.map (Set.toList >> List.map prodIdx_of_item0)
     { prods = prods
@@ -917,7 +923,7 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec): CompiledSpec =
       actionTable = actionTable
       immediateActionTable = immediateActionTable
       gotoTable = gotoTable
-      endOfInputTerminalIdx = termTab.ToIndex endOfInputTerminal
+      endOfInputTerminalIdx = termTab.ToIndex (fst endOfInputTerminal)
       errorTerminalIdx = errorTerminalIdx
       nonTerminals = nonTerminals }
   

@@ -26,9 +26,9 @@ spec:
 
 headeropt: 
   | HEADER 
-       { $1 } 
+       { $1, parseState.ResultRange } 
   | 
-      { "", (parseState.ResultRange |> fst)}
+      { "", parseState.ResultRange }
 
 decls:  
     { [] } 

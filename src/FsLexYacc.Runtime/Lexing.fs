@@ -63,6 +63,8 @@ type Position =
           pos_cnum=0 }
 
 type [<Struct>] Range = { startPos: Position; endPos: Position }
+with static member Empty = { startPos = Position.Empty; endPos = Position.Empty }
+
 type LexBufferFiller<'char> = 
     { fillSync : (LexBuffer<'char> -> unit) option
       fillAsync : (LexBuffer<'char> -> Async<unit>) option } 

@@ -220,19 +220,18 @@ and [<Sealed>]
             new LexBuffer<_> 
                 { fillSync = Some (fun _ -> ()) 
                   fillAsync = Some (fun _ -> async { return () }) }
-        let buffer = Array.copy s 
-        lexBuffer.Buffer <- buffer
-        lexBuffer.BufferMaxScanLength <- buffer.Length
+        lexBuffer.Buffer <- s
+        lexBuffer.BufferMaxScanLength <- s.Length
         lexBuffer
 
     static member FromBytes (arr) =
-        LexBuffer<byte>.FromArray(arr)
+        LexBuffer<byte>.FromArray(Array.copy arr)
 
     static member FromChars (arr) =
-        LexBuffer<char>.FromArray(arr) 
+        LexBuffer<char>.FromArray(Array.copy arr)
 
     static member FromString (s:string) =
-        LexBuffer<char>.FromChars (s.ToCharArray())
+        LexBuffer<char>.FromArray (s.ToCharArray())
 
     static member FromTextReader (tr:System.IO.TextReader) : LexBuffer<char> = 
        LexBuffer<char>.FromReadFunctions(Some tr.Read, Some (tr.ReadAsync >> Async.AwaitTask))

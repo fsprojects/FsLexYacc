@@ -243,4 +243,4 @@ Target.create "All" ignore
   ==> "Release"
 
 
-Target.runOrDefault "All"
+Target.runOrDefaultWithArguments "All"

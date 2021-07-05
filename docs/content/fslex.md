@@ -258,7 +258,7 @@ Some ways of creating lex buffers are by using:
     LexBuffer<_>.FromFunction
     LexBuffer<_>.FromStream
     LexBuffer<_>.FromTextReader
-    LexBuffer<_>.FromArray
+    LexBuffer<_>.FromBytes
 
 Within lexing actions the variable `lexbuf` is in scope and you may use properties on the `LexBuffer` type such as:
 

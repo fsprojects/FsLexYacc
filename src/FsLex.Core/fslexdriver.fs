@@ -36,7 +36,7 @@ type Writer(fileName) =
     member x.write fmt =
         Printf.fprintf os fmt
 
-    member x.writeCode (code, pos: Position) =
+    member x.writeCode (code, { startPos = pos }) =
         if pos <> Position.Empty  // If bottom code is unspecified, then position is empty.
         then
             x.writeLine "# %d \"%s\"" pos.Line pos.FileName
@@ -175,13 +175,14 @@ let writeRules (rules: Rule list) (perRuleData: PerRuleData) outputFileName (wri
     // These actions push the additional start state and come first, because they are then typically inlined into later
     // rules. This means more tailcalls are taken as direct branches, increasing efficiency and
     // improving stack usage on platforms that do not take tailcalls.
-    for ((startNode, actions),(ident,args,_)) in List.zip perRuleData rules do
+    for ((startNode, actions),{ Name = (ident, _); Arguments = args } ) in List.zip perRuleData rules do
         writer.writeLine "// Rule %s" ident
-        writer.writeLine "and %s %s lexbuf =" ident (String.Join(" ", Array.ofList args))
+        let argumentNames = args |> List.map fst |> Array.ofList
+        writer.writeLine "and %s %s lexbuf =" ident (String.Join(" ", argumentNames))
         writer.writeLine "  match _fslex_tables.Interpret(%d,lexbuf) with" startNode.Id
-        actions |> Seq.iteri (fun i (code:string, pos) ->
+        actions |> Seq.iteri (fun i (code:string, range) ->
             writer.writeLine "  | %d -> ( " i
-            writer.writeLine "# %d \"%s\"" pos.Line pos.FileName
+            writer.writeLine "# %d \"%s\"" range.startPos.Line range.startPos.FileName
             let lines = code.Split([| '\r'; '\n' |], StringSplitOptions.RemoveEmptyEntries)
             for line in lines do
                 writer.writeLine "               %s" line

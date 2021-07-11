@@ -71,7 +71,7 @@ and fs_type = parse
   | _ { appendBuf(lexeme lexbuf); fs_type lexbuf } 
                                    
 and header p buff = parse
- | "%}" { HEADER (buff.ToString(), p) }
+ | "%}" { HEADER (buff.ToString(), { startPos = p; endPos = lexbuf.EndPos }) }
  | newline { newline lexbuf; 
              ignore <| buff.Append System.Environment.NewLine; 
              header p buff lexbuf }
@@ -92,7 +92,7 @@ and header p buff = parse
  | _ { ignore <| buff.Append(lexeme lexbuf).[0]; 
        header p buff lexbuf }
 and code p buff = parse
- | "}" { CODE (buff.ToString(), p) }
+ | "}" { CODE (buff.ToString(), { startPos = p; endPos = lexbuf.EndPos }) }
  | "{" { ignore <| buff.Append (lexeme lexbuf); 
          ignore(code p buff lexbuf); 
          ignore <| buff.Append "}"; 

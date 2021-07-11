@@ -102,8 +102,8 @@ type Writer(outputFileName, outputFileInterface) =
 
     member x.WriteUInt16 (i: int) = fprintf os "%dus;" i
     
-    member x.WriteCode (code, pos) = 
-        x.WriteLine "# %d \"%s\"" pos.pos_lnum pos.pos_fname
+    member x.WriteCode (code, range: Range) = 
+        x.WriteLine "# %d \"%s\"" range.startPos.pos_lnum range.startPos.pos_fname
         x.WriteLine "%s" code
         let codeLines = code.Replace("\r","").Split([| '\n' |]).Length
         outputLineCount <- outputLineCount + codeLines
@@ -131,7 +131,7 @@ type Writer(outputFileName, outputFileInterface) =
 
 
 // This is to avoid name conflicts against keywords.
-let generic_nt_name nt = "'gentype_" + nt
+let generic_nt_name (nt, _range) = "'gentype_" + nt
 let anyMarker = 0xffff
 
 let actionCoding   =
@@ -215,7 +215,7 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
           
           writer.WriteLine "type token = ";
           writer.WriteLineInterface "type token = ";
-          for id,typ in spec.Tokens do 
+          for (id, _range), typ in spec.Tokens do 
               match typ with
               | None -> 
                 writer.WriteLine "  | %s" id
@@ -228,7 +228,7 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
       writer.WriteLine "// This type is used to give symbolic names to token indexes, useful for error messages";
       writer.WriteLine          "type tokenId = ";
       writer.WriteLineInterface "type tokenId = ";
-          for id,typ in spec.Tokens do 
+          for (id, _range), typ in spec.Tokens do 
                writer.WriteLine          "    | TOKEN_%s" id;
                writer.WriteLineInterface "    | TOKEN_%s" id;
       writer.WriteLine          "    | TOKEN_end_of_input";
@@ -239,7 +239,7 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
       writer.WriteLine "// This type is used to give symbolic names to token indexes, useful for error messages";
       writer.WriteLine          "type nonTerminalId = ";
       writer.WriteLineInterface "type nonTerminalId = ";
-      for nt in compiledSpec.nonTerminals do 
+      for (nt, _range) in compiledSpec.nonTerminals do 
           writer.WriteLine          "    | NONTERM_%s" nt;
           writer.WriteLineInterface "    | NONTERM_%s" nt;
 
@@ -248,7 +248,7 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
       writer.WriteLine "// This function maps tokens to integer indexes";
       writer.WriteLine "let tagOfToken (t:token) = ";
       writer.WriteLine "  match t with";
-      spec.Tokens |> List.iteri (fun i (id,typ) -> 
+      spec.Tokens |> List.iteri (fun i ((id, _range), typ) -> 
           writer.WriteLine "  | %s %s -> %d " id (match typ with Some _ -> "_" | None -> "") i);
       writer.WriteLineInterface "/// This function maps tokens to integer indexes";
       writer.WriteLineInterface "val tagOfToken: token -> int";
@@ -257,7 +257,7 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
       writer.WriteLine "// This function maps integer indexes to symbolic token ids";
       writer.WriteLine "let tokenTagToTokenId (tokenIdx:int) = ";
       writer.WriteLine "  match tokenIdx with";
-      spec.Tokens |> List.iteri (fun i (id,typ) ->  writer.WriteLine "  | %d -> TOKEN_%s " i id)
+      spec.Tokens |> List.iteri (fun i ((id, _range), typ) ->  writer.WriteLine "  | %d -> TOKEN_%s " i id)
       writer.WriteLine "  | %d -> TOKEN_end_of_input" compiledSpec.endOfInputTerminalIdx;
       writer.WriteLine "  | %d -> TOKEN_error" compiledSpec.errorTerminalIdx;
       writer.WriteLine "  | _ -> failwith \"tokenTagToTokenId: bad token\""
@@ -270,7 +270,7 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
       writer.WriteLine "/// This function maps production indexes returned in syntax errors to strings representing the non terminal that would be produced by that production";
       writer.WriteLine "let prodIdxToNonTerminal (prodIdx:int) = ";
       writer.WriteLine "  match prodIdx with";
-      compiledSpec.prods |> Array.iteri (fun i (nt,ntIdx,syms,code) ->  writer.WriteLine "    | %d -> NONTERM_%s " i nt);
+      compiledSpec.prods |> Array.iteri (fun i ((nt, _range), ntIdx, syms, code) ->  writer.WriteLine "    | %d -> NONTERM_%s " i nt);
       writer.WriteLine "    | _ -> failwith \"prodIdxToNonTerminal: bad production index\""
 
       writer.WriteLineInterface "";
@@ -284,7 +284,7 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
       writer.WriteLine "// This function gets the name of a token as a string";
       writer.WriteLine "let token_to_string (t:token) = ";
       writer.WriteLine "  match t with ";
-      spec.Tokens |> List.iteri (fun i (id,typ) ->  writer.WriteLine "  | %s %s -> \"%s\" " id (match typ with Some _ -> "_" | None -> "") id);
+      spec.Tokens |> List.iteri (fun i ((id, _range), typ) ->  writer.WriteLine "  | %s %s -> \"%s\" " id (match typ with Some _ -> "_" | None -> "") id);
 
       writer.WriteLineInterface "";
       writer.WriteLineInterface "/// This function gets the name of a token as a string";
@@ -295,7 +295,7 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
       writer.WriteLine "let _fsyacc_dataOfToken (t:token) = ";
       writer.WriteLine "  match t with ";
 
-      for (id,typ) in spec.Tokens do
+      for ((id, _range), typ) in spec.Tokens do
           writer.WriteLine "  | %s %s -> %s " 
             id
             (match typ with Some _ -> "_fsyacc_x" | None -> "")
@@ -303,14 +303,14 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
 
       let tychar = "'cty" 
 
-      for (key,_) in spec.Types |> Seq.countBy fst |> Seq.filter (fun (_,n) -> n > 1)  do
+      for ((key, _range), _) in spec.Types |> Seq.countBy fst |> Seq.filter (fun (_,n) -> n > 1)  do
             failwithf "%s is given multiple %%type declarations" key;
         
-      for (key,_) in spec.Tokens |> Seq.countBy fst |> Seq.filter (fun (_,n) -> n > 1)  do
+      for ((key, _range), _) in spec.Tokens |> Seq.countBy fst |> Seq.filter (fun (_,n) -> n > 1)  do
             failwithf "%s is given %%token declarations" key
         
-      let types = Map.ofList spec.Types 
-      let tokens = Map.ofList spec.Tokens 
+      let types = Map.ofList (spec.Types |> List.map (fun ((name, _range), rest) -> name, rest))
+      let tokens = Map.ofList (spec.Tokens |> List.map (fun ((name, _range), rest) -> name, rest))
       
       let nStates = compiledSpec.states.Length 
       begin 
@@ -457,7 +457,11 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
           writer.WriteLine "|]" ;
       end;
       
-      let getType nt = if types.ContainsKey nt then  types.[nt] else generatorState.generate_nonterminal_name nt
+      let getType ((name, _range) as nt) = 
+        types
+        |> Map.tryFind name
+        |> Option.defaultWith (fun _ -> generatorState.generate_nonterminal_name nt)
+
       begin 
           writer.Write "let _fsyacc_reductions ()  =" ;
           writer.WriteLine "    [| " ;
@@ -469,10 +473,7 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
               syms |> List.iteri (fun i sym -> 
                   let tyopt = 
                       match sym with
-                      | Terminal t -> 
-                          if tokens.ContainsKey t then 
-                            tokens.[t]
-                          else None
+                      | Terminal (name, range) -> tokens |> Map.tryFind name |> Option.flatten
                       | NonTerminal nt -> Some (getType nt) 
                   match tyopt with 
                   | Some ty -> writer.WriteLine "            let _%d = parseState.GetInput(%d) :?> %s in" (i+1) (i+1) ty
@@ -481,7 +482,7 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
               writer.WriteLine "                (";
               writer.WriteLine "                   (";
               match code with 
-              | Some (_,pos) -> writer.WriteLine "# %d \"%s\"" pos.pos_lnum pos.pos_fname
+              | Some (_,{ startPos = pos }) -> writer.WriteLine "# %d \"%s\"" pos.pos_lnum pos.pos_fname
               | None -> ()
               match code with 
               | Some (code,_) -> 
@@ -500,9 +501,9 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
               writer.WriteLine "                   )";
               // Place the line count back for the type constraint
               match code with 
-              | Some (_,pos) -> writer.WriteLine "# %d \"%s\"" pos.pos_lnum pos.pos_fname
+              | Some (_, { startPos = pos }) -> writer.WriteLine "# %d \"%s\"" pos.pos_lnum pos.pos_fname
               | None -> ()
-              writer.WriteLine "                 : %s));" (if types.ContainsKey nt then  types.[nt] else generatorState.generate_nonterminal_name nt);
+              writer.WriteLine "                 : %s));" (getType nt);
           done;
           writer.WriteLine "|]" ;
       end;
@@ -530,14 +531,14 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
       writer.WriteLine "    productionToNonTerminalTable = _fsyacc_productionToNonTerminalTable  }"
       writer.WriteLine "let engine lexer lexbuf startState = tables.Interpret(lexer, lexbuf, startState)"                                                                                                         
 
-      for (id,startState) in List.zip spec.StartSymbols compiledSpec.startStates do
+      for ((id, _range), startState) in List.zip spec.StartSymbols compiledSpec.startStates do
             if not (types.ContainsKey id) then 
-              failwith ("a %type declaration is required for for start token "+id);
+              failwith ("a %type declaration is required for for start token "+ id);
             let ty = types.[id] in 
             writer.WriteLine "let %s lexer lexbuf : %s =" id ty;
             writer.WriteLine "    engine lexer lexbuf %d :?> _" startState
 
-      for id in spec.StartSymbols do
+      for (id, _range) in spec.StartSymbols do
           if not (types.ContainsKey id) then 
             failwith ("a %type declaration is required for start token "+id);
           let ty = types.[id] in 

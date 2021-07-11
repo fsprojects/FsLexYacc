@@ -152,7 +152,7 @@ and string p buff = parse
  | _ { let _ = buff.Append (lexeme lexbuf).[0] in
        string p buff lexbuf }
 and code p buff = parse
- | "}" { CODE (buff.ToString(), p) }
+ | "}" { CODE (buff.ToString(), { startPos = p; endPos = lexbuf.EndPos }) }
  | "{" { let _ = buff.Append (lexeme lexbuf) in 
          ignore(code p buff lexbuf); 
          let _ = buff.Append "}" in

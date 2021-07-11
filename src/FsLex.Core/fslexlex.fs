@@ -579,7 +579,7 @@ and code p buff lexbuf =
   match _fslex_tables.Interpret(28,lexbuf) with
   | 0 -> ( 
 # 155 "fslexlex.fsl"
-                        CODE (buff.ToString(), p) 
+                        CODE (buff.ToString(), { startPos = p; endPos = lexbuf.EndPos }) 
 # 583 "fslexlex.fs"
           )
   | 1 -> ( 

@@ -447,7 +447,7 @@ and header p buff lexbuf =
   match _fslex_tables.Interpret(42,lexbuf) with
   | 0 -> ( 
 # 74 "fsyacclex.fsl"
-                         HEADER (buff.ToString(), p) 
+                         HEADER (buff.ToString(), { startPos = p; endPos = lexbuf.EndPos }) 
 # 451 "fsyacclex.fs"
           )
   | 1 -> ( 
@@ -499,7 +499,7 @@ and code p buff lexbuf =
   match _fslex_tables.Interpret(23,lexbuf) with
   | 0 -> ( 
 # 95 "fsyacclex.fsl"
-                        CODE (buff.ToString(), p) 
+                        CODE (buff.ToString(), { startPos = p; endPos = lexbuf.EndPos }) 
 # 503 "fsyacclex.fs"
           )
   | 1 -> ( 

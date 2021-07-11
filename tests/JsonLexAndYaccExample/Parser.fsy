@@ -23,7 +23,8 @@ open JsonParsing
 
 %%
 
-start: prog { $1 }
+start:
+  | prog { $1 }
 
 prog:
   | EOF { None }

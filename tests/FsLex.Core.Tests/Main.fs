@@ -1,11 +1,9 @@
 ﻿module FsLex.Core.Tests
 
 open Expecto
-open FsLex.Core
+open FsLexYacc.FsLex
 
-let parse file = 
-    FsLexYacc.FsLex.AST.Compile 
-
+let parse file = AST.Compile 
 
 [<EntryPoint>]
 let main argv =

@@ -1,3 +1,9 @@
+#### 11.0.0-beta1 - 11 July, 2021
+* Break out core domain logic and generation into core libraries #144
+* Update FsLexYacc.targets #149
+* Avoid copying a string twice in LexBuffer.FromString. #150
+* Fix misc packaging issues #145
+
 #### 10.2.0 - 22 November, 2020
 * Enable running tools under .net 5.0
 

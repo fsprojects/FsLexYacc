@@ -15,11 +15,11 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup>
 		<CompileDependsOn>CallFsLex;CallFsYacc;$(CompileDependsOn)</CompileDependsOn>
-		<FsLexToolPath Condition="'$(FsLexToolPath)' == '' AND '$(MSBuildRuntimeType)'=='Core'">$(MSBuildThisFileDirectory)/fslex/netcoreapp3.1</FsLexToolPath>
-		<FsLexToolExe Condition="'$(FsLexToolExe)' == '' AND '$(MSBuildRuntimeType)'=='Core'">fslex.dll</FsLexToolExe>
-		<FsYaccToolPath Condition="'$(FsYaccToolPath)' == '' AND '$(MSBuildRuntimeType)'=='Core'">$(MSBuildThisFileDirectory)/fsyacc/netcoreapp3.1</FsYaccToolPath>
-		<FsYaccToolExe Condition="'$(FsYaccToolExe)' == '' AND '$(MSBuildRuntimeType)'=='Core'">fsyacc.dll</FsYaccToolExe>
-		<FsLexYaccToolRunner Condition="'$(UseFsLexYaccToolRunner)' != 'false' AND '$(FsLexYaccToolRunner)' == '' AND '$(MSBuildRuntimeType)'=='Core'">dotnet </FsLexYaccToolRunner>
+		<FsLexToolPath Condition="'$(FsLexToolPath)' == ''">$(MSBuildThisFileDirectory)/fslex/netcoreapp3.1</FsLexToolPath>
+		<FsLexToolExe Condition="'$(FsLexToolExe)' == ''">fslex.dll</FsLexToolExe>
+		<FsYaccToolPath Condition="'$(FsYaccToolPath)' == ''">$(MSBuildThisFileDirectory)/fsyacc/netcoreapp3.1</FsYaccToolPath>
+		<FsYaccToolExe Condition="'$(FsYaccToolExe)' == ''">fsyacc.dll</FsYaccToolExe>
+		<FsLexYaccToolRunner Condition="'$(UseFsLexYaccToolRunner)' != 'false' AND '$(FsLexYaccToolRunner)' == ''">dotnet </FsLexYaccToolRunner>
 	</PropertyGroup>
 
 	<!-- Build FsLex files. -->

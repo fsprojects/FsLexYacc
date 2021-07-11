@@ -177,7 +177,8 @@ let writeRules (rules: Rule list) (perRuleData: PerRuleData) outputFileName (wri
     // improving stack usage on platforms that do not take tailcalls.
     for ((startNode, actions),{ Name = (ident, _); Arguments = args } ) in List.zip perRuleData rules do
         writer.writeLine "// Rule %s" ident
-        writer.writeLine "and %s %s lexbuf =" ident (String.Join(" ", Array.ofList args))
+        let argumentNames = args |> List.map fst |> Array.ofList
+        writer.writeLine "and %s %s lexbuf =" ident (String.Join(" ", argumentNames))
         writer.writeLine "  match _fslex_tables.Interpret(%d,lexbuf) with" startNode.Id
         actions |> Seq.iteri (fun i (code:string, range) ->
             writer.writeLine "  | %d -> ( " i

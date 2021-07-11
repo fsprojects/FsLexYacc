@@ -495,8 +495,8 @@ module Implementation =
         valueStack.Peep().value
 
 type Tables<'tok> with
-    member tables.Interpret (lexer,lexbuf,initialState) = 
-        Implementation.interpret tables lexer lexbuf initialState
+    member tables.Interpret (lexer,lexbuf, startState) =
+        Implementation.interpret tables lexer lexbuf startState
     
 module ParseHelpers = 
     let parse_error (_s:string) = ()

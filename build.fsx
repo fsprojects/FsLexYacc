@@ -6,7 +6,8 @@ nuget Fake.IO.FileSystem
 nuget Fake.DotNet.Cli
 nuget Fake.DotNet.AssemblyInfoFile
 nuget Fake.DotNet.Paket
-nuget Fake.Tools.Git //"
+nuget Fake.Tools.Git
+nuget MsBuild.StructuredLogger >= 2.1.507 //"
 
 #if !FAKE
 #load "./.fake/build.fsx/intellisense.fsx"
@@ -183,6 +184,7 @@ Target.create "NuGet" (fun _ ->
             ToolType = ToolType.CreateLocalTool()
             TemplateFile = "nuget/FsLexYacc.template"
             Version = release.NugetVersion
+
             OutputPath = "bin"
             ReleaseNotes = String.toLines release.Notes })
 )

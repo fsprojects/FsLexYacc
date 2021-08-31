@@ -2,7 +2,6 @@ module FsLexYacc.FsYacc.Driver
 
 open System
 open System.IO
-open FSharp.Text
 open FSharp.Text.Lexing
 open FsLexYacc.FsYacc
 open FsLexYacc.FsYacc.AST
@@ -55,7 +54,7 @@ let deriveOutputFileNames (filename, out: string option) =
   output, outputi
 
 type Logger = 
-    inherit System.IDisposable
+    inherit IDisposable
 
     abstract member LogStream: (TextWriter -> 'a) -> 'a
     abstract member Log: TextWriterFormat<'a> -> 'a
@@ -67,11 +66,11 @@ type FileLogger (outputFileLog) =
     interface Logger with
         member x.LogStream f = f osl
 
-        member x.Log format = Printf.fprintfn osl format
+        member x.Log format = fprintfn osl format
         
-        member x.LogString msg =  Printf.fprintfn osl "%s" msg
+        member x.LogString msg =  fprintfn osl "%s" msg
 
-    interface System.IDisposable with
+    interface IDisposable with
         member _.Dispose() = 
             osl.Dispose()
 
@@ -81,9 +80,9 @@ type NullLogger () =
             f  TextWriter.Null
         member x.Log f = 
             fprintfn TextWriter.Null f
-        member x.LogString msg = ()
+        member x.LogString _ = ()
 
-    interface System.IDisposable with member _.Dispose () = ()
+    interface IDisposable with member _.Dispose () = ()
 
 type Writer(outputFileName, outputFileInterface) = 
     let os = File.CreateText outputFileName :> TextWriter
@@ -92,10 +91,10 @@ type Writer(outputFileName, outputFileInterface) =
     let mutable interfaceLineCount = 0
 
     member x.Write format = 
-        Printf.fprintf os format
+        fprintf os format
     
     member x.WriteLine format =
-        Printf.kfprintf (fun _ -> 
+        kfprintf (fun _ -> 
             outputLineCount <- outputLineCount + 1
             os.WriteLine ()
         ) os format
@@ -112,10 +111,10 @@ type Writer(outputFileName, outputFileInterface) =
     member x.OutputLineCount = outputLineCount
 
     member x.WriteInterface format = 
-        Printf.fprintf osi format
+        fprintf osi format
     
     member x.WriteLineInterface format = 
-        Printf.kfprintf (fun _ -> 
+        kfprintf (fun _ -> 
             interfaceLineCount <- interfaceLineCount + 1
             osi.WriteLine ()
         ) osi format
@@ -228,7 +227,7 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
       writer.WriteLine "// This type is used to give symbolic names to token indexes, useful for error messages";
       writer.WriteLine          "type tokenId = ";
       writer.WriteLineInterface "type tokenId = ";
-          for id,typ in spec.Tokens do 
+          for id,_ in spec.Tokens do 
                writer.WriteLine          "    | TOKEN_%s" id;
                writer.WriteLineInterface "    | TOKEN_%s" id;
       writer.WriteLine          "    | TOKEN_end_of_input";
@@ -257,7 +256,7 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
       writer.WriteLine "// This function maps integer indexes to symbolic token ids";
       writer.WriteLine "let tokenTagToTokenId (tokenIdx:int) = ";
       writer.WriteLine "  match tokenIdx with";
-      spec.Tokens |> List.iteri (fun i (id,typ) ->  writer.WriteLine "  | %d -> TOKEN_%s " i id)
+      spec.Tokens |> List.iteri (fun i (id,_) ->  writer.WriteLine "  | %d -> TOKEN_%s " i id)
       writer.WriteLine "  | %d -> TOKEN_end_of_input" compiledSpec.endOfInputTerminalIdx;
       writer.WriteLine "  | %d -> TOKEN_error" compiledSpec.errorTerminalIdx;
       writer.WriteLine "  | _ -> failwith \"tokenTagToTokenId: bad token\""
@@ -270,7 +269,7 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
       writer.WriteLine "/// This function maps production indexes returned in syntax errors to strings representing the non terminal that would be produced by that production";
       writer.WriteLine "let prodIdxToNonTerminal (prodIdx:int) = ";
       writer.WriteLine "  match prodIdx with";
-      compiledSpec.prods |> Array.iteri (fun i (nt,ntIdx,syms,code) ->  writer.WriteLine "    | %d -> NONTERM_%s " i nt);
+      compiledSpec.prods |> Array.iteri (fun i (nt,_,_,_) ->  writer.WriteLine "    | %d -> NONTERM_%s " i nt);
       writer.WriteLine "    | _ -> failwith \"prodIdxToNonTerminal: bad production index\""
 
       writer.WriteLineInterface "";
@@ -284,7 +283,7 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
       writer.WriteLine "// This function gets the name of a token as a string";
       writer.WriteLine "let token_to_string (t:token) = ";
       writer.WriteLine "  match t with ";
-      spec.Tokens |> List.iteri (fun i (id,typ) ->  writer.WriteLine "  | %s %s -> \"%s\" " id (match typ with Some _ -> "_" | None -> "") id);
+      spec.Tokens |> List.iteri (fun _ (id,typ) ->  writer.WriteLine "  | %s %s -> \"%s\" " id (match typ with Some _ -> "_" | None -> "") id);
 
       writer.WriteLineInterface "";
       writer.WriteLineInterface "/// This function gets the name of a token as a string";
@@ -295,7 +294,7 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
       writer.WriteLine "let _fsyacc_dataOfToken (t:token) = ";
       writer.WriteLine "  match t with ";
 
-      for (id,typ) in spec.Tokens do
+      for id,typ in spec.Tokens do
           writer.WriteLine "  | %s %s -> %s " 
             id
             (match typ with Some _ -> "_fsyacc_x" | None -> "")
@@ -303,10 +302,10 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
 
       let tychar = "'cty" 
 
-      for (key,_) in spec.Types |> Seq.countBy fst |> Seq.filter (fun (_,n) -> n > 1)  do
+      for key,_ in spec.Types |> Seq.countBy fst |> Seq.filter (fun (_,n) -> n > 1)  do
             failwithf "%s is given multiple %%type declarations" key;
         
-      for (key,_) in spec.Tokens |> Seq.countBy fst |> Seq.filter (fun (_,n) -> n > 1)  do
+      for key,_ in spec.Tokens |> Seq.countBy fst |> Seq.filter (fun (_,n) -> n > 1)  do
             failwithf "%s is given %%token declarations" key
         
       let types = Map.ofList spec.Types 
@@ -378,7 +377,7 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
 
       begin 
         let numActionRows = (Array.length compiledSpec.actionTable) 
-        let maxActionColumns = Array.length compiledSpec.actionTable.[0] 
+        let _ = Array.length compiledSpec.actionTable.[0] 
         writer.WriteLine "let _fsyacc_action_rows = %d" numActionRows;
         writer.Write "let _fsyacc_actionTableElements = [|" ;
         let actionIndexes = Array.create numActionRows 0 
@@ -387,8 +386,8 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
         for i = 0 to nStates-1 do 
             actionIndexes.[i] <- actionTableCurrIndex;
             let actions = compiledSpec.actionTable.[i] 
-            let terminalsByAction = new Dictionary<_,int list>(10) 
-            let countPerAction = new Dictionary<_,_>(10) 
+            let terminalsByAction = Dictionary<_,int list>(10) 
+            let countPerAction = Dictionary<_,_>(10) 
             for terminal = 0 to actions.Length - 1 do  
                   let action = snd actions.[terminal] 
                   if terminalsByAction.ContainsKey action then 
@@ -403,14 +402,14 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
             let mostCommonAction = 
                 let mostCommon = ref Error 
                 let max = ref 0 
-                for (KeyValue(x,y)) in countPerAction do 
+                for KeyValue(x,y) in countPerAction do 
                     if y > !max then (mostCommon := x; max := y)
                 !mostCommon 
 
             (* Count the number of entries in the association table. *)
             let count = ref 0 
-            for (KeyValue(action,terminals)) in terminalsByAction do 
-                for terminals  in terminals do 
+            for KeyValue(action,terminals) in terminalsByAction do 
+                for terminal in terminals do 
                    if action <> mostCommonAction then  
                        incr count;
             
@@ -488,10 +487,10 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
                   let dollar = ref false in 
                   let c = code |> String.collect (fun c -> 
                       if not !dollar && c = '$' then (dollar := true; "")
-                      elif !dollar && c >= '0' && c <= '9' then (dollar := false; "_"+new System.String(c,1))
-                      elif !dollar then (dollar := false; "$"+new System.String(c,1))
-                      else new System.String(c,1))
-                  let lines = c.Split([| '\r'; '\n' |], System.StringSplitOptions.RemoveEmptyEntries);
+                      elif !dollar && c >= '0' && c <= '9' then (dollar := false; "_"+String(c,1))
+                      elif !dollar then (dollar := false; "$"+String(c,1))
+                      else String(c,1))
+                  let lines = c.Split([| '\r'; '\n' |], StringSplitOptions.RemoveEmptyEntries);
                   for line in lines do 
                       writer.WriteLine "                     %s" line;
                   if !dollar then writer.Write "$"
@@ -530,7 +529,7 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
       writer.WriteLine "    productionToNonTerminalTable = _fsyacc_productionToNonTerminalTable  }"
       writer.WriteLine "let engine lexer lexbuf startState = tables.Interpret(lexer, lexbuf, startState)"                                                                                                         
 
-      for (id,startState) in List.zip spec.StartSymbols compiledSpec.startStates do
+      for id,startState in List.zip spec.StartSymbols compiledSpec.startStates do
             if not (types.ContainsKey id) then 
               failwith ("a %type declaration is required for for start token "+id);
             let ty = types.[id] in 

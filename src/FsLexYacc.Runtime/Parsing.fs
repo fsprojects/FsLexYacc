@@ -3,7 +3,6 @@
 namespace FSharp.Text.Parsing
 open FSharp.Text.Lexing
 
-open System
 open System.Collections.Generic
 
 type IParseState = 
@@ -35,19 +34,19 @@ type ParseErrorContext<'tok>
           shiftableTokens: int list, 
           message : string) =
 
-      member __.StateStack  = stateStack
+      member _.StateStack  = stateStack
 
-      member __.ReduceTokens = reduceTokens
+      member _.ReduceTokens = reduceTokens
 
-      member __.CurrentToken = currentToken
+      member _.CurrentToken = currentToken
 
-      member __.ParseState = parseState
+      member _.ParseState = parseState
 
-      member __.ReducibleProductions = reducibleProductions
+      member _.ReducibleProductions = reducibleProductions
 
-      member __.ShiftTokens = shiftableTokens
+      member _.ShiftTokens = shiftableTokens
 
-      member __.Message = message
+      member _.Message = message
 
 
 //-------------------------------------------------------------------------
@@ -135,7 +134,7 @@ module Implementation =
     // Read the tables written by FSYACC.  
 
     type AssocTable(elemTab:uint16[], offsetTab:uint16[]) =
-        let cache = new Dictionary<_,_>(2000)
+        let cache = Dictionary<_,_>(2000)
 
         member t.readAssoc (minElemNum,maxElemNum,defaultValueOfAssoc,keyToFind) =     
             // do a binary chop on the table 
@@ -175,7 +174,7 @@ module Implementation =
 
         // Read all entries in the association table
         // Used during error recovery to find all valid entries in the table
-        member __.ReadAll(n) =       
+        member _.ReadAll(n) =       
             let headOfTable = int offsetTab.[n]
             let firstElemNumber = headOfTable + 1           
             let numberOfElementsInAssoc = int32 elemTab.[headOfTable*2]           
@@ -186,7 +185,7 @@ module Implementation =
     type IdxToIdxListTable(elemTab:uint16[], offsetTab:uint16[]) =
 
         // Read all entries in a row of the table
-        member __.ReadAll(n) =       
+        member _.ReadAll(n) =       
             let headOfTable = int offsetTab.[n]
             let firstElemNumber = headOfTable + 1           
             let numberOfElements = int32 elemTab.[headOfTable]           
@@ -205,16 +204,16 @@ module Implementation =
         new(value,startPos,endPos) = { value=value; startPos=startPos; endPos=endPos }
 
     let interpret (tables: Tables<'tok>) lexer (lexbuf : LexBuffer<_>) initialState =                                                                      
-        let localStore = new Dictionary<string,obj>() in
+        let localStore = Dictionary<string,obj>() in
         localStore.["LexBuffer"] <- lexbuf
 #if __DEBUG
         if Flags.debug then System.Console.WriteLine("\nParser: interpret tables")
 #endif
-        let stateStack : Stack<int> = new Stack<_>(100)
+        let stateStack : Stack<int> = Stack<_>(100)
 
         stateStack.Push(initialState)
 
-        let valueStack = new Stack<ValueInfo>(100)
+        let valueStack = Stack<ValueInfo>(100)
 
         let mutable haveLookahead = false                                                                              
 
@@ -248,19 +247,19 @@ module Implementation =
         let lhsPos        = (Array.zeroCreate 2 : Position[])                                            
 
         let reductions = tables.reductions
-        let actionTable = new AssocTable(tables.actionTableElements, tables.actionTableRowOffsets)
-        let gotoTable = new AssocTable(tables.gotos, tables.sparseGotoTableRowOffsets)
-        let stateToProdIdxsTable = new IdxToIdxListTable(tables.stateToProdIdxsTableElements, tables.stateToProdIdxsTableRowOffsets)
+        let actionTable = AssocTable(tables.actionTableElements, tables.actionTableRowOffsets)
+        let gotoTable = AssocTable(tables.gotos, tables.sparseGotoTableRowOffsets)
+        let stateToProdIdxsTable = IdxToIdxListTable(tables.stateToProdIdxsTableElements, tables.stateToProdIdxsTableRowOffsets)
 
         let parseState =                                                                                            
             { new IParseState with 
-                member __.InputRange(n) = ruleStartPoss.[n-1], ruleEndPoss.[n-1] 
-                member __.InputStartPosition(n) = ruleStartPoss.[n-1]
-                member __.InputEndPosition(n) = ruleEndPoss.[n-1] 
-                member __.GetInput(n)    = ruleValues.[n-1]        
-                member __.ResultRange    = (lhsPos.[0], lhsPos.[1])  
-                member __.ParserLocalStore = (localStore :> IDictionary<_,_>) 
-                member __.RaiseError()  = raise RecoverableParseError  (* NOTE: this binding tests the fairly complex logic associated with an object expression implementing a generic abstract method *)
+                member _.InputRange(n) = ruleStartPoss.[n-1], ruleEndPoss.[n-1] 
+                member _.InputStartPosition(n) = ruleStartPoss.[n-1]
+                member _.InputEndPosition(n) = ruleEndPoss.[n-1] 
+                member _.GetInput(n)    = ruleValues.[n-1]        
+                member _.ResultRange    = (lhsPos.[0], lhsPos.[1])  
+                member _.ParserLocalStore = (localStore :> IDictionary<_,_>) 
+                member _.RaiseError()  = raise RecoverableParseError  (* NOTE: this binding tests the fairly complex logic associated with an object expression implementing a generic abstract method *)
             }       
 
 #if __DEBUG
@@ -272,7 +271,7 @@ module Implementation =
         // Pop the stack until we can shift the 'error' token. If 'tokenOpt' is given
         // then keep popping until we can shift both the 'error' token and the token in 'tokenOpt'.
         // This is used at end-of-file to make sure we can shift both the 'error' token and the 'EOF' token.
-        let rec popStackUntilErrorShifted(tokenOpt) =
+        let rec popStackUntilErrorShifted tokenOpt =
             // Keep popping the stack until the "error" terminal is shifted
 #if __DEBUG
             if Flags.debug then System.Console.WriteLine("popStackUntilErrorShifted")
@@ -451,10 +450,10 @@ module Implementation =
 
                         let currentToken = if haveLookahead then Some(lookaheadToken) else None
                         let actions,defaultAction = actionTable.ReadAll(state) 
-                        let explicit = Set.ofList [ for (tag,_action) in actions -> tag ]
+                        let explicit = Set.ofList [ for tag,_action in actions -> tag ]
                         
                         let shiftableTokens = 
-                           [ for (tag,action) in actions do
+                           [ for tag,action in actions do
                                  if (actionKind action) = shiftFlag then 
                                      yield tag
                              if actionKind defaultAction = shiftFlag  then
@@ -468,7 +467,7 @@ module Implementation =
                                yield stateToProdIdxsTable.ReadAll(state)  ]
 
                         let reduceTokens = 
-                           [ for (tag,action) in actions do
+                           [ for tag,action in actions do
                                 if actionKind(action) = reduceFlag then
                                     yield tag
                              if actionKind(defaultAction) = reduceFlag  then

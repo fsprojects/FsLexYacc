@@ -30,17 +30,17 @@ exception HelpText of string
 [<Sealed>]
 type ArgParser() = 
     static let getUsage specs u =  
-      let sbuf = new System.Text.StringBuilder 100  
+      let sbuf = System.Text.StringBuilder 100  
       let pstring (s:string) = sbuf.Append s |> ignore 
       let pendline s = pstring s; pstring "\n" 
       pendline u;
       List.iter (fun (arg:ArgInfo) -> 
         match arg.Name, arg.ArgType, arg.HelpText with
-        | (s, (UnitArg _ | SetArg _ | ClearArg _), helpText) -> pstring "\t"; pstring s; pstring ": "; pendline helpText
-        | (s, StringArg _, helpText) -> pstring "\t"; pstring s; pstring " <string>: "; pendline helpText
-        | (s, IntArg _, helpText) -> pstring "\t"; pstring s; pstring " <int>: "; pendline helpText
-        | (s, FloatArg _, helpText) ->  pstring "\t"; pstring s; pstring " <float>: "; pendline helpText
-        | (s, RestArg _, helpText) -> pstring "\t"; pstring s; pstring " ...: "; pendline helpText)
+        | s, (UnitArg _ | SetArg _ | ClearArg _), helpText -> pstring "\t"; pstring s; pstring ": "; pendline helpText
+        | s, StringArg _, helpText -> pstring "\t"; pstring s; pstring " <string>: "; pendline helpText
+        | s, IntArg _, helpText -> pstring "\t"; pstring s; pstring " <int>: "; pendline helpText
+        | s, FloatArg _, helpText ->  pstring "\t"; pstring s; pstring " <float>: "; pendline helpText
+        | s, RestArg _, helpText -> pstring "\t"; pstring s; pstring " ...: "; pendline helpText)
         specs;
       pstring "\t"; pstring "--help"; pstring ": "; pendline "display this list of options";
       pstring "\t"; pstring "-help"; pstring ": "; pendline "display this list of options";
@@ -58,7 +58,7 @@ type ArgParser() =
           let arg = argv.[!cursor] 
           let rec findMatchingArg args = 
             match args with
-            | ((s, action) :: _) when s = arg -> 
+            | (s, action) :: _ when s = arg -> 
                let getSecondArg () = 
                    if !cursor + 1 >= nargs then 
                      raise(Bad("option "+s+" needs an argument.\n"+getUsage argSpecs usageText));
@@ -91,16 +91,16 @@ type ArgParser() =
                | RestArg f -> 
                  incr cursor;
                  while !cursor < nargs do
-                     f (argv.[!cursor]);
+                     f argv.[!cursor];
                      incr cursor;
 
-            | (_ :: more)  -> findMatchingArg more 
+            | _ :: more  -> findMatchingArg more 
             | [] -> 
                 if arg = "-help" || arg = "--help" || arg = "/help" || arg = "/help" || arg = "/?" then
                     raise (HelpText (getUsage argSpecs usageText))
                 // Note: for '/abc/def' does not count as an argument
                 // Note: '/abc' does
-                elif arg.Length>0 && (arg.[0] = '-' || (arg.[0] = '/' && not (arg.Length > 1 && arg.[1..].Contains ("/")))) then
+                elif arg.Length>0 && (arg.[0] = '-' || (arg.[0] = '/' && not (arg.Length > 1 && arg.[1..].Contains "/"))) then
                     raise (Bad ("unrecognized argument: "+ arg + "\n" + getUsage argSpecs usageText))
                 else 
                    other arg;
@@ -123,6 +123,6 @@ type ArgParser() =
               System.Console.Error.WriteLine h; 
               System.Console.Error.Flush();  
               System.Environment.Exit(1); 
-          | e -> 
+          | _ -> 
               reraise()
     #endif

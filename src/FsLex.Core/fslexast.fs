@@ -78,8 +78,8 @@ let UnicodeCategoryIndex(x:Alphabet) = (x - encodedUnicodeCategoryBase)
 
 let numLowUnicodeChars = 128
 assert (numLowUnicodeChars = 128) // see table interpreter
-let specificUnicodeChars = new Dictionary<_,_>()
-let specificUnicodeCharsDecode = new Dictionary<_,_>()
+let specificUnicodeChars = Dictionary()
+let specificUnicodeCharsDecode = Dictionary()
 
 let EncodeChar(c:char): Parser<uint32> = fun ctx ->
      let x = System.Convert.ToUInt32 c
@@ -108,8 +108,8 @@ let DecodeChar(x:Alphabet): Parser<char> = fun ctx ->
 let NumSpecificUnicodeChars() = specificUnicodeChars.Count
 let GetSpecificUnicodeChars() =
     specificUnicodeChars
-        |> Seq.sortBy (fun (KeyValue(k,v)) -> v)
-        |> Seq.map (fun (KeyValue(k,v)) -> k)
+        |> Seq.sortBy (fun (KeyValue(_,v)) -> v)
+        |> Seq.map (fun (KeyValue(k,_)) -> k)
 
 let GetSingleCharAlphabet: Parser<Set<char>> = fun ctx ->
     if ctx.unicode
@@ -146,7 +146,7 @@ type Regexp =
   | Macro of Ident
 type Clause = Regexp * Code
 
-type Rule = (Ident * Ident list * Clause list)
+type Rule = Ident * Ident list * Clause list
 type Macro = Ident * Regexp
 
 type Spec =
@@ -178,14 +178,14 @@ let AddToMultiMap (trDict:MultiMap<_,_>) a b =
     trDict.[a] <- b::prev
 
 type NfaNodeMap() =
-    let map = new Dictionary<int,NfaNode>(100)
-    member x.Item with get(nid) = map.[nid]
+    let map = Dictionary<int,NfaNode>(100)
+    member x.Item with get nid = map.[nid]
     member x.Count = map.Count
 
     member x.NewNfaNode(trs,ac) =
         let nodeId = map.Count+1 // ID zero is reserved
-        let trDict = new Dictionary<_,_>(List.length trs)
-        for (a,b) in trs do
+        let trDict = Dictionary<_,_>(List.length trs)
+        for a,b in trs do
            AddToMultiMap trDict a b
 
         let node : NfaNode = {Id=nodeId; Name=string nodeId; Transitions=trDict; Accepted=ac}
@@ -195,7 +195,7 @@ type NfaNodeMap() =
 let LexerStateToNfa ctx (macros: Map<string,_>) (clauses: Clause list) =
 
     /// Table allocating node ids
-    let nfaNodeMap = new NfaNodeMap()
+    let nfaNodeMap = NfaNodeMap()
 
     /// Compile a regular expression into the NFA
     let rec CompileRegexp re dest =
@@ -204,7 +204,7 @@ let LexerStateToNfa ctx (macros: Map<string,_>) (clauses: Clause list) =
             let trs = res ctx |> List.map (fun re -> (Epsilon,CompileRegexp re dest))
             nfaNodeMap.NewNfaNode(trs,[])
         | Seq res ->
-            List.foldBack (CompileRegexp) res dest
+            List.foldBack CompileRegexp res dest
         | Inp (Alphabet c) ->
             let c = c ctx
             if ctx.caseInsensitive && c <> Eof then
@@ -244,7 +244,7 @@ let LexerStateToNfa ctx (macros: Map<string,_>) (clauses: Clause list) =
 
         | Inp Any ->
             let re = Alt(fun ctx ->
-                [ for n in GetAlphabet ctx do yield Inp(Alphabet(fun ctx -> n)) ]
+                [ for n in GetAlphabet ctx do yield Inp(Alphabet(fun _ -> n)) ]
             )
             CompileRegexp re dest
 
@@ -255,14 +255,14 @@ let LexerStateToNfa ctx (macros: Map<string,_>) (clauses: Clause list) =
                    for c in GetSingleCharAlphabet ctx do
                        let ec = EncodeChar c ctx
                        if not (chars.Contains(ec)) then
-                           yield Inp(Alphabet(fun ctx -> ec))
+                           yield Inp(Alphabet(fun _ -> ec))
 
                    // Include all unicode categories
                    // That is, negations _only_ exclude precisely the given set of characters. You can't
                    // exclude whole classes of characters as yet
                    if ctx.unicode then
-                       let ucs = chars |> Set.map(fun c -> DecodeChar c ctx |> System.Char.GetUnicodeCategory)
-                       for KeyValue(nm,uc) in unicodeCategories do
+                       let _ = chars |> Set.map(fun c -> DecodeChar c ctx |> System.Char.GetUnicodeCategory)
+                       for KeyValue(nm,_) in unicodeCategories do
                            //if ucs.Contains(uc) then
                            //    printfn "warning: the unicode category '\\%s' ('%O') is automatically excluded by this character set negation. Consider adding this to the negation." nm uc
                            //else
@@ -271,10 +271,10 @@ let LexerStateToNfa ctx (macros: Map<string,_>) (clauses: Clause list) =
              )
             CompileRegexp re dest
 
-    let actions = new System.Collections.Generic.List<_>()
+    let actions = List()
 
     /// Compile an acceptance of a regular expression into the NFA
-    let sTrans macros nodeId (regexp,code) =
+    let sTrans _ nodeId (regexp,code) =
         let actionId = actions.Count
         actions.Add(code)
         let sAccept = nfaNodeMap.NewNfaNode([],[(nodeId,actionId)])
@@ -337,26 +337,26 @@ let NfaToDfa (nfaNodeMap:NfaNodeMap) nfaStartNode =
                     tr |> List.iter (EClosure1 acc)
 
     let EClosure (moves:list<NodeId>) =
-        let acc = new NfaNodeIdSetBuilder(HashIdentity.Structural)
+        let acc = NfaNodeIdSetBuilder(HashIdentity.Structural)
         for i in moves do
             EClosure1 acc nfaNodeMap.[i]
-        new NfaNodeIdSet(acc)
+        NfaNodeIdSet(acc)
 
     // Compute all the immediate one-step moves for a set of NFA states, as a dictionary
     // mapping inputs to destination lists
     let ComputeMoves (nset:NfaNodeIdSet) =
-        let moves = new MultiMap<_,_>()
+        let moves = MultiMap<_,_>()
         nset.Iterate(fun nodeId ->
-            for (KeyValue(inp,dests)) in nfaNodeMap.[nodeId].Transitions do
+            for KeyValue(inp,dests) in nfaNodeMap.[nodeId].Transitions do
                 if inp <> Epsilon then
                     match dests with
                     | [] -> ()  // this Clause is an optimization - the list is normally empty
                     | tr -> tr |> List.iter(fun dest -> AddToMultiMap moves inp dest.Id))
         moves
 
-    let acc = new NfaNodeIdSetBuilder(HashIdentity.Structural)
+    let acc = NfaNodeIdSetBuilder(HashIdentity.Structural)
     EClosure1 acc nfaStartNode
-    let nfaSet0 = new NfaNodeIdSet(acc)
+    let nfaSet0 = NfaNodeIdSet(acc)
 
     let dfaNodes = Dictionary<NfaNodeIdSet,DfaNode>()
 
@@ -385,7 +385,7 @@ let NfaToDfa (nfaNodeMap:NfaNodeMap) nfaStartNode =
         let nfaSet = workList.Pop()
         if not <| doneSet.Contains(nfaSet) then
             let moves = ComputeMoves nfaSet
-            for (KeyValue(inp,movesForInput)) in moves do
+            for KeyValue(inp,movesForInput) in moves do
                 assert (inp <> Epsilon)
                 let moveSet = EClosure movesForInput
                 if not moveSet.IsEmpty then
@@ -409,7 +409,7 @@ let NfaToDfa (nfaNodeMap:NfaNodeMap) nfaStartNode =
 let Compile ctx spec =
     let macros = Map.ofList spec.Macros
     List.foldBack
-        (fun (name,args,clauses) (perRuleData,dfaNodes) ->
+        (fun (_,_,clauses) (perRuleData,dfaNodes) ->
             let nfa, actions, nfaNodeMap = LexerStateToNfa ctx macros clauses
             let ruleStartNode, ruleNodes = NfaToDfa nfaNodeMap nfa
             //printfn "name = %s, ruleStartNode = %O" name ruleStartNode.Id

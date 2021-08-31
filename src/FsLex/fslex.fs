@@ -2,15 +2,10 @@
 
 module FsLexYacc.FsLex.Program
 
-open FsLexYacc.FsLex
 open FsLexYacc.FsLex.AST
-open FsLexYacc.FsLex.Parser
 open FsLexYacc.FsLex.Driver
 open Printf
 open FSharp.Text
-open FSharp.Text.Lexing
-open System
-open System.Collections.Generic
 open System.IO
 
 //------------------------------------------------------------------
@@ -41,7 +36,7 @@ let usage =
 let _ = ArgParser.Parse(usage, (fun x -> match input with Some _ -> failwith "more than one input given" | None -> input <- Some x), "fslex <filename>")
 
 let compileSpec (spec: Spec) (ctx: ParseContext) =
-    let perRuleData, dfaNodes = AST.Compile ctx spec 
+    let perRuleData, dfaNodes = Compile ctx spec 
     let dfaNodes = dfaNodes |> List.sortBy (fun n -> n.Id)
     perRuleData, dfaNodes
 

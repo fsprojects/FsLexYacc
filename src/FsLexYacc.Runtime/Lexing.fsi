@@ -40,7 +40,7 @@ type Position =
      /// using AsNewLinePos()
      member OriginalLine : int
 
-     [<System.ObsoleteAttribute("Use the AbsoluteOffset property instead")>]
+     [<System.Obsolete("Use the AbsoluteOffset property instead")>]
      member Char : int
 
      /// The character number in the input stream
@@ -61,7 +61,7 @@ type Position =
      /// Gives a position shifted by specified number of characters
      member ShiftColumnBy: by:int -> Position
 
-     [<System.ObsoleteAttribute("Consider using the NextLine property instead")>]
+     [<System.Obsolete("Consider using the NextLine property instead")>]
      member AsNewLinePos : unit -> Position
 
      /// Get an arbitrary position, with the empty string as filename, and

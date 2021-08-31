@@ -459,8 +459,7 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
       
       let getType nt = if types.ContainsKey nt then  types.[nt] else generatorState.generate_nonterminal_name nt
       begin 
-          writer.Write "let _fsyacc_reductions ()  =" ;
-          writer.WriteLine "    [| " ;
+          writer.WriteLine "let _fsyacc_reductions = lazy [|"
           for nt,ntIdx,syms,code in compiledSpec.prods do 
               writer.WriteLine "# %d \"%s\"" writer.OutputLineCount output;
               writer.WriteLine "        (fun (parseState : %s.IParseState) ->"  generatorState.parslib
@@ -508,7 +507,7 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
       end;
       writer.WriteLine "# %d \"%s\"" writer.OutputLineCount output;
       writer.WriteLine "let tables : %s.Tables<_> = " generatorState.parslib
-      writer.WriteLine "  { reductions= _fsyacc_reductions ();"
+      writer.WriteLine "  { reductions = _fsyacc_reductions.Value;"
       writer.WriteLine "    endOfInputTag = _fsyacc_endOfInputTag;"
       writer.WriteLine "    tagOfToken = tagOfToken;"
       writer.WriteLine "    dataOfToken = _fsyacc_dataOfToken; "

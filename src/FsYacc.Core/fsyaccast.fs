@@ -77,7 +77,7 @@ let ProcessParserSpecAst (spec: ParserSpec) =
         |> List.mapi (fun n precSpecs -> precSpecs |> List.map (fun (precSym, assoc) -> precSym,ExplicitPrec (assoc, 9999 - n)))
         |> List.concat
     
-    for (key,_) in explicitPrecInfo |> Seq.countBy fst |> Seq.filter (fun (_,n) -> n > 1)  do
+    for key,_ in explicitPrecInfo |> Seq.countBy fst |> Seq.filter (fun (_,n) -> n > 1)  do
         failwithf "%s is given two associativities" key
     
     let explicitPrecInfo = 
@@ -93,8 +93,8 @@ let ProcessParserSpecAst (spec: ParserSpec) =
        
     let mkSym s = if IsTerminal s then Terminal s else NonTerminal s
     let prods =  
-        spec.Rules |> List.mapi (fun i (nonterm,rules) -> 
-            rules |> List.mapi (fun j (Rule(syms,precsym,code)) -> 
+        spec.Rules |> List.mapi (fun _ (nonterm,rules) -> 
+            rules |> List.mapi (fun _ (Rule(syms,precsym,code)) -> 
                 let precInfo = 
                     let precsym = List.foldBack (fun x acc -> match acc with Some _ -> acc | None -> match x with z when IsTerminal z -> Some z | _ -> acc) syms precsym
                     let implicitPrecInfo = NoPrecedence
@@ -109,7 +109,7 @@ let ProcessParserSpecAst (spec: ParserSpec) =
         if nt <> "error" && not (nonTerminalSet.Contains(nt)) then 
             failwith (sprintf "NonTerminal '%s' has no productions" nt)
 
-    for (Production(nt,_,syms,_)) in prods do
+    for Production(_,_,syms,_) in prods do
         for sym in syms do 
            match sym with 
            | NonTerminal nt -> 
@@ -119,7 +119,7 @@ let ProcessParserSpecAst (spec: ParserSpec) =
            
     if spec.StartSymbols= [] then (failwith "at least one %start declaration is required");
 
-    for (nt,_) in spec.Types do 
+    for nt,_ in spec.Types do 
         checkNonTerminal nt;
 
     let terminals = terminals |> List.map (fun t -> (t,prec_of_terminal t None)) 
@@ -226,14 +226,14 @@ let LeastFixedPoint f set =
 /// A general standard memoization utility. Be sure to apply to only one (function) argument to build the
 /// residue function!
 let Memoize f = 
-    let t = new Dictionary<_,_>(1000)
+    let t = Dictionary(1000)
     fun x -> 
         let ok,v = t.TryGetValue(x) 
         if ok then v else let res = f x in t.[x] <- res; res 
 
 /// A standard utility to create a dictionary from a list of pairs
 let CreateDictionary xs = 
-    let dict = new Dictionary<_,_>()
+    let dict = Dictionary()
     for x,y in xs do dict.Add(x,y)
     dict
 
@@ -276,7 +276,7 @@ type ProductionTable(ntTab:NonTerminalTable, termTab:TerminalTable, nonTerminals
     let c = Array.ofList (List.map (fun (_,Production(_,prec,_,_)) -> prec) prodsWithIdxs)
     let productions = 
         nonTerminals
-        |> List.map(fun nt -> (ntTab.ToIndex nt, List.choose (fun (i,Production(nt2,prec,syms,_)) -> if nt2=nt then Some i else None) prodsWithIdxs))
+        |> List.map(fun nt -> (ntTab.ToIndex nt, List.choose (fun (i,Production(nt2,_,_,_)) -> if nt2=nt then Some i else None) prodsWithIdxs))
         |> CreateDictionary
 
     member prodTab.Symbols(i) = a.[i]
@@ -284,12 +284,12 @@ type ProductionTable(ntTab:NonTerminalTable, termTab:TerminalTable, nonTerminals
     member prodTab.Precedence(i) = c.[i]
     member prodTab.Symbol i n = 
         let syms = prodTab.Symbols i
-        if n >= syms.Length then None else Some (syms.[n])
+        if n >= syms.Length then None else Some syms.[n]
     member prodTab.Productions = productions
 
 /// A mutable table maping kernels to sets of lookahead tokens
 type LookaheadTable() = 
-    let t = new Dictionary<KernelItemIndex,Set<TerminalIndex>>()
+    let t = Dictionary<KernelItemIndex,Set<TerminalIndex>>()
     member table.Add(x,y) = 
         let prev = if t.ContainsKey(x) then t.[x] else Set.empty 
         t.[x] <- prev.Add(y)
@@ -313,9 +313,9 @@ type KernelTable(kernels) =
 
 /// Hold the results of cpmuting the LALR(1) closure of an LR(0) kernel
 type Closure1Table() = 
-    let t = new Dictionary<Item0,HashSet<TerminalIndex>>()
+    let t = Dictionary<Item0,HashSet<TerminalIndex>>()
     member table.Add(a,b) = 
-        if not (t.ContainsKey(a)) then t.[a] <- new HashSet<_>(HashIdentity.Structural)
+        if not (t.ContainsKey(a)) then t.[a] <- HashSet<_>(HashIdentity.Structural)
         t.[a].Add(b)
     member table.Count  = t.Count
     member table.IEnumerable = (t :> seq<_>)
@@ -324,9 +324,9 @@ type Closure1Table() =
 /// A mutable table giving a lookahead set Set<Terminal> for each kernel. The terminals represent the
 /// "spontaneous" items for the kernel. TODO: document this more w.r.t. the Dragon book.
 type SpontaneousTable() = 
-    let t = new Dictionary<KernelItemIndex,HashSet<TerminalIndex>>()
+    let t = Dictionary<KernelItemIndex,HashSet<TerminalIndex>>()
     member table.Add(a,b) = 
-        if not (t.ContainsKey(a)) then t.[a] <- new HashSet<_>(HashIdentity.Structural)
+        if not (t.ContainsKey(a)) then t.[a] <- HashSet<_>(HashIdentity.Structural)
         t.[a].Add(b)
     member table.Count  = t.Count
     member table.IEnumerable = (t :> seq<_>)
@@ -334,12 +334,12 @@ type SpontaneousTable() =
 /// A mutable table giving a Set<KernelItemIndex> for each kernel. The kernels represent the
 /// "propagate" items for the kernel. TODO: document this more w.r.t. the Dragon book.
 type PropagateTable() = 
-    let t = new Dictionary<KernelItemIndex,HashSet<KernelItemIndex>>()
+    let t = Dictionary<KernelItemIndex,HashSet<KernelItemIndex>>()
     member table.Add(a,b) = 
-        if not (t.ContainsKey(a)) then t.[a] <- new HashSet<KernelItemIndex>(HashIdentity.Structural)
+        if not (t.ContainsKey(a)) then t.[a] <- HashSet<KernelItemIndex>(HashIdentity.Structural)
         t.[a].Add(b)
     member table.Item 
-      with get(a) = 
+      with get a = 
         let ok,v = t.TryGetValue(a) 
         if ok then v :> seq<_> else Seq.empty
     member table.Count  = t.Count
@@ -362,7 +362,7 @@ type CompiledSpec =
 
 /// Compile a pre-processed LALR parser spec to tables following the Dragon book algorithm
 let CompilerLalrParserSpec logf (spec : ProcessedParserSpec): CompiledSpec =
-    let stopWatch = new System.Diagnostics.Stopwatch()
+    let stopWatch = System.Diagnostics.Stopwatch()
     let reportTime() = printfn "        time: %A" stopWatch.Elapsed; stopWatch.Reset(); stopWatch.Start()
     stopWatch.Start()
 
@@ -414,7 +414,7 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec): CompiledSpec =
                         let rhs = Array.toList (prodTab.Symbols prodIdx)
                         let rec place l =
                             match l with
-                            | (yi::t) -> 
+                            | yi::t -> 
                                 res := 
                                    List.choose 
                                      (function None -> None | Some a -> Some (PNonTerminal nonTermX,Some a)) 
@@ -438,7 +438,7 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec): CompiledSpec =
     /// have an empty token in the first set then we have to iterate through those. 
     let ComputeFirstSetOfTokenList =
         Memoize (fun (str,term) -> 
-            let acc = new System.Collections.Generic.List<_>()
+            let acc = System.Collections.Generic.List<_>()
             let rec add l = 
                 match l with 
                 | [] -> acc.Add(term)
@@ -533,7 +533,7 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec): CompiledSpec =
             fprintf os "  gotos:"
             fprintf os "%a" OutputGotos d) m
     
-    let OutputLalrTables os (prods,states, startStates,actionTable,immediateActionTable,gotoTable,endOfInputTerminalIdx,errorTerminalIdx) = 
+    let OutputLalrTables os (_,states, startStates,actionTable,immediateActionTable,gotoTable,_,_) = 
         let combined = Array.ofList (List.map2 (fun x (y,(z,w)) -> x,y,z,w) (Array.toList states) (List.zip (Array.toList actionTable) (List.zip (Array.toList immediateActionTable) (Array.toList gotoTable))))
         fprintfn os "------------------------";
         fprintfn os "states = ";
@@ -573,7 +573,7 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec): CompiledSpec =
     // Input is kernel, output is kernel
     let ComputeGotosOfKernel iset sym = 
         let isetClosure = ComputeClosure0 iset
-        let acc = new System.Collections.Generic.List<_>(10)
+        let acc = System.Collections.Generic.List<_>(10)
         isetClosure |> Set.iter (fun item0 -> 
               match rsym_of_item0 item0 with 
               | Some sym2 when sym = sym2 -> acc.Add(advance_of_item0 item0) 
@@ -601,7 +601,7 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec): CompiledSpec =
     
     reportTime(); printf "building kernel table..."; stdout.Flush();
     // Give an index to each LR(0) kernel, and from now on refer to them only by index 
-    let kernelTab = new KernelTable(kernels)
+    let kernelTab = KernelTable(kernels)
     let startKernelIdxs = List.map kernelTab.Index startKernels
     let startKernelItemIdxs = List.map2 (fun a b -> KernelItemIdx(a,b)) startKernelIdxs startItems
 
@@ -631,7 +631,7 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec): CompiledSpec =
     //            add [B --> .g, b] to I
     
     let ComputeClosure1 iset = 
-        let acc = new Closure1Table()
+        let acc = Closure1Table()
         ProcessWorkList iset (fun addToWorkList (item0,pretokens:Set<TerminalIndex>) ->
             pretokens |> Set.iter (fun pretoken -> 
                 if not (acc.Contains(item0,pretoken)) then
@@ -639,7 +639,7 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec): CompiledSpec =
                     let rsyms = rsyms_of_item0 item0 
                     if rsyms.Length > 0 then 
                         match rsyms.[0] with 
-                        | (PNonTerminal ntB) -> 
+                        | PNonTerminal ntB -> 
                              let firstSet = ComputeFirstSetOfTokenList (Array.toList rsyms.[1..],pretoken)
                              for prodIdx in prodTab.Productions.[ntB] do
                                  addToWorkList (prodIdx_to_item0 prodIdx,firstSet)
@@ -671,8 +671,8 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec): CompiledSpec =
         let closure1OfItem0WithDummy = 
             Memoize (fun item0 -> ComputeClosure1 [(item0,Set.ofList [dummyLookaheadIdx])])
 
-        let spontaneous = new SpontaneousTable()
-        let propagate = new PropagateTable()
+        let spontaneous = SpontaneousTable()
+        let propagate = PropagateTable()
         let count = ref 0 
 
         for kernelIdx in kernelTab.Indexes do
@@ -683,7 +683,7 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec): CompiledSpec =
                 let item0Idx = KernelItemIdx(kernelIdx,item0)
                 let jset = closure1OfItem0WithDummy item0
                 //printf  "#jset = %d\n" jset.Count; stdout.Flush();
-                for (KeyValue(closureItem0, lookaheadTokens)) in jset.IEnumerable do
+                for KeyValue(closureItem0, lookaheadTokens) in jset.IEnumerable do
                     incr count
                     match rsym_of_item0 closureItem0 with 
                     | None -> ()
@@ -715,11 +715,11 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec): CompiledSpec =
         let initialWork =
             [ for idx in startKernelItemIdxs do
                   yield (idx,endOfInputTerminalIdx)
-              for (KeyValue(kernelItemIdx,lookaheads)) in spontaneous.IEnumerable do
+              for KeyValue(kernelItemIdx,lookaheads) in spontaneous.IEnumerable do
                   for lookahead in lookaheads do
                       yield (kernelItemIdx,lookahead) ]
 
-        let acc = new LookaheadTable()
+        let acc = LookaheadTable()
         // Compute the closure
         ProcessWorkList 
             initialWork
@@ -743,7 +743,7 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec): CompiledSpec =
             // printf "DEBUG: state %d: adding action for %s, precNew = %a, actionNew = %a\n" kernelIdx (termTab.OfIndex termIdx) outputPrec precNew OutputAction actionNew; 
             // We add in order of precedence - however the precedences may be the same, and we give warnings when rpecedence resolution is based on implicit file orderings 
 
-            let (precSoFar, actionSoFar) as itemSoFar = arr.[termIdx]
+            let _, actionSoFar as itemSoFar = arr.[termIdx]
 
             // printf "DEBUG: state %d: adding action for %s, precNew = %a, precSoFar = %a, actionSoFar = %a\n" kernelIdx (termTab.OfIndex termIdx) outputPrec precNew outputPrec precSoFar OutputAction actionSoFar; 
             // if compare_prec precSoFar precNew = -1 then failwith "addResolvingPrecedence"; 
@@ -778,17 +778,17 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec): CompiledSpec =
                     let a2n, astr2 = reportAction x2
                     printfn "        %s/%s error at state %d on terminal %s between %s and %s - assuming the former because %s" a1n a2n kernelIdx (termTab.OfIndex termIdx) astr1 astr2 reason
                 match itemSoFar,itemNew with 
-                | (_,Shift s1),(_, Shift s2) -> 
+                | (_,Shift _),(_, Shift _) -> 
                    if actionSoFar <> actionNew then 
                       reportConflict itemSoFar itemNew "internal error"
                    itemSoFar
 
-                | (((precShift,Shift sIdx) as shiftItem), 
-                   ((precReduce,Reduce prodIdx) as reduceItem))
-                | (((precReduce,Reduce prodIdx) as reduceItem), 
-                   ((precShift,Shift sIdx) as shiftItem)) -> 
+                | (precShift,Shift _ as shiftItem, 
+                   (precReduce,Reduce _ as reduceItem))
+                | (precReduce,Reduce _ as reduceItem, 
+                   (precShift,Shift _ as shiftItem)) -> 
                     match precReduce, precShift with 
-                    | (ExplicitPrec (_,p1), ExplicitPrec(assocNew,p2)) -> 
+                    | ExplicitPrec (_,p1), ExplicitPrec(assocNew,p2) -> 
                       if p1 < p2 then shiftItem
                       elif p1 > p2 then reduceItem
                       else
@@ -803,7 +803,7 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec): CompiledSpec =
                        reportConflict shiftItem reduceItem "we prefer shift when unable to compare precedences"
                        incr shiftReduceConflicts;
                        shiftItem
-                | ((_,Reduce prodIdx1),(_, Reduce prodIdx2)) -> 
+                | (_,Reduce prodIdx1),(_, Reduce prodIdx2) -> 
                    "we prefer the rule earlier in the file"
                    |> if prodIdx1 < prodIdx2 then reportConflict itemSoFar itemNew else reportConflict itemNew itemSoFar
                    incr reduceReduceConflicts;
@@ -827,9 +827,9 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec): CompiledSpec =
                      yield (item0,lookaheads) ]
                  |> ComputeClosure1
 
-            for (KeyValue(item0,lookaheads)) in items.IEnumerable do
+            for KeyValue(item0,lookaheads) in items.IEnumerable do
 
-                let nonTermA = ntIdx_of_item0 item0
+                let _ = ntIdx_of_item0 item0
                 match rsym_of_item0 item0 with 
                 | Some (PTerminal termIdx) -> 
                     let action =
@@ -904,7 +904,7 @@ let CompilerLalrParserSpec logf (spec : ProcessedParserSpec): CompiledSpec =
 
     /// The final results
     let states = kernels |> Array.ofList 
-    let prods = Array.ofList (List.map (fun (Production(nt,prec,syms,code)) -> (nt, ntTab.ToIndex nt, syms,code)) prods)
+    let prods = Array.ofList (List.map (fun (Production(nt,_,syms,code)) -> (nt, ntTab.ToIndex nt, syms,code)) prods)
 
     logf (fun logStream -> 
         printfn  "writing tables to log"; stdout.Flush();

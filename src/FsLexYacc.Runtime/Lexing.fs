@@ -67,7 +67,7 @@ type LexBufferFiller<'char> =
     
 and [<Sealed>]
     LexBuffer<'char>(filler: LexBufferFiller<'char>) as this = 
-    let context = new Dictionary<string, obj>(1) in 
+    let context = Dictionary<string, obj>(1) in 
     let extendBufferSync = (fun () -> match filler.fillSync with Some refill -> refill this | None -> invalidOp "attempt to read synchronously from an asynchronous lex buffer")
     let extendBufferAsync = (fun () -> match filler.fillAsync with Some refill -> refill this | None -> invalidOp "attempt to read asynchronously from a synchronous lex buffer")
     let mutable buffer=[||]
@@ -110,58 +110,58 @@ and [<Sealed>]
         lexbuf.EndPos <- endPos.EndOfToken(lexbuf.LexemeLength)
         bufferAcceptAction
 
-    member __.StartPos
+    member _.StartPos
        with get() = startPos
-       and  set(b) = startPos <- b
+       and  set b = startPos <- b
        
-    member __.EndPos 
+    member _.EndPos 
        with get() = endPos
-       and  set(b) = endPos <- b
+       and  set b = endPos <- b
 
-    member __.Lexeme = Array.sub buffer bufferScanStart lexemeLength
+    member _.Lexeme = Array.sub buffer bufferScanStart lexemeLength
 
-    member __.LexemeChar n = buffer.[n+bufferScanStart]
+    member _.LexemeChar n = buffer.[n+bufferScanStart]
     
-    member __.BufferLocalStore = (context :> IDictionary<_, _>)
+    member _.BufferLocalStore = (context :> IDictionary<_, _>)
 
-    member __.LexemeLength
+    member _.LexemeLength
         with get() : int = lexemeLength
         and set v = lexemeLength <- v
 
-    member internal __.Buffer
+    member internal _.Buffer
         with get() : 'char[] = buffer
         and set v = buffer <- v
 
-    member internal __.BufferMaxScanLength
+    member internal _.BufferMaxScanLength
         with get() = bufferMaxScanLength
         and set v = bufferMaxScanLength <- v
 
-    member internal __.BufferScanLength
+    member internal _.BufferScanLength
         with get() = bufferScanLength    
         and set v = bufferScanLength <- v
 
-    member internal __.BufferScanStart
+    member internal _.BufferScanStart
         with get() : int = bufferScanStart     
         and set v = bufferScanStart <- v
 
-    member internal __.BufferAcceptAction 
+    member internal _.BufferAcceptAction 
         with get() = bufferAcceptAction  
         and set v = bufferAcceptAction <- v
 
-    member internal __.RefillBuffer = extendBufferSync
+    member internal _.RefillBuffer = extendBufferSync
 
-    member internal __.AsyncRefillBuffer = extendBufferAsync
+    member internal _.AsyncRefillBuffer = extendBufferAsync
 
     static member LexemeString(lexbuf:LexBuffer<char>) = 
-        new System.String(lexbuf.Buffer, lexbuf.BufferScanStart, lexbuf.LexemeLength)
+        System.String(lexbuf.Buffer, lexbuf.BufferScanStart, lexbuf.LexemeLength)
 
-    member __.IsPastEndOfStream 
+    member _.IsPastEndOfStream 
        with get() = eof
-       and  set(b) = eof <- b
+       and  set b = eof <- b
 
-    member __.DiscardInput() = discardInput ()
+    member _.DiscardInput() = discardInput ()
 
-    member __.BufferScanPos = bufferScanStart + bufferScanLength
+    member _.BufferScanPos = bufferScanStart + bufferScanLength
 
     member lexbuf.EnsureBufferSize n = 
         if lexbuf.BufferScanPos + n >= buffer.Length then 
@@ -191,7 +191,7 @@ and [<Sealed>]
                                   lexBuffer.EnsureBufferSize n
                                   Array.blit extension 0 lexBuffer.Buffer lexBuffer.BufferScanPos n
                                   lexBuffer.BufferMaxScanLength <- lexBuffer.BufferScanLength + n }) }
-        new LexBuffer<_>(fillers)
+        LexBuffer<_>(fillers)
 
     // A full type signature is required on this method because it is used at more specific types within its own scope
     static member FromFunction (f : 'char[] * int * int -> int) : LexBuffer<'char> = 
@@ -217,17 +217,17 @@ and [<Sealed>]
     // A full type signature is required on this method because it is used at more specific types within its own scope
     static member FromArray (s: 'char[]) : LexBuffer<'char> = 
         let lexBuffer = 
-            new LexBuffer<_> 
+            LexBuffer<_> 
                 { fillSync = Some (fun _ -> ()) 
                   fillAsync = Some (fun _ -> async { return () }) }
         lexBuffer.Buffer <- s
         lexBuffer.BufferMaxScanLength <- s.Length
         lexBuffer
 
-    static member FromBytes (arr) =
+    static member FromBytes arr =
         LexBuffer<byte>.FromArray(Array.copy arr)
 
-    static member FromChars (arr) =
+    static member FromChars arr =
         LexBuffer<char>.FromArray(Array.copy arr)
 
     static member FromString (s:string) =
@@ -335,7 +335,7 @@ type AsciiTables(trans: uint16[] array, accept: uint16[]) =
         scanUntilSentinel(lexBuffer, initialState)
 
 
-    static member Create(trans, accept) = new AsciiTables(trans, accept)
+    static member Create(trans, accept) = AsciiTables(trans, accept)
 
 [<Sealed>]
 type UnicodeTables(trans: uint16[] array, accept: uint16[]) = 
@@ -439,7 +439,7 @@ type UnicodeTables(trans: uint16[] array, accept: uint16[]) =
         startInterpret(lexBuffer)
         scanUntilSentinel(lexBuffer, initialState)
 
-    static member Create(trans, accept) = new UnicodeTables(trans, accept)
+    static member Create(trans, accept) = UnicodeTables(trans, accept)
 
 open System.IO
 

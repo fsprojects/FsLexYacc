@@ -83,6 +83,6 @@ let main() =
 let result = 
     try main()
     with e -> 
-      eprintf "FSYACC: error FSY000: %s\n%s" (match e with Failure s -> s | e -> e.Message) (e.StackTrace);
+      eprintf "FSYACC: error FSY000: %s\n%s" (match e with Failure s -> s | e -> e.Message) e.StackTrace;
       exit 1
 

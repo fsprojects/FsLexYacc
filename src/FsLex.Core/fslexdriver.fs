@@ -1,12 +1,10 @@
 module FsLexYacc.FsLex.Driver 
 
 open FsLexYacc.FsLex.AST
-open FsLexYacc.FsLex.Parser
 open System
 open System.IO
 open FSharp.Text.Lexing
 open System.Collections.Generic
-open FSharp.Text.Lexing
 
 type Domain = Unicode | ASCII
 
@@ -25,7 +23,7 @@ type PerRuleData = list<DfaNode * seq<Code>>
 type DfaNodes = list<DfaNode>
 
 type Writer(fileName) =
-    let os = System.IO.File.CreateText fileName
+    let os = File.CreateText fileName
     let mutable lineCount = 0
     let incr () =
         lineCount <- lineCount + 1
@@ -61,7 +59,7 @@ let readSpecFromFile fileName codePage =
   use stream = stream
   use reader = reader
   try
-      let spec = Parser.spec FsLexYacc.FsLex.Lexer.token lexbuf
+      let spec = Parser.spec Lexer.token lexbuf
       Ok spec
   with e ->
       (e, lexbuf.StartPos.Line, lexbuf.StartPos.Column)
@@ -79,7 +77,7 @@ let writeModuleExpression genModuleName isInternal (writer: Writer) =
         let internal_tag = if isInternal then "internal " else ""
         writer.writeLine "module %s%s" internal_tag s
 
-let writeTopCode (code) (writer: Writer) = writer.writeCode code
+let writeTopCode code (writer: Writer) = writer.writeCode code
 
 let writeUnicodeTranslationArray dfaNodes domain (writer: Writer) =
     let parseContext = 
@@ -105,7 +103,7 @@ let writeUnicodeTranslationArray dfaNodes domain (writer: Writer) =
             writer.writeLine "    (* State %d *)" state.Id
             writer.write  "     [| "
             let trans =
-                let dict = new Dictionary<_,_>()
+                let dict = Dictionary()
                 state.Transitions |> List.iter dict.Add
                 dict
             let emit n =
@@ -137,7 +135,7 @@ let writeUnicodeTranslationArray dfaNodes domain (writer: Writer) =
             writer.writeLine "   (* State %d *)" state.Id
             writer.write " [|"
             let trans =
-                let dict = new Dictionary<_,_>()
+                let dict = Dictionary()
                 state.Transitions |> List.iter dict.Add
                 dict
             let emit n =
@@ -175,7 +173,7 @@ let writeRules (rules: Rule list) (perRuleData: PerRuleData) outputFileName (wri
     // These actions push the additional start state and come first, because they are then typically inlined into later
     // rules. This means more tailcalls are taken as direct branches, increasing efficiency and
     // improving stack usage on platforms that do not take tailcalls.
-    for ((startNode, actions),(ident,args,_)) in List.zip perRuleData rules do
+    for (startNode, actions),(ident,args,_) in List.zip perRuleData rules do
         writer.writeLine "// Rule %s" ident
         writer.writeLine "and %s %s lexbuf =" ident (String.Join(" ", Array.ofList args))
         writer.writeLine "  match _fslex_tables.Interpret(%d,lexbuf) with" startNode.Id

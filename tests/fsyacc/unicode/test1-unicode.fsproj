@@ -9,9 +9,9 @@
     <Compile Include="../../../src/Common/Arg.fs" />
     <Compile Include="../arg2.fs" />
     <Compile Include="../tree.fs" />
-    <Compile Include="test1.fsi" />
-    <Compile Include="test1.fs" />
-    <Compile Include="test1lex.fs" />
+    <Compile Include="test1-unicode.fsi" />
+    <Compile Include="test1-unicode.fs" />
+    <Compile Include="test1-unicode-lex.fs" />
     <Compile Include="../main.fs" />
   </ItemGroup>
   <ItemGroup>

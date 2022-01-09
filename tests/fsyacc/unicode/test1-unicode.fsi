@@ -11,6 +11,8 @@ type token =
   | LET
   | IN
   | END
+  | UNICODE1
+  | UNICODE2
 type tokenId = 
     | TOKEN_IDENT
     | TOKEN_MINUS
@@ -22,6 +24,8 @@ type tokenId =
     | TOKEN_LET
     | TOKEN_IN
     | TOKEN_END
+    | TOKEN_UNICODE1
+    | TOKEN_UNICODE2
     | TOKEN_end_of_input
     | TOKEN_error
 type nonTerminalId = 

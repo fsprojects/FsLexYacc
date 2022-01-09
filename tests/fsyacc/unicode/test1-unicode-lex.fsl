@@ -42,9 +42,9 @@ rule token = parse
  | "*" { STAR }
  | "+" { PLUS }
  | "-" { MINUS }
- | ident { let s = new System.String(lexbuf.Lexeme) in 
+ | ident { let s = new System.String(lexbuf.Lexeme)
            match s with 
-           |  "let" -> LET
+           | "let" -> LET
            | "in" -> IN
            | "end" -> END
            | _ -> IDENT(s) }

@@ -7,3 +7,5 @@ nuget FSharp.Core ~> 4.6.0
 nuget FsLexYacc copy_local: true
 nuget Microsoft.SourceLink.GitHub copy_local: true
 nuget Expecto ~> 9.0
+nuget Microsoft.NET.Test.Sdk
+nuget YoloDev.Expecto.TestSdk

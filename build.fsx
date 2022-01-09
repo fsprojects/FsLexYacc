@@ -149,6 +149,10 @@ Target.create "Build" (fun _ ->
         }) project
 )
 
+Target.create "RunTests" (fun _ ->
+    DotNet.test id "."
+)
+
 // --------------------------------------------------------------------------------------
 // Run the unit tests using test runner
 
@@ -225,8 +229,9 @@ Target.create "Release" ignore
 Target.create "All" ignore
 
 "Clean"
-  ==>  "AssemblyInfo"
-  ==>  "Build"
+  ==> "AssemblyInfo"
+  ==> "Build"
+  ==> "RunTests"
   ==> "RunOldFsYaccTests"
   ==> "All"
 

@@ -1,6 +1,2 @@
-﻿module FsYacc.Core.Tests
-open Expecto
-
-[<EntryPoint>]
-let main argv =
-    Tests.runTestsInAssembly defaultConfig argv
+﻿[<EntryPoint>]
+let main argv = Expecto.Tests.runTestsInAssembly Expecto.Tests.defaultConfig argv

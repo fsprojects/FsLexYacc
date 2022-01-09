@@ -204,3 +204,9 @@ tests/fsyacc/Test1/test1lex.fs
 .idea/
 .vs/
 .ionide/
+tests/fsyacc/unicode/test1-unicode-lex.fs
+tests/fsyacc/unicode/test1-unicode.fs
+tests/fsyacc/unicode/test1-unicode.input3.tokens.bsl.err
+tests/fsyacc/Test2/test2lex.fs
+tests/fsyacc/Test2/test2.fs
+tests/fsyacc/Test2/test2.fsi

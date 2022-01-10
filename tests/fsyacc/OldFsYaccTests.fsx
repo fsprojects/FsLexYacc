@@ -164,15 +164,15 @@ runTests test1unicodeProj [
     ]
 
 // Test 2
-let test2lexFs = Path.Combine(__SOURCE_DIRECTORY__, "test2", "test2lex.fs")
-let test2lexFsl = Path.Combine(__SOURCE_DIRECTORY__, "test1", "test1lex.fsl")
-let test2Fs = Path.Combine(__SOURCE_DIRECTORY__, "test2", "test2.fs")
-let test2Fsy = Path.Combine(__SOURCE_DIRECTORY__, "test2", "test2.fsy")
-let test2Proj = Path.Combine(__SOURCE_DIRECTORY__, "test2", "test2.fsproj")
+let test2lexFs = Path.Combine(__SOURCE_DIRECTORY__, "Test2", "test2lex.fs")
+let test2lexFsl = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1lex.fsl")
+let test2Fs = Path.Combine(__SOURCE_DIRECTORY__, "Test2", "test2.fs")
+let test2Fsy = Path.Combine(__SOURCE_DIRECTORY__, "Test2", "test2.fsy")
+let test2Proj = Path.Combine(__SOURCE_DIRECTORY__, "Test2", "test2.fsproj")
 let test2Input1 = Path.Combine(__SOURCE_DIRECTORY__, "Test2", "test2.input1")
 let test2Input1TokensBsl = Path.Combine(__SOURCE_DIRECTORY__, "Test2", "test2.input1.tokens.bsl")
-let test2BadInput = Path.Combine(__SOURCE_DIRECTORY__, "Test2", "test2.badinput")
-let test2BadInputTokensBsl = Path.Combine(__SOURCE_DIRECTORY__, "Test2", "test2.badinput.tokens.bsl")
+let test2BadInput = Path.Combine(__SOURCE_DIRECTORY__, "Test2", "test2.badInput")
+let test2BadInputTokensBsl = Path.Combine(__SOURCE_DIRECTORY__, "Test2", "test2.badInput.tokens.bsl")
 
 fsLex ("-o " + test2lexFs + " " + test2lexFsl)
 fsYacc ("--module TestParser -o " + test2Fs + " " + test2Fsy)

@@ -152,6 +152,8 @@ let test1unicodeFsy = Path.Combine(__SOURCE_DIRECTORY__, "unicode", "test1-unico
 let test1unicodeProj = Path.Combine(__SOURCE_DIRECTORY__, "unicode", "test1-unicode.fsproj")
 let test1unicodeInput3 = Path.Combine(__SOURCE_DIRECTORY__, "unicode", "test1-unicode.input3.utf8")
 let test1unicodeInput3TokensBsl = Path.Combine(__SOURCE_DIRECTORY__, "unicode", "test1-unicode.input3.tokens.bsl")
+let test1unicodeInput4 = Path.Combine(__SOURCE_DIRECTORY__, "unicode", "test1-unicode.input4.utf8")
+let test1unicodeInput4TokensBsl = Path.Combine(__SOURCE_DIRECTORY__, "unicode", "test1-unicode.input4.tokens.bsl")
 
 fsLex ("--unicode -o " + test1unicodelexFs + " " + test1unicodelexFsl)
 fsYacc ("--module TestParser -o " + test1unicodeFs + " " + test1unicodeFsy)
@@ -161,6 +163,17 @@ runTests test1unicodeProj [
     test1Input1, test1Input1Bsl
     sprintf "%s %s" test1Input2Variation1 test1Input2Variation2, test1Input2Bsl
     sprintf "--tokens %s" test1unicodeInput3, test1unicodeInput3TokensBsl
+    //sprintf "--tokens %s" test1unicodeInput4, test1unicodeInput4TokensBsl
+    ]
+
+// Case insensitive option test
+fsLex ("--unicode -i -o " + test1unicodelexFs + " " + test1unicodelexFsl)
+runTests test1unicodeProj [
+    sprintf "--tokens %s" test1Input1, test1Input1TokensBsl
+    test1Input1, test1Input1Bsl
+    sprintf "%s %s" test1Input2Variation1 test1Input2Variation2, test1Input2Bsl
+    sprintf "--tokens %s" test1unicodeInput3, test1unicodeInput3TokensBsl
+    sprintf "--tokens %s" test1unicodeInput4, test1unicodeInput4TokensBsl
     ]
 
 // Test 2

@@ -22,10 +22,6 @@ type Alphabet = uint32
 let Eof : Alphabet = 0xFFFFFFFEu
 let Epsilon : Alphabet = 0xFFFFFFFFu
 
-// let mutable unicode = false
-// let mutable caseInsensitive = false
-
-
 let unicodeCategories =
  dict
   [| "Pe", UnicodeCategory.ClosePunctuation; // (Pe)
@@ -64,14 +60,23 @@ let NumUnicodeCategories = unicodeCategories.Count
 assert (NumUnicodeCategories = 30) // see table interpreter
 let encodedUnicodeCategoryBase = 0xFFFFFF00u
 
-let EncodeUnicodeCategoryIndex(idx:int) = encodedUnicodeCategoryBase + uint32 idx
-let EncodeUnicodeCategory s: Parser<uint32> = fun ctx ->
+let EncodeUnicodeCategoryIndex(idx:int) : Alphabet = encodedUnicodeCategoryBase + uint32 idx
+let EncodeUnicodeCategory(s:string) : Parser<Alphabet> = fun ctx ->
     if not ctx.unicode then
         failwith "unicode category classes may only be used if --unicode is specified"
-    if unicodeCategories.ContainsKey(s) then
-        EncodeUnicodeCategoryIndex (int32 unicodeCategories.[s])
+    match unicodeCategories.TryGetValue s with
+    | true,  v -> v |> int32 |> EncodeUnicodeCategoryIndex
+    | false, _ -> failwithf "invalid Unicode category: '%s'" s
+
+//TODO: Test
+let TryDecodeUnicodeCategory(x:Alphabet) : UnicodeCategory option =
+    let maybeUnicodeCategory = x - encodedUnicodeCategoryBase |> int32 |> enum<UnicodeCategory>
+    if UnicodeCategory.IsDefined(typeof<UnicodeCategory>, maybeUnicodeCategory) then
+        Some maybeUnicodeCategory
     else
-        failwithf "invalid Unicode category: '%s'" s
+        None
+
+let (|UnicodeCategoryAP|_|) (x:Alphabet) = TryDecodeUnicodeCategory x
 
 let IsUnicodeCategory(x:Alphabet) = (encodedUnicodeCategoryBase <= x) && (x < encodedUnicodeCategoryBase + uint32 NumUnicodeCategories)
 let UnicodeCategoryIndex(x:Alphabet) = (x - encodedUnicodeCategoryBase)
@@ -207,7 +212,18 @@ let LexerStateToNfa ctx (macros: Map<string,_>) (clauses: Clause list) =
             List.foldBack CompileRegexp res dest
         | Inp (Alphabet c) ->
             let c = c ctx
-            if ctx.caseInsensitive && c <> Eof then
+            match c with
+            | c when not ctx.caseInsensitive || c = Eof ->
+                nfaNodeMap.NewNfaNode([(c, dest)],[])
+            | UnicodeCategoryAP uc ->
+                let allCasedCategories = [UnicodeCategory.UppercaseLetter; UnicodeCategory.LowercaseLetter; UnicodeCategory.TitlecaseLetter]
+                let isCasedLetterCategory = allCasedCategories |> Seq.contains uc
+                if isCasedLetterCategory then
+                    let trs = allCasedCategories |> List.map (fun x -> (EncodeUnicodeCategoryIndex (int32 x) ,dest))
+                    nfaNodeMap.NewNfaNode(trs,[])
+                else
+                    nfaNodeMap.NewNfaNode([(c, dest)],[])
+            | c ->
                 let x = DecodeChar c ctx
                 let lowerCase = System.Char.ToLowerInvariant x
                 let upperCase = System.Char.ToUpperInvariant x
@@ -216,9 +232,7 @@ let LexerStateToNfa ctx (macros: Map<string,_>) (clauses: Clause list) =
                     let encodedUpperCase = EncodeChar upperCase ctx
                     nfaNodeMap.NewNfaNode([(encodedLowerCase, dest); (encodedUpperCase, dest)],[])
                 else
-                    nfaNodeMap.NewNfaNode([(c, dest)],[]) 
-            else nfaNodeMap.NewNfaNode([(c, dest)],[])
-
+                    nfaNodeMap.NewNfaNode([(c, dest)],[])
         | Star re ->
             let nfaNode = nfaNodeMap.NewNfaNode([(Epsilon, dest)],[])
             let sre = CompileRegexp re nfaNode

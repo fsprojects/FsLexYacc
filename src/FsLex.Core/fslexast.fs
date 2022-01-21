@@ -60,15 +60,14 @@ let NumUnicodeCategories = unicodeCategories.Count
 assert (NumUnicodeCategories = 30) // see table interpreter
 let encodedUnicodeCategoryBase = 0xFFFFFF00u
 
-let EncodeUnicodeCategoryIndex(idx:int) : Alphabet = encodedUnicodeCategoryBase + uint32 idx
-let EncodeUnicodeCategory(s:string) : Parser<Alphabet> = fun ctx ->
+let EncodeUnicodeCategoryIndex(idx:int) = encodedUnicodeCategoryBase + uint32 idx
+let EncodeUnicodeCategory s: Parser<uint32> = fun ctx ->
     if not ctx.unicode then
         failwith "unicode category classes may only be used if --unicode is specified"
     match unicodeCategories.TryGetValue s with
     | true,  v -> v |> int32 |> EncodeUnicodeCategoryIndex
     | false, _ -> failwithf "invalid Unicode category: '%s'" s
 
-//TODO: Test
 let TryDecodeUnicodeCategory(x:Alphabet) : UnicodeCategory option =
     let maybeUnicodeCategory = x - encodedUnicodeCategoryBase |> int32 |> enum<UnicodeCategory>
     if UnicodeCategory.IsDefined(typeof<UnicodeCategory>, maybeUnicodeCategory) then

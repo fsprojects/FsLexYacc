@@ -2,7 +2,6 @@
 {
 module TestLexer
 open TestParser
-open Microsoft.FSharp.Compatibility.OCaml
 } 
 
 let letter = ['A'-'Z'] | ['a'-'z']
@@ -23,9 +22,9 @@ rule token = parse
  | "let" { LET }
  | "in" { IN }
  | "end" { END }
- | ident { let s = Lexing.lexeme lexbuf in 
+ | ident { let s = lexbuf.Lexeme |> System.Text.Encoding.ASCII.GetString
            match s with 
-           |  "let" -> LET
+           | "let" -> LET
            | "in" -> IN
            | "end" -> END
            | _ -> IDENT(s) }

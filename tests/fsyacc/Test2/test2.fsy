@@ -28,8 +28,8 @@ decls: decls decl { $2 :: $1 } | decl { [$1] }
 decl: IDENT expr { 
     /// Stephan Tolksdorf reported a bug where quotation characters in headers and semantic
     /// actions caused the parser generator to fail with an "unterminated string" comment.
-    let testQuotationCharInHeader1 = '"' in
-    let testQuotationCharInHeader2 = '\"' in
+    let testQuotationCharInHeader1 = '"'
+    let testQuotationCharInHeader2 = '\"'
     Tree.Node("decl",[$2]) }
 
 expr:  expr MINUS expr { Tree.Node("-",[$1;$3]) } 

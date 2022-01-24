@@ -5,7 +5,7 @@ nuget Fake.Core.Trace
 nuget Fake.DotNet.Cli //"
 
 #if !FAKE
-#load "./.fake/build.fsx/intellisense.fsx"
+#load "./.fake/oldfsyacctests.fsx/intellisense.fsx"
 #r "netstandard" // Temp fix for https://github.com/fsharp/FAKE/issues/1985
 #endif
 
@@ -96,15 +96,15 @@ assertFileExists fsYaccProject
 let fsLex  = run fslexProject
 let fsYacc = run fsYaccProject
 
-let repro1885Fsl = Path.Combine(__SOURCE_DIRECTORY__, "repro1885.fsl")
+let repro1885Fsl = Path.Combine(__SOURCE_DIRECTORY__, "repro1885", "repro1885.fsl")
 // Regression test for FSB 1885
 fsLex repro1885Fsl
 
 // Test 1
 let test1lexFs = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1lex.fs")
-let test1lexMll = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1lex.mll")
+let test1lexFsl = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1lex.fsl")
 let test1Fs = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1.fs")
-let test1Mly = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1.mly")
+let test1Fsy = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1.fsy")
 let test1Input1 = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1.input1")
 let test1Input1Bsl = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1.input1.bsl")
 let test1Input1TokensBsl = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1.input1.tokens.bsl")
@@ -119,16 +119,16 @@ let test1Input4 = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1.input4")
 let test1Input4Bsl = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1.input4.bsl")
 let test1Input4TokensBsl = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1.input4.tokens.bsl")
 
-fsLex ("--light-off -o " + test1lexFs + " " + test1lexMll)
-fsYacc ("--light-off --module TestParser -o " + test1Fs + " " + test1Mly)
 
-let runTest1Tests xs =    
-    test1Proj
+let runTests projFile xs =    
+    projFile
     |> DotNet.build (fun opts -> { opts with Configuration = DotNet.BuildConfiguration.Release })
 
-    xs |> List.iter (test ("-p " + test1Proj))
+    xs |> List.iter (test ("-p " + projFile))
 
-runTest1Tests [
+fsLex ("-o " + test1lexFs + " " + test1lexFsl)
+fsYacc ("--module TestParser -o " + test1Fs + " " + test1Fsy)
+runTests test1Proj [
      sprintf "--tokens %s" test1Input1, test1Input1TokensBsl
      test1Input1, test1Input1Bsl
      sprintf "%s %s" test1Input2Variation1 test1Input2Variation2, test1Input2Bsl
@@ -137,63 +137,47 @@ runTest1Tests [
      ]
 
 // Case insensitive option test
-fsLex ("--light-off -i -o " + test1lexFs + " " + test1lexMll)
-runTest1Tests [
+fsLex ("-i -o " + test1lexFs + " " + test1lexFsl)
+runTests test1Proj [
     sprintf "--tokens %s" test1Input4, test1Input4TokensBsl
     sprintf "--tokens %s" test1Input3, test1Input4TokensBsl
     sprintf "%s %s" test1Input3 test1Input4, test1Input4Bsl
     ]
 
-// All other tests have missing files. It's not clear if they ever existed.
+// Test 1 unicode
+let test1unicodelexFs = Path.Combine(__SOURCE_DIRECTORY__, "unicode", "test1-unicode-lex.fs")
+let test1unicodelexFsl = Path.Combine(__SOURCE_DIRECTORY__, "unicode", "test1-unicode-lex.fsl")
+let test1unicodeFs = Path.Combine(__SOURCE_DIRECTORY__, "unicode", "test1-unicode.fs")
+let test1unicodeFsy = Path.Combine(__SOURCE_DIRECTORY__, "unicode", "test1-unicode.fsy")
+let test1unicodeProj = Path.Combine(__SOURCE_DIRECTORY__, "unicode", "test1-unicode.fsproj")
+let test1unicodeInput3 = Path.Combine(__SOURCE_DIRECTORY__, "unicode", "test1-unicode.input3.utf8")
+let test1unicodeInput3TokensBsl = Path.Combine(__SOURCE_DIRECTORY__, "unicode", "test1-unicode.input3.tokens.bsl")
 
-// Test 2 - Thre is no 'test2.fs'/'test2.fsi' ...
-//fsYacc "--light-off --module TestParser -o test2.fs test2.mly"
-//fsc "test2.exe" ["test2.fsi"; "test2.fs"; "test1lex.fs"; "main.ml"]
+fsLex ("--unicode -o " + test1unicodelexFs + " " + test1unicodelexFsl)
+fsYacc ("--module TestParser -o " + test1unicodeFs + " " + test1unicodeFsy)
 
-// let runTest2Tests() =
-//     ["--tokens ./test2.input1", "test2.input1.tokens.bsl"
-//      "--tokens ./test2.badInput", "test1.badInput.tokens.bsl"
-//      //"./test2.input1", "test2.input1.bsl" TODO: Test fails
-//      //"./test2.badInput", "test1.badInput.bsl"
-//      ]
-//     |> List.iter (test "test2.exe")
+runTests test1unicodeProj [
+    sprintf "--tokens %s" test1Input1, test1Input1TokensBsl
+    test1Input1, test1Input1Bsl
+    sprintf "%s %s" test1Input2Variation1 test1Input2Variation2, test1Input2Bsl
+    sprintf "--tokens %s" test1unicodeInput3, test1unicodeInput3TokensBsl
+    ]
 
-// runTest2Tests()
+// Test 2
+let test2lexFs = Path.Combine(__SOURCE_DIRECTORY__, "Test2", "test2lex.fs")
+let test2lexFsl = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1lex.fsl")
+let test2Fs = Path.Combine(__SOURCE_DIRECTORY__, "Test2", "test2.fs")
+let test2Fsy = Path.Combine(__SOURCE_DIRECTORY__, "Test2", "test2.fsy")
+let test2Proj = Path.Combine(__SOURCE_DIRECTORY__, "Test2", "test2.fsproj")
+let test2Input1 = Path.Combine(__SOURCE_DIRECTORY__, "Test2", "test2.input1")
+let test2Input1TokensBsl = Path.Combine(__SOURCE_DIRECTORY__, "Test2", "test2.input1.tokens.bsl")
+let test2BadInput = Path.Combine(__SOURCE_DIRECTORY__, "Test2", "test2.badInput")
+let test2BadInputTokensBsl = Path.Combine(__SOURCE_DIRECTORY__, "Test2", "test2.badInput.tokens.bsl")
 
+fsLex ("-o " + test2lexFs + " " + test2lexFsl)
+fsYacc ("--module TestParser -o " + test2Fs + " " + test2Fsy)
 
-// // test1.exe
-// fsLex "-o test1lex.ml test1lex.mll"
-// fsYacc "--module TestParser -o test1.ml test1.mly"
-// fsc "test1.exe" ["test1.mli"; "test1.ml"; "test1lex.ml"; "main.ml"]
-
-// runTest1Tests()
-
-
-// // test1compat.exe
-// fsYacc "--module TestParser -o test1compat.ml --ml-compatibility test1.mly"
-// fsc "test1compat.exe" ["test1compat.mli"; "test1compat.ml"; "test1lex.ml"; "main.ml"]
-
-// ["--tokens ./test1.input1", "test1compat.input1.tokens.bsl"
-//  "./test1.input1", "test1comapt.input1.bsl"
-//  "./test1.input2.variation1  ./test1.input2.variation2", "test1compat.input2.bsl"]
-// |> List.iter (test "test1compat.exe")
-
-
-// // test2.exe
-// fsYacc "--module TestParser -o test2.ml test2.mly"
-// fsc "test2.exe" ["test2.mli"; "test2.ml"; "test1lex.ml"; "main.ml"]
-
-// runTest2Tests()
-
-
-// // test2compat.exe
-// fsYacc "--module TestParser -o test2compat.ml --ml-compatibility test2.mly"
-// fsc "test2compat.exe" ["test2compat.mli"; "test2compat.ml"; "test1lex.ml"; "main.ml"]
-
-
-// // test1-unicode.exe
-// fsLex "--unicode -o test1-unicode-lex.ml test1-unicode-lex.mll"
-// fsYacc "--module TestParser -o test1-unicode.ml test1-unicode.mly"
-// fsc "test1-unicode.exe" ["test1-unicode.mli"; "test1-unicode.ml"; "test1-unicode-lex.ml"; "main-unicode.ml"]
-
-// runTest1UnicodeTests()
+runTests test2Proj [
+    sprintf "--tokens %s" test2Input1, test2Input1TokensBsl
+    sprintf "--tokens %s" test2BadInput, test2BadInputTokensBsl
+    ]

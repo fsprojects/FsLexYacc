@@ -2,7 +2,6 @@
 //module TestParser
 //Bug1885: is about skipping // comments in the header and code sections, rather than lexing as tokens
 //Bug1885: REPRO: Convert a string such as "\"c:\\windows\\\"" into "c:\windows\" 
-open Microsoft.FSharp.Compatibility.OCaml
 %} 
 
 %type <Tree.tree> start

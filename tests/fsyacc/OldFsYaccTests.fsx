@@ -1,4 +1,5 @@
 #r @"paket:
+nuget FSharp.Core ~> 5.0
 nuget Fake.IO.FileSystem
 nuget Fake.DotNet.Fsc
 nuget Fake.Core.Trace

@@ -127,7 +127,6 @@ let runTests' shouldBeOK projFile xs =
 
     xs |> List.iter (test ("-p " + projFile) shouldBeOK)
 let runTests projFile xs = runTests' true projFile xs   
-let runTests2 projFile xs = runTests' false projFile xs   
 
 fsLex ("-o " + test1lexFs + " " + test1lexFsl)
 fsYacc ("--module TestParser -o " + test1Fs + " " + test1Fsy)
@@ -169,7 +168,7 @@ runTests test1unicodeProj [
     sprintf "--tokens %s" test1unicodeInput3, test1unicodeInput3TokensBsl
     ]
 
-runTests2 test1unicodeProj [
+runTests' false test1unicodeProj [
     sprintf "--tokens %s" test1unicodeWithTitleCaseLetter, test1unicodeWithTitleCaseLetterTokensErrorBsl
 ]
 

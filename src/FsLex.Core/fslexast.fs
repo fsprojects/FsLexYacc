@@ -64,9 +64,10 @@ let EncodeUnicodeCategoryIndex(idx:int) = encodedUnicodeCategoryBase + uint32 id
 let EncodeUnicodeCategory s: Parser<uint32> = fun ctx ->
     if not ctx.unicode then
         failwith "unicode category classes may only be used if --unicode is specified"
-    match unicodeCategories.TryGetValue s with
-    | true,  v -> v |> int32 |> EncodeUnicodeCategoryIndex
-    | false, _ -> failwithf "invalid Unicode category: '%s'" s
+    if unicodeCategories.ContainsKey(s) then
+        EncodeUnicodeCategoryIndex (int32 unicodeCategories.[s])
+    else
+        failwithf "invalid Unicode category: '%s'" s
 
 let TryDecodeUnicodeCategory(x:Alphabet) : UnicodeCategory option =
     let maybeUnicodeCategory = x - encodedUnicodeCategoryBase |> int32 |> enum<UnicodeCategory>
@@ -96,7 +97,7 @@ let EncodeChar(c:char): Parser<uint32> = fun ctx ->
                  specificUnicodeCharsDecode.[idx] <- c
              specificUnicodeChars.[c]
      else
-         if x >= 256u then failwithf "the Unicode character '%x' may not be used unless --unicode is specified" <| int c
+         if x >= 256u then failwithf "the Unicode character '0x%x' may not be used unless --unicode is specified" <| int c
          x
 
 let DecodeChar(x:Alphabet): Parser<char> = fun ctx ->
@@ -104,7 +105,7 @@ let DecodeChar(x:Alphabet): Parser<char> = fun ctx ->
          if x < uint32 numLowUnicodeChars then System.Convert.ToChar x
          else specificUnicodeCharsDecode.[x]
      else
-         if x >= 256u then failwithf "the Unicode character '%x' may not be used unless --unicode is specified" x
+         if x >= 256u then failwithf "the Unicode character '0x%x' may not be used unless --unicode is specified" x
          System.Convert.ToChar x
 
 

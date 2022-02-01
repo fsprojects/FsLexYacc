@@ -1,4 +1,5 @@
 #r @"paket:
+nuget FSharp.Core ~> 5.0
 nuget Fake.IO.FileSystem
 nuget Fake.DotNet.Fsc
 nuget Fake.Core.Trace
@@ -36,12 +37,12 @@ let run project args =
     if not res.OK then
         failwithf "Process failed with code %d" res.ExitCode
 
-let test proj (args, baseLineOutput) =
+let test proj shouldBeOK (args, baseLineOutput) =
     Trace.traceImportant <| sprintf "Running '%s' with args '%s'" proj args
 
     let res = DotNet.exec (fun opts -> { opts with RedirectOutput = true }) "run" ("-p " + proj + " " + args)
 
-    if not res.OK then
+    if res.OK <> shouldBeOK then
         failwithf "Process failed with code %d on input %s" res.ExitCode args
 
     let output =
@@ -120,11 +121,12 @@ let test1Input4Bsl = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1.input4.b
 let test1Input4TokensBsl = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1.input4.tokens.bsl")
 
 
-let runTests projFile xs =    
+let runTests' shouldBeOK projFile xs =    
     projFile
     |> DotNet.build (fun opts -> { opts with Configuration = DotNet.BuildConfiguration.Release })
 
-    xs |> List.iter (test ("-p " + projFile))
+    xs |> List.iter (test ("-p " + projFile) shouldBeOK)
+let runTests projFile xs = runTests' true projFile xs   
 
 fsLex ("-o " + test1lexFs + " " + test1lexFsl)
 fsYacc ("--module TestParser -o " + test1Fs + " " + test1Fsy)
@@ -152,6 +154,9 @@ let test1unicodeFsy = Path.Combine(__SOURCE_DIRECTORY__, "unicode", "test1-unico
 let test1unicodeProj = Path.Combine(__SOURCE_DIRECTORY__, "unicode", "test1-unicode.fsproj")
 let test1unicodeInput3 = Path.Combine(__SOURCE_DIRECTORY__, "unicode", "test1-unicode.input3.utf8")
 let test1unicodeInput3TokensBsl = Path.Combine(__SOURCE_DIRECTORY__, "unicode", "test1-unicode.input3.tokens.bsl")
+let test1unicodeWithTitleCaseLetter = Path.Combine(__SOURCE_DIRECTORY__, "unicode", "test1-unicode.WithTitleCaseLetter.utf8")
+let test1unicodeWithTitleCaseLetterTokensBsl = Path.Combine(__SOURCE_DIRECTORY__, "unicode", "test1-unicode.WithTitleCaseLetter.tokens.bsl")
+let test1unicodeWithTitleCaseLetterTokensErrorBsl = Path.Combine(__SOURCE_DIRECTORY__, "unicode", "test1-unicode.WithTitleCaseLetter.tokens.error.bsl")
 
 fsLex ("--unicode -o " + test1unicodelexFs + " " + test1unicodelexFsl)
 fsYacc ("--module TestParser -o " + test1unicodeFs + " " + test1unicodeFsy)
@@ -161,6 +166,20 @@ runTests test1unicodeProj [
     test1Input1, test1Input1Bsl
     sprintf "%s %s" test1Input2Variation1 test1Input2Variation2, test1Input2Bsl
     sprintf "--tokens %s" test1unicodeInput3, test1unicodeInput3TokensBsl
+    ]
+
+runTests' false test1unicodeProj [
+    sprintf "--tokens %s" test1unicodeWithTitleCaseLetter, test1unicodeWithTitleCaseLetterTokensErrorBsl
+]
+
+// Case insensitive option test
+fsLex ("--unicode -i -o " + test1unicodelexFs + " " + test1unicodelexFsl)
+runTests test1unicodeProj [
+    sprintf "--tokens %s" test1Input1, test1Input1TokensBsl
+    test1Input1, test1Input1Bsl
+    sprintf "%s %s" test1Input2Variation1 test1Input2Variation2, test1Input2Bsl
+    sprintf "--tokens %s" test1unicodeInput3, test1unicodeInput3TokensBsl
+    sprintf "--tokens %s" test1unicodeWithTitleCaseLetter, test1unicodeWithTitleCaseLetterTokensBsl
     ]
 
 // Test 2

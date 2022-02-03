@@ -200,3 +200,9 @@ runTests test2Proj [
     sprintf "--tokens %s" test2Input1, test2Input1TokensBsl
     sprintf "--tokens %s" test2BadInput, test2BadInputTokensBsl
     ]
+
+// #141 TODO
+let repro141Fsl = Path.Combine(__SOURCE_DIRECTORY__, "repro_#141", "Lexer_fail_option_i.fsl")
+let repro141Fs = Path.Combine(__SOURCE_DIRECTORY__, "repro_#141", "Lexer_fail_option_i.fs")
+fsLex ("-i -o " + repro141Fs + " " + repro141Fsl)
+fsLex ("--unicode -i -o " + repro141Fs + " " + repro141Fsl)

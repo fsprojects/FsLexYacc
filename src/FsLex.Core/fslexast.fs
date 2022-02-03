@@ -86,19 +86,24 @@ assert (numLowUnicodeChars = 128) // see table interpreter
 let specificUnicodeChars = Dictionary()
 let specificUnicodeCharsDecode = Dictionary()
 
-let EncodeChar(c:char): Parser<uint32> = fun ctx ->
+let TryEncodeChar(c:char): Parser<uint32 option> = fun ctx ->
      let x = System.Convert.ToUInt32 c
      if ctx.unicode then
-         if x < uint32 numLowUnicodeChars then x
+         if x < uint32 numLowUnicodeChars then Some x
          else
              if not(specificUnicodeChars.ContainsKey(c)) then
                  let idx = uint32 numLowUnicodeChars + uint32 specificUnicodeChars.Count
                  specificUnicodeChars.[c] <- idx
                  specificUnicodeCharsDecode.[idx] <- c
-             specificUnicodeChars.[c]
+             Some specificUnicodeChars.[c]
      else
-         if x >= 256u then failwithf "the Unicode character '0x%x' may not be used unless --unicode is specified" <| int c
-         x
+         if x >= 256u
+         then None
+         else Some x
+
+let EncodeChar(c:char) : Parser<uint32> = fun ctx ->
+    TryEncodeChar c ctx
+    |> Option.defaultWith (fun () -> failwithf "the Unicode character '0x%x' may not be used unless --unicode is specified" <| int c)
 
 let DecodeChar(x:Alphabet): Parser<char> = fun ctx ->
      if ctx.unicode then
@@ -224,15 +229,16 @@ let LexerStateToNfa ctx (macros: Map<string,_>) (clauses: Clause list) =
                 else
                     nfaNodeMap.NewNfaNode([(c, dest)],[])
             | c ->
-                let x = DecodeChar c ctx
-                let lowerCase = System.Char.ToLowerInvariant x
-                let upperCase = System.Char.ToUpperInvariant x
-                if lowerCase <> upperCase then
-                    let encodedLowerCase = EncodeChar lowerCase ctx
-                    let encodedUpperCase = EncodeChar upperCase ctx
-                    nfaNodeMap.NewNfaNode([(encodedLowerCase, dest); (encodedUpperCase, dest)],[])
-                else
-                    nfaNodeMap.NewNfaNode([(c, dest)],[])
+                let decodedChar = DecodeChar c ctx
+                let trs =
+                    [
+                        System.Char.ToLowerInvariant decodedChar
+                        System.Char.ToUpperInvariant decodedChar
+                    ]
+                    |> List.distinct
+                    |> List.choose (fun letter -> TryEncodeChar letter ctx)
+                    |> List.map (fun encodedLetter -> (encodedLetter, dest))
+                nfaNodeMap.NewNfaNode(trs,[])
         | Star re ->
             let nfaNode = nfaNodeMap.NewNfaNode([(Epsilon, dest)],[])
             let sre = CompileRegexp re nfaNode

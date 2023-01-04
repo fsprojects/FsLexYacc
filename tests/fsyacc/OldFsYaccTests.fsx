@@ -1,9 +1,10 @@
 #r @"paket:
+frameworks: net6.0
+
 nuget FSharp.Core ~> 5.0
 nuget Fake.IO.FileSystem
 nuget Fake.DotNet.Fsc
-nuget Fake.Core.Trace
-nuget Fake.DotNet.Cli //"
+nuget Fake.Core.Trace //"
 
 #if !FAKE
 #load "./.fake/oldfsyacctests.fsx/intellisense.fsx"
@@ -14,7 +15,6 @@ open System
 open System.Runtime.InteropServices
 open System.IO
 
-open Fake.DotNet
 open Fake.IO
 open Fake.Core
 
@@ -26,29 +26,39 @@ let assertFileExists file =
 
 let run project args =
     Trace.traceImportant <| sprintf "Running '%s' with args %s" project args
+    
+    CreateProcess.fromRawCommandLine "dotnet" $"build {project} -c Release"
+    |> Proc.run
+    |> ignore
+    
+    // project
+    // |> DotNet.build (fun opts ->
+    //     { opts with
+    //         Configuration = DotNet.BuildConfiguration.Release })
 
-    project
-    |> DotNet.build (fun opts ->
-        { opts with
-            Configuration = DotNet.BuildConfiguration.Release })
+    let res = 
+        CreateProcess.fromRawCommandLine "dotnet" $"run --project {project} {args}"
+        |> Proc.run
+    // DotNet.exec (fun opts -> { opts with RedirectOutput = true }) "run" ("-p " + project + " " + args)
 
-    let res = DotNet.exec (fun opts -> { opts with RedirectOutput = true }) "run" ("-p " + project + " " + args)
-
-    if not res.OK then
+    if res.ExitCode <> 0 then
         failwithf "Process failed with code %d" res.ExitCode
 
 let test proj shouldBeOK (args, baseLineOutput) =
     Trace.traceImportant <| sprintf "Running '%s' with args '%s'" proj args
 
-    let res = DotNet.exec (fun opts -> { opts with RedirectOutput = true }) "run" ("-p " + proj + " " + args)
+    let res = 
+        CreateProcess.fromRawCommandLine "dotnet" $"run --project {proj} {args}"
+        |> CreateProcess.redirectOutput
+        |> Proc.run
+    //DotNet.exec (fun opts -> { opts with RedirectOutput = true }) "run" ("-p " + proj + " " + args)
 
-    if res.OK <> shouldBeOK then
+    if (res.ExitCode = 0) <> shouldBeOK then
         failwithf "Process failed with code %d on input %s" res.ExitCode args
 
     let output =
-        res.Results
-        |> Array.ofList
-        |> Array.map (fun cm -> cm.Message)
+        // For some reason, the output is captured in the stderr
+        res.Result.Error.Split('\n', StringSplitOptions.RemoveEmptyEntries)
         |> Array.map (fun line ->
             if line.StartsWith("parsed") then
                 let pieces = line.Split(' ')
@@ -122,16 +132,18 @@ let test1Input4TokensBsl = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1.in
 
 
 let runTests' shouldBeOK projFile xs =    
-    projFile
-    |> DotNet.build (fun opts -> { opts with Configuration = DotNet.BuildConfiguration.Release })
+    CreateProcess.fromRawCommandLine "dotnet" $"build {projFile} -c Release"
+    |> Proc.run
+    |> ignore
 
-    xs |> List.iter (test ("-p " + projFile) shouldBeOK)
+    xs |> List.iter (test projFile shouldBeOK)
 let runTests projFile xs = runTests' true projFile xs   
 
 fsLex ("-o " + test1lexFs + " " + test1lexFsl)
 fsYacc ("--module TestParser -o " + test1Fs + " " + test1Fsy)
 runTests test1Proj [
      sprintf "--tokens %s" test1Input1, test1Input1TokensBsl
+     test1Input1, test1Input1Bsl
      test1Input1, test1Input1Bsl
      sprintf "%s %s" test1Input2Variation1 test1Input2Variation2, test1Input2Bsl
      sprintf "--tokens %s" test1Input3, test1Input3TokensBsl

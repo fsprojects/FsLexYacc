@@ -15,9 +15,9 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup>
 		<CompileDependsOn>CallFsLex;CallFsYacc;$(CompileDependsOn)</CompileDependsOn>
-		<FsLexToolPath Condition="'$(FsLexToolPath)' == ''">$(MSBuildThisFileDirectory)/fslex/netcoreapp3.1</FsLexToolPath>
+		<FsLexToolPath Condition="'$(FsLexToolPath)' == ''">$(MSBuildThisFileDirectory)/fslex/net6.0</FsLexToolPath>
 		<FsLexToolExe Condition="'$(FsLexToolExe)' == ''">fslex.dll</FsLexToolExe>
-		<FsYaccToolPath Condition="'$(FsYaccToolPath)' == ''">$(MSBuildThisFileDirectory)/fsyacc/netcoreapp3.1</FsYaccToolPath>
+		<FsYaccToolPath Condition="'$(FsYaccToolPath)' == ''">$(MSBuildThisFileDirectory)/fsyacc/net6.0</FsYaccToolPath>
 		<FsYaccToolExe Condition="'$(FsYaccToolExe)' == ''">fsyacc.dll</FsYaccToolExe>
 		<FsLexYaccToolRunner Condition="'$(UseFsLexYaccToolRunner)' != 'false' AND '$(FsLexYaccToolRunner)' == ''">dotnet </FsLexYaccToolRunner>
 	</PropertyGroup>

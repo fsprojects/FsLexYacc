@@ -2,9 +2,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <FsLexToolPath>..\..\src\FsLex\bin\$(Configuration)\netcoreapp3.1</FsLexToolPath>
-    <FsYaccToolPath>..\..\src\FsYacc\bin\$(Configuration)\netcoreapp3.1</FsYaccToolPath>
+    <TargetFramework>net6.0</TargetFramework>
+    <FsLexToolPath>..\..\src\FsLex\bin\$(Configuration)\net6.0</FsLexToolPath>
+    <FsYaccToolPath>..\..\src\FsYacc\bin\$(Configuration)\net6.0</FsYaccToolPath>
   </PropertyGroup>
   <ItemGroup>
     <FsYacc Include="Parser.fsy">

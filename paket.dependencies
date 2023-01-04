@@ -1,7 +1,7 @@
 source https://api.nuget.org/v3/index.json
 
 storage: none
-frameworks: netstandard2.0, netcoreapp3.1
+frameworks: netstandard2.0, net6.0
 
 nuget FSharp.Core ~> 4.6.0
 nuget FsLexYacc copy_local: true

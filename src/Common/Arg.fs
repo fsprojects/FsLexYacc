@@ -47,12 +47,12 @@ type ArgParser() =
       sbuf.ToString()
 
 
-    static member ParsePartial(cursor,argv,argSpecs:seq<ArgInfo>,?other,?usageText) =
-        let other = defaultArg other (fun _ -> ())
+    static member ParsePartial(cursor,argv,arguments:seq<ArgInfo>,?otherArgs,?usageText) =
+        let other = defaultArg otherArgs (fun _ -> ())
         let usageText = defaultArg usageText ""
         let nargs = Array.length argv 
         incr cursor;
-        let argSpecs = argSpecs |> Seq.toList
+        let argSpecs = arguments |> Seq.toList
         let specs = argSpecs |> List.map (fun (arg:ArgInfo) -> arg.Name, arg.ArgType)
         while !cursor < nargs do
           let arg = argv.[!cursor] 
@@ -107,16 +107,16 @@ type ArgParser() =
                    incr cursor
           findMatchingArg specs 
 
-    static member Usage (specs,?usage) = 
+    static member Usage (arguments, ?usage) = 
         let usage = defaultArg usage ""
-        System.Console.Error.WriteLine (getUsage (Seq.toList specs) usage)
+        System.Console.Error.WriteLine (getUsage (Seq.toList arguments) usage)
 
     #if FX_NO_COMMAND_LINE_ARGS
     #else
-    static member Parse (specs,?other,?usageText) = 
+    static member Parse (arguments, ?otherArgs,?usageText) = 
         let current = ref 0
         let argv = System.Environment.GetCommandLineArgs() 
-        try ArgParser.ParsePartial (current, argv, specs, ?other=other, ?usageText=usageText)
+        try ArgParser.ParsePartial (current, argv, arguments, ?otherArgs=otherArgs, ?usageText=usageText)
         with 
           | Bad h 
           | HelpText h -> 

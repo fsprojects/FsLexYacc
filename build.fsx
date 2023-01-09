@@ -1,13 +1,14 @@
 #r @"paket:
-nuget FSharp.Core 4.7.2
+frameworks: net6.0
+
+nuget FSharp.Core ~> 6
 nuget Fake.Core.Target
 nuget Fake.Core.ReleaseNotes
 nuget Fake.IO.FileSystem
-nuget Fake.DotNet.Cli
 nuget Fake.DotNet.AssemblyInfoFile
 nuget Fake.DotNet.Paket
 nuget Fake.Tools.Git
-nuget MsBuild.StructuredLogger >= 2.1.507 //"
+nuget MsBuild.StructuredLogger //"
 
 #if !FAKE
 #load "./.fake/build.fsx/intellisense.fsx"
@@ -26,7 +27,6 @@ open Fake
 open Fake.Core.TargetOperators
 open Fake.Core 
 open Fake.Tools.Git
-open Fake.DotNet
 open Fake.IO
 open Fake.IO.FileSystemOperators
 open Fake.IO.Globbing.Operators
@@ -111,8 +111,16 @@ Target.create "CleanDocs" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Build library & test project
 
+let dotnet arguments =
+    let result =
+        CreateProcess.fromRawCommandLine "dotnet" arguments
+        |> Proc.run
+
+    if result.ExitCode <> 0 then
+        failwithf "Failed to run \"dotnet %s\"" arguments
+
 Target.create "Build" (fun _ ->
-    for framework in ["netcoreapp3.1"] do
+    for framework in ["net6.0"] do
         [
             "src/FsLex.Core/fslexlex.fs"
             "src/FsLex.Core/fslexpars.fs"
@@ -123,12 +131,7 @@ Target.create "Build" (fun _ ->
         ] |> File.deleteAll
 
         for project in ["src/FsLex/fslex.fsproj"; "src/FsYacc/fsyacc.fsproj"] do
-            DotNet.publish (fun opts -> { 
-                opts with 
-                    Common = { opts.Common with CustomParams = Some "/v:n" }
-                    Configuration = DotNet.BuildConfiguration.Release
-                    Framework = Some framework 
-            }) project
+            dotnet $"publish {project} -c Release /v:n -f {framework}"
 
     [
         "tests/JsonLexAndYaccExample/Lexer.fs"
@@ -142,15 +145,11 @@ Target.create "Build" (fun _ ->
     for project in [ "src/FsLexYacc.Runtime/FsLexYacc.Runtime.fsproj"
                      "tests/JsonLexAndYaccExample/JsonLexAndYaccExample.fsproj"
                      "tests/LexAndYaccMiniProject/LexAndYaccMiniProject.fsproj" ] do
-        DotNet.build (fun opts -> { 
-            opts with 
-                Common = { opts.Common with CustomParams = Some "/v:n" }
-                Configuration = DotNet.BuildConfiguration.Release 
-        }) project
+        dotnet $"build {project} -c Release /v:n"
 )
 
 Target.create "RunTests" (fun _ ->
-    DotNet.test id "."
+    dotnet "test ."
 )
 
 // --------------------------------------------------------------------------------------
@@ -158,9 +157,7 @@ Target.create "RunTests" (fun _ ->
 
 Target.create "RunOldFsYaccTests" (fun _ ->
     let script = Path.Combine(__SOURCE_DIRECTORY__, "tests", "fsyacc", "OldFsYaccTests.fsx")
-    let result = DotNet.exec id "fake" ("run " + script)
-    if not result.OK then
-        failwith "Old FsLexYacc tests were failed"
+    dotnet $"fake run {script}"
 )
 
 // --------------------------------------------------------------------------------------

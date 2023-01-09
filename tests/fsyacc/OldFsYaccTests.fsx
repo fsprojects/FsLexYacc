@@ -24,25 +24,18 @@ let assertFileExists file =
     else
         failwithf "'%s' doesn't exist" file
 
+let dotnet arguments =
+    let result =
+        CreateProcess.fromRawCommandLine "dotnet" arguments
+        |> Proc.run
+
+    if result.ExitCode <> 0 then
+        failwithf "Failed to run \"dotnet %s\"" arguments
+
 let run project args =
     Trace.traceImportant <| sprintf "Running '%s' with args %s" project args
-    
-    CreateProcess.fromRawCommandLine "dotnet" $"build {project} -c Release"
-    |> Proc.run
-    |> ignore
-    
-    // project
-    // |> DotNet.build (fun opts ->
-    //     { opts with
-    //         Configuration = DotNet.BuildConfiguration.Release })
-
-    let res = 
-        CreateProcess.fromRawCommandLine "dotnet" $"run --project {project} {args}"
-        |> Proc.run
-    // DotNet.exec (fun opts -> { opts with RedirectOutput = true }) "run" ("-p " + project + " " + args)
-
-    if res.ExitCode <> 0 then
-        failwithf "Process failed with code %d" res.ExitCode
+    dotnet $"build {project} -c Release"
+    dotnet $"run --project {project} {args}"
 
 let test proj shouldBeOK (args, baseLineOutput) =
     Trace.traceImportant <| sprintf "Running '%s' with args '%s'" proj args
@@ -51,7 +44,6 @@ let test proj shouldBeOK (args, baseLineOutput) =
         CreateProcess.fromRawCommandLine "dotnet" $"run --project {proj} {args}"
         |> CreateProcess.redirectOutput
         |> Proc.run
-    //DotNet.exec (fun opts -> { opts with RedirectOutput = true }) "run" ("-p " + proj + " " + args)
 
     if (res.ExitCode = 0) <> shouldBeOK then
         failwithf "Process failed with code %d on input %s" res.ExitCode args
@@ -132,10 +124,7 @@ let test1Input4TokensBsl = Path.Combine(__SOURCE_DIRECTORY__, "Test1", "test1.in
 
 
 let runTests' shouldBeOK projFile xs =    
-    CreateProcess.fromRawCommandLine "dotnet" $"build {projFile} -c Release"
-    |> Proc.run
-    |> ignore
-
+    dotnet $"build {projFile} -c Release"
     xs |> List.iter (test projFile shouldBeOK)
 let runTests projFile xs = runTests' true projFile xs   
 

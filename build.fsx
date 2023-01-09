@@ -111,6 +111,14 @@ Target.create "CleanDocs" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Build library & test project
 
+let dotnet arguments =
+    let result =
+        CreateProcess.fromRawCommandLine "dotnet" arguments
+        |> Proc.run
+
+    if result.ExitCode <> 0 then
+        failwithf "Failed to run \"dotnet %s\"" arguments
+
 Target.create "Build" (fun _ ->
     for framework in ["net6.0"] do
         [
@@ -123,9 +131,7 @@ Target.create "Build" (fun _ ->
         ] |> File.deleteAll
 
         for project in ["src/FsLex/fslex.fsproj"; "src/FsYacc/fsyacc.fsproj"] do
-            CreateProcess.fromRawCommandLine "dotnet" $"publish {project} -c Release /v:n -f {framework}"
-            |> Proc.run
-            |> ignore
+            dotnet $"publish {project} -c Release /v:n -f {framework}"
 
     [
         "tests/JsonLexAndYaccExample/Lexer.fs"
@@ -139,15 +145,11 @@ Target.create "Build" (fun _ ->
     for project in [ "src/FsLexYacc.Runtime/FsLexYacc.Runtime.fsproj"
                      "tests/JsonLexAndYaccExample/JsonLexAndYaccExample.fsproj"
                      "tests/LexAndYaccMiniProject/LexAndYaccMiniProject.fsproj" ] do
-        CreateProcess.fromRawCommandLine "dotnet" $"build {project} -c Release /v:n"
-        |> Proc.run
-        |> ignore
+        dotnet $"build {project} -c Release /v:n"
 )
 
 Target.create "RunTests" (fun _ ->
-    CreateProcess.fromRawCommandLine "dotnet" "test ."
-    |> Proc.run
-    |> ignore
+    dotnet "test ."
 )
 
 // --------------------------------------------------------------------------------------
@@ -155,12 +157,7 @@ Target.create "RunTests" (fun _ ->
 
 Target.create "RunOldFsYaccTests" (fun _ ->
     let script = Path.Combine(__SOURCE_DIRECTORY__, "tests", "fsyacc", "OldFsYaccTests.fsx")
-    let result = 
-        CreateProcess.fromRawCommandLine "dotnet" $"fake run {script}"
-        |> Proc.run
-
-    if result.ExitCode <> 0 then
-        failwith "Old FsLexYacc tests were failed"
+    dotnet $"fake run {script}"
 )
 
 // --------------------------------------------------------------------------------------

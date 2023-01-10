@@ -16,26 +16,15 @@ Build the project
 * Unix: Run *build.sh*
 * Windows: Run *build.cmd*
 
-### Generating docs
 
-This is currently done manually:
 
-    dotnet fsi docs\generate.fsx // on Windows
 
-Site can be tested locally using local dev server
 
-    dotnet serve -d docs/output --path-base /FsLexYacc
 
-### Releasing
 
-    .\build.cmd --target NuGet
-    ./build.sh --target NuGet
 
-    set APIKEY=...
-    ..\FSharp.TypeProviders.SDK\.nuget\nuget.exe push bin\FsLexYacc.Runtime.9.0.3.nupkg %APIKEY% -Source https://nuget.org
-    ..\FSharp.TypeProviders.SDK\.nuget\nuget.exe push bin\FsLexYacc.9.0.3.nupkg %APIKEY% -Source https://nuget.org
-    ..\FSharp.TypeProviders.SDK\.nuget\nuget.exe push bin\FsLex.Core.9.0.3.nupkg %APIKEY% -Source https://nuget.org
-    ..\FSharp.TypeProviders.SDK\.nuget\nuget.exe push bin\FsYacc.Core.9.0.3.nupkg %APIKEY% -Source https://nuget.org
+
+
 
 ### Maintainer(s)
 

@@ -1,10 +1,7 @@
-name: Build and test
+name: Build and Test and Publish (master)
 
 on:
   push:
-    branches:
-    - master
-  pull_request:
     branches:
     - master
 
@@ -14,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
+        os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -26,4 +23,6 @@ jobs:
     - name: Paket restore
       run: dotnet paket restore
     - name: Build
-      run: dotnet fake run build.fsx
+      run: dotnet fake run build.fsx -t Release
+    - name: Publish NuGets (if main version changed)
+      run: dotnet nuget push "bin/*.nupkg" -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_KEY }} --skip-duplicate

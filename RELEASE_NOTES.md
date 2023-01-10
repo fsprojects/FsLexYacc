@@ -1,3 +1,8 @@
+#### 11.0.0 - 10 January, 2022
+* Migration to net6.0 #166
+* Fix Activating case insensitive option crash the lexer generator #141
+* Reuse produced reductions table #141
+
 #### 11.0.0-beta1 - 11 July, 2021
 * Break out core domain logic and generation into core libraries #144
 * Update FsLexYacc.targets #149

@@ -1,3 +1,6 @@
+#### 11.0.1 - 10 January, 2022
+* Resolve FSharp.Core dependency restriction #168
+
 #### 11.0.0 - 10 January, 2022
 * Migration to net6.0 #166
 * Fix Activating case insensitive option crash the lexer generator #141

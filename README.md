@@ -1,7 +1,7 @@
 FsLexYacc
 =======================
 
-FsLex and FsYacc tools, originally part of the "F# PowerPack"
+FsLex and FsYacc tools
 
 See https://fsprojects.github.io/FsLexYacc.
 

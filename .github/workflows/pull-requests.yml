@@ -1,0 +1,26 @@
+name: Build and test
+
+on:
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  build:
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET for main project build
+      uses: actions/setup-dotnet@v3
+    - name: Install local tools
+      run: dotnet tool restore
+    - name: Paket restore
+      run: dotnet paket restore
+    - name: Build
+      run: dotnet fake run build.fsx

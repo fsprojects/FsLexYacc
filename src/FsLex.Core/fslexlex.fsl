@@ -125,6 +125,7 @@ rule token = parse
  | ']' { RBRACK }
  | '(' { LPAREN }
  | ')' { RPAREN }
+ | ':' { COLON }
  | '_' { UNDERSCORE }
  | '^' { HAT }
  | '-' { DASH }

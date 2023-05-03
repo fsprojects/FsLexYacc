@@ -1,4 +1,4 @@
-#### 11.1.0 - 3 May, 2022
+#### 11.1.0 - 3 May, 2023
 * Add `--buffer-type-argument` option for fsyacc.
 
 #### 11.0.1 - 10 January, 2022

@@ -11,7 +11,7 @@ open FsLexYacc.FsLex.AST
 %token <AST.Code> CODE
 %token <char> CHAR
 %token <string> UNICODE_CATEGORY
-%token RULE PARSE LET  AND LPAREN RPAREN
+%token RULE PARSE LET  AND LPAREN RPAREN COLON
 %token EOF BAR DOT PLUS STAR QMARK EQUALS UNDERSCORE LBRACK RBRACK HAT DASH
 %start spec
 %left BAR
@@ -54,7 +54,8 @@ rule:
 
 args:
 |  { [] }
-| IDENT args { $1 :: $2 }
+| LPAREN IDENT COLON IDENT RPAREN args { RuleArgument.Typed($2, $4) :: $6 }
+| IDENT args { RuleArgument.Ident($1) :: $2 }
 
 optbar:
 | { }

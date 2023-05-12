@@ -19,6 +19,7 @@ type token =
   | AND
   | LPAREN
   | RPAREN
+  | COLON
   | UNICODE_CATEGORY of (string)
   | CHAR of (char)
   | CODE of (AST.Code)
@@ -43,6 +44,7 @@ type tokenId =
     | TOKEN_AND
     | TOKEN_LPAREN
     | TOKEN_RPAREN
+    | TOKEN_COLON
     | TOKEN_UNICODE_CATEGORY
     | TOKEN_CHAR
     | TOKEN_CODE

@@ -1,3 +1,7 @@
+#### 11.2.0 - 12 May, 2023
+* Add `--open` option for fslex.
+* Generate signature files for transformed files in fslex.
+
 #### 11.1.0 - 3 May, 2023
 * Add `--buffer-type-argument` option for fsyacc.
 

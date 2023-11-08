@@ -83,12 +83,8 @@ The above generates a datatype for tokens and a function for each `start` produc
 MSBuild support
 ---------------
 
-The nuget package includes MSBuild support for `FsLex` and `FsYacc`. You must add a `FsLexYacc.targets` reference
-to your project file manually like this (adjust the nuget package number if needed):
-
-    <Import Project="..\packages\FsLexYacc.6.0.3\bin\FsLexYacc.targets" />
-
-You must also add `FsLex` andd `FsYacc` entries like this:
+The nuget package includes MSBuild support for `FsLex` and `FsYacc`. New MSBuild targets are added automatically by the nuget package.  
+But you must manually add `FsLex` andd `FsYacc` entries inside of an `ItemGroup` to your `.fsproj` file like this:
 
     <FsYacc Include="..\LexAndYaccMiniProject\Parser.fsy">
       <OtherFlags>--module Parser</OtherFlags>
@@ -97,7 +93,7 @@ You must also add `FsLex` andd `FsYacc` entries like this:
       <OtherFlags>--unicode</OtherFlags>
     </FsLex>
     
-If you want to see `verbose` output from `FsYacc` you need to add `-v` in `OtherFlags` section like this:
+If you want to see `verbose` output from `FsYacc` you need to add `-v` in the `OtherFlags` section like this:
 
     <FsYacc Include="..\LexAndYaccMiniProject\Parser.fsy">
       <OtherFlags>--module Parser -v</OtherFlags>

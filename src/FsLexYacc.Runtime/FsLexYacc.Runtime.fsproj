@@ -11,7 +11,7 @@
     <Compile Include="Lexing.fs" />
     <Compile Include="Parsing.fsi" />
     <Compile Include="Parsing.fs" />
-    <Content Include="../../docs/files/img/logo.png" PackagePath="logo.png" />
+    <Content Include="../../docs/img/logo.png" PackagePath="logo.png" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

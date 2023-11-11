@@ -8,7 +8,7 @@ summary
   Tools for FsLex/FsYacc lexer/parser generation tools
 licenseurl https://github.com/fsprojects/FsLexYacc/blob/master/LICENSE.txt
 projecturl https://github.com/fsprojects/FsLexYacc
-iconurl https://raw.githubusercontent.com/fsprojects/FsLexYacc/master/docs/files/img/logo.png
+iconurl https://raw.githubusercontent.com/fsprojects/FsLexYacc/master/docs/img/logo.png
 tags
   F#, fsharp, yacc, fsyacc, lex, parsing, lexing, fslex
 files

@@ -16,7 +16,7 @@
     <Compile Include="fsyaccpars.fs" />
     <Compile Include="fsyacclex.fs" />
     <Compile Include="fsyaccdriver.fs" />
-    <Content Include="../../docs/files/img/logo.png" PackagePath="logo.png" />
+    <Content Include="../../docs/img/logo.png" PackagePath="logo.png" />
   </ItemGroup>
 
   <ItemGroup>

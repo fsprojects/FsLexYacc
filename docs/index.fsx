@@ -7,10 +7,6 @@
 FsLex, FsYacc
 =============
 
- * [FsLex docs](fslex.html) 
- * [FsYacc docs](fsyacc.html) 
- * [API Reference](reference/index.html)
- 
 Example:
 
  * [Project File](https://github.com/fsprojects/FsLexYacc/blob/master/tests/LexAndYaccMiniProject/LexAndYaccMiniProject.fsproj)

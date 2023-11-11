@@ -7,7 +7,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>logo.png</PackageIcon>
     <PackageIconUrl>https://raw.githubusercontent.com/fsprojects/FsLexYacc/master/docs/img/logo.png</PackageIconUrl>
-    <PackageProjectUrl>https://github.com/fsprojects/FsLexYacc</PackageProjectUrl>
+    <PackageProjectUrl>https://fsprojects.github.io/FsLexYacc/</PackageProjectUrl>
     <DebugType>embedded</DebugType>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>

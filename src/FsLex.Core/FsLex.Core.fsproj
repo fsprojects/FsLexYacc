@@ -15,7 +15,7 @@
     <Compile Include="fslexpars.fs" />
     <Compile Include="fslexlex.fs" />
     <Compile Include="fslexdriver.fs" />
-    <Content Include="../../docs/files/img/logo.png" PackagePath="logo.png" />
+    <Content Include="../../docs/img/logo.png" PackagePath="logo.png" />
   </ItemGroup>
 
   <ItemGroup>

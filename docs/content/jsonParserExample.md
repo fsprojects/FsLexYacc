@@ -1,15 +1,6 @@
 Building JSON parser using FsLex and FsYacc
 ===========================================
 
-Content:
-
-1. [Introduction](#introduction)
-2. [Syntax tree](#syntaxtree)
-3. [Parser](#parser)
-4. [Lexer](#lexer)
-5. [Program](#program)
-
-
 1 Introduction
 ----------------
 FsLexYacc is a solution which allows you to define and generate lexer and parser. It's made of two parts FsLex (lexer generator) and FsYacc (parser generator). Parsing is a two phase process. In the first phase lexer is analyzing text and creates a stream of tokens (or token list). In the second phase parser is going through tokens in the stream and generates output (syntax tree).

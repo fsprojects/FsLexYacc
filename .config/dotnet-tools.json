@@ -14,16 +14,16 @@
         "paket"
       ]
     },
-    "dotnet-serve": {
-      "version": "1.10.149",
-      "commands": [
-        "dotnet-serve"
-      ]
-    },
     "fantomas": {
       "version": "6.0.2",
       "commands": [
         "fantomas"
+      ]
+    },
+    "fsdocs-tool": {
+      "version": "20.0.0-alpha-008",
+      "commands": [
+        "fsdocs"
       ]
     }
   }

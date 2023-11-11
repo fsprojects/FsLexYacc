@@ -20,14 +20,6 @@ EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "LexAndYaccMiniProject", "tests\LexAndYaccMiniProject\LexAndYaccMiniProject.fsproj", "{91D0BE7A-E128-498A-BB68-6ED65A582E04}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{4BB66375-380B-4EBD-9BA6-40CE92EB3D98}"
-	ProjectSection(SolutionItems) = preProject
-		docs\content\fslex.md = docs\content\fslex.md
-		docs\content\fsyacc.md = docs\content\fsyacc.md
-		docs\generate.fsx = docs\generate.fsx
-		docs\content\index.fsx = docs\content\index.fsx
-		docs\content\jsonParserExample.md = docs\content\jsonParserExample.md
-		docs\templates\template.cshtml = docs\templates\template.cshtml
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{884C599D-FDE2-4AC3-828A-12F6C662F273}"
 EndProject

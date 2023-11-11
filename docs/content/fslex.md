@@ -1,4 +1,4 @@
-Overview
+FsLex Overview
 ========
 
 The `fslex` tool is a lexer generator for byte and Unicode character input.

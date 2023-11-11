@@ -1,4 +1,4 @@
-Overview
+FsYacc Overview
 ========
 
 `fsyacc` is a `LALR` parser generator. It follows a similar specification to the `OCamlYacc` parser generator (especially when used with the `ml compatibility` switch)

@@ -5,6 +5,11 @@ on:
     branches:
     - master
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   build:
 
@@ -26,3 +31,17 @@ jobs:
       run: dotnet fake run build.fsx -t Release
     - name: Publish NuGets (if main version changed)
       run: dotnet nuget push "bin/*.nupkg" -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_KEY }} --skip-duplicate
+    - name: Build documentation
+      run: dotnet fake run build.fsx -t GenerateDocs
+    - name: Upload documentation
+      uses: actions/upload-pages-artifact@v1
+      with:
+        path: ./output
+
+  docs:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1

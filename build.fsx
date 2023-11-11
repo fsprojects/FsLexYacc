@@ -113,7 +113,7 @@ Target.create "AssemblyInfo" (fun _ ->
 
 Target.create "Clean" (fun _ -> Shell.cleanDirs [ "bin"; "temp" ])
 
-Target.create "CleanDocs" (fun _ -> Shell.cleanDirs [ "docs/output" ])
+Target.create "CleanDocs" (fun _ -> Shell.cleanDirs [ "output"; ".fsdocs" ])
 
 // --------------------------------------------------------------------------------------
 // Build library & test project
@@ -188,27 +188,16 @@ Target.create "GenerateDocs" (fun _ ->
         DotNet.exec
             (fun p ->
                 { p with
-                    WorkingDirectory = __SOURCE_DIRECTORY__ @@ "docs"
+                    WorkingDirectory = __SOURCE_DIRECTORY__
                 })
-            "fsi"
-            "--define:RELEASE --define:REFERENCE --define:HELP --exec generate.fsx"
+            "fsdocs"
+            "build --eval"
 
     if not result.OK then
         failwith "error generating docs")
 
 // --------------------------------------------------------------------------------------
 // Release Scripts
-
-Target.create "ReleaseDocs" (fun _ ->
-    let tempDocsDir = "temp/gh-pages"
-    Shell.cleanDir tempDocsDir
-    Repository.cloneSingleBranch "" (gitHome + "/" + gitName + ".git") "gh-pages" tempDocsDir
-
-    Repository.fullclean tempDocsDir
-    Shell.copyRecursive "docs/output" tempDocsDir true |> Trace.tracefn "%A"
-    Staging.stageAll tempDocsDir
-    Commit.exec tempDocsDir (sprintf "Update generated documentation for version %s" release.NugetVersion)
-    Branches.push tempDocsDir)
 
 Target.create "Release" ignore
 
@@ -225,7 +214,7 @@ Target.create "All" ignore
 ==> "RunOldFsYaccTests"
 ==> "All"
 
-"All" ==> "CleanDocs" ==> "GenerateDocs" ==> "ReleaseDocs"
+"CleanDocs" ==> "Build" ==> "GenerateDocs"
 
 "Build" ==> "NuGet"
 

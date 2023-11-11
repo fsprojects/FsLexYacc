@@ -1,9 +1,0 @@
-<Project>
-    <PropertyGroup>
-        <FsDocsLicenseLink>https://github.com/fsprojects/fslexYacc/blob/master/LICENSE.txt</FsDocsLicenseLink>
-        <FsDocsReleaseNotesLink>https://github.com/fsprojects/FsLexYacc/blob/master/RELEASE_NOTES.md</FsDocsReleaseNotesLink>
-        <RepositoryUrl>https://github.com/fsprojects/FsLexYacc/</RepositoryUrl>
-        <FsDocsLogoSource>img/logo.png</FsDocsLogoSource>
-        <FsDocsFaviconSource>img/favicon.ico</FsDocsFaviconSource>
-    </PropertyGroup>
-</Project>

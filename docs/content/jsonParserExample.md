@@ -205,14 +205,14 @@ Reload/Open the project and add the following code to ``Lexer.fsl:``
       | ':'      { COLON }
       | ','      { COMMA }
       | eof      { EOF }
-      | _ { raise (Exception (sprintf "SyntaxError: Unexpected char: '%s' Line: %d Column: %d" (lexeme lexbuf) (lexbuf.StartPos.Line+1) lexbuf.StartPos.Column)) }
+      | _ { raise (Exception (sprintf "SyntaxError: Unexpected char: '%s' Line: %d Column: %d" (lexeme lexbuf) (lexbuf.StartPos.Line + 1) lexbuf.StartPos.Column)) }
     
     
-    and read_string str ignorequote =
+    and read_string (str: string) (ignorequote: bool) =
       parse
-      | '"'           { if ignorequote  then (read_string (str+"\\\"") false lexbuf) else STRING (str) }
+      | '"'           { if ignorequote then (read_string (str + "\\\"") false lexbuf) else STRING (str) }
       | '\\'          { read_string str true lexbuf }
-      | [^ '"' '\\']+ { read_string (str+(lexeme lexbuf)) false lexbuf }
+      | [^ '"' '\\']+ { read_string (str + (lexeme lexbuf)) false lexbuf }
       | eof           { raise (Exception ("String is not terminated")) }
 
 When you build the project, a new file called ``Lexer.fs`` will be created in the project root directory. Include it in your project after ``Parser.fs``.

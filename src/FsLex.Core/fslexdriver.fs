@@ -118,7 +118,17 @@ let writeOpens opens (writer: Writer) =
         writer.WriteLine ""
         writer.WriteLineInterface ""
 
-let writeTopCode code (writer: Writer) = writer.WriteCode code
+let writeTopCode code (writer: Writer) =
+    writer.WriteCode code
+
+    let moduleAndOpens =
+        (fst code).Split([| '\n'; '\r' |])
+        |> Array.filter (fun s ->
+            s.StartsWith("module ", StringComparison.Ordinal)
+            || s.StartsWith("open ", StringComparison.Ordinal))
+        |> String.concat Environment.NewLine
+
+    writer.WriteInterface "%s" moduleAndOpens
 
 let writeUnicodeTranslationArray dfaNodes domain (writer: Writer) =
     let parseContext =

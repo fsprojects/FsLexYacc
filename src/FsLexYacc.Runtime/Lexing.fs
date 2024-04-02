@@ -193,10 +193,8 @@ and [<Sealed>] LexBuffer<'char>(filler: LexBufferFiller<'char>) as this =
             buffer <- repl
 
     static member FromReadFunctions
-        (
-            syncRead: ('char[] * int * int -> int) option,
-            asyncRead: ('char[] * int * int -> Async<int>) option
-        ) : LexBuffer<'char> =
+        (syncRead: ('char[] * int * int -> int) option, asyncRead: ('char[] * int * int -> Async<int>) option)
+        : LexBuffer<'char> =
         let extension = Array.zeroCreate 4096
 
         let fillers =

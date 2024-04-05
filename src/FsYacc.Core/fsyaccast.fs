@@ -252,7 +252,7 @@ let ProcessWorkList start f =
     let queueWork = (fun x -> work := x :: !work)
 
     let rec loop () =
-        match !work with
+        match work.Value with
         | [] -> ()
         | x :: t ->
             work := t
@@ -450,11 +450,20 @@ type CompiledSpec =
     }
 
 /// Compile a pre-processed LALR parser spec to tables following the Dragon book algorithm
-let CompilerLalrParserSpec logf (spec: ProcessedParserSpec) : CompiledSpec =
+let CompilerLalrParserSpec logf (spec: ProcessedParserSpec) quiet : CompiledSpec =
+
+    let qprintf fmt =
+        fprintf
+            (if quiet then
+                 System.IO.TextWriter.Null
+             else
+                 System.Console.Out)
+            fmt
+
     let stopWatch = System.Diagnostics.Stopwatch()
 
     let reportTime () =
-        printfn "        time: %A" stopWatch.Elapsed
+        qprintf "        time: %A" stopWatch.Elapsed
         stopWatch.Reset()
         stopWatch.Start()
 
@@ -487,7 +496,7 @@ let CompilerLalrParserSpec logf (spec: ProcessedParserSpec) : CompiledSpec =
     let errorTerminalIdx = termTab.ToIndex "error"
 
     // Compute the FIRST function
-    printf "computing first function..."
+    qprintf "computing first function..."
     stdout.Flush()
 
     let computedFirstTable =
@@ -879,13 +888,13 @@ let CompilerLalrParserSpec logf (spec: ProcessedParserSpec) : CompiledSpec =
         for kernelIdx in kernelTab.Indexes do
             printf "."
             stdout.Flush()
-            //printf  "kernelIdx = %d\n" kernelIdx; stdout.Flush();
+            //qprintf  "kernelIdx = %d\n" kernelIdx; stdout.Flush();
             let kernel = kernelTab.Kernel(kernelIdx)
 
             for item0 in kernel do
                 let item0Idx = KernelItemIdx(kernelIdx, item0)
                 let jset = closure1OfItem0WithDummy item0
-                //printf  "#jset = %d\n" jset.Count; stdout.Flush();
+                //qprintf  "#jset = %d\n" jset.Count; stdout.Flush();
                 for KeyValue(closureItem0, lookaheadTokens) in jset.IEnumerable do
                     incr count
 
@@ -904,16 +913,16 @@ let CompilerLalrParserSpec logf (spec: ProcessedParserSpec) : CompiledSpec =
                                 else
                                     spontaneous.Add(gotoItemIdx, lookaheadToken) |> ignore
 
-        //printfn "#kernelIdxs = %d, count = %d" kernelTab.Indexes.Length !count
+        //qprintf "#kernelIdxs = %d, count = %d" kernelTab.Indexes.Length !count
         spontaneous, propagate
 
-    //printfn "#spontaneous = %d, #propagate = %d" spontaneous.Count propagate.Count; stdout.Flush();
+    //qprintf "#spontaneous = %d, #propagate = %d" spontaneous.Count propagate.Count; stdout.Flush();
 
     //exit 0;
     // Repeatedly use the "spontaneous" and "propagate" maps to build the full set
     // of lookaheads for each LR(0) kernelItem.
     reportTime ()
-    printf "building lookahead table..."
+    qprintf "building lookahead table..."
     stdout.Flush()
 
     let lookaheadTable =
@@ -939,10 +948,10 @@ let CompilerLalrParserSpec logf (spec: ProcessedParserSpec) : CompiledSpec =
 
         acc
 
-    //printf  "built lookahead table, #lookaheads = %d\n" lookaheadTable.Count; stdout.Flush();
+    //qprintf "built lookahead table, #lookaheads = %d\n" lookaheadTable.Count; stdout.Flush();
 
     reportTime ()
-    printf "building action table..."
+    qprintf "building action table..."
     stdout.Flush()
     let shiftReduceConflicts = ref 0
     let reduceReduceConflicts = ref 0
@@ -952,12 +961,12 @@ let CompilerLalrParserSpec logf (spec: ProcessedParserSpec) : CompiledSpec =
         // Now build the action tables. First a utility to merge the given action
         // into the table, taking into account precedences etc. and reporting errors.
         let addResolvingPrecedence (arr: _[]) kernelIdx termIdx (precNew, actionNew) =
-            // printf "DEBUG: state %d: adding action for %s, precNew = %a, actionNew = %a\n" kernelIdx (termTab.OfIndex termIdx) outputPrec precNew OutputAction actionNew;
+            // qprintf "DEBUG: state %d: adding action for %s, precNew = %a, actionNew = %a\n" kernelIdx (termTab.OfIndex termIdx) outputPrec precNew OutputAction actionNew;
             // We add in order of precedence - however the precedences may be the same, and we give warnings when rpecedence resolution is based on implicit file orderings
 
             let _, actionSoFar as itemSoFar = arr.[termIdx]
 
-            // printf "DEBUG: state %d: adding action for %s, precNew = %a, precSoFar = %a, actionSoFar = %a\n" kernelIdx (termTab.OfIndex termIdx) outputPrec precNew outputPrec precSoFar OutputAction actionSoFar;
+            // qprintf "DEBUG: state %d: adding action for %s, precNew = %a, precSoFar = %a, actionSoFar = %a\n" kernelIdx (termTab.OfIndex termIdx) outputPrec precNew outputPrec precSoFar OutputAction actionSoFar;
             // if compare_prec precSoFar precNew = -1 then failwith "addResolvingPrecedence";
 
             let itemNew = (precNew, actionNew)
@@ -1050,7 +1059,7 @@ let CompilerLalrParserSpec logf (spec: ProcessedParserSpec) : CompiledSpec =
             let kernel = kernelTab.Kernel kernelIdx
             let arr = Array.create terminals.Length (NoPrecedence, Error)
 
-            //printf  "building lookahead table LR(1) items for kernelIdx %d\n" kernelIdx; stdout.Flush();
+            //qprintf  "building lookahead table LR(1) items for kernelIdx %d\n" kernelIdx; stdout.Flush();
 
             // Compute the LR(1) items based on lookaheads
             let items =
@@ -1148,7 +1157,7 @@ let CompilerLalrParserSpec logf (spec: ProcessedParserSpec) : CompiledSpec =
     // The goto table is much simpler - it is based on LR(0) kernels alone.
 
     reportTime ()
-    printf "        building goto table..."
+    qprintf "        building goto table..."
     stdout.Flush()
 
     let gotoTable =
@@ -1158,7 +1167,7 @@ let CompilerLalrParserSpec logf (spec: ProcessedParserSpec) : CompiledSpec =
         Array.ofList (List.map gotos kernelTab.Indexes)
 
     reportTime ()
-    printfn "        returning tables."
+    qprintf "        returning tables."
     stdout.Flush()
 
     if !shiftReduceConflicts > 0 then
@@ -1212,8 +1221,8 @@ let CompilerLalrParserSpec logf (spec: ProcessedParserSpec) : CompiledSpec =
 
 (*
 
-let example1 = 
-  let e = "E" 
+let example1 =
+  let e = "E"
   let t = "Terminal"
   let plus = "+"
   let mul = "*"
@@ -1221,12 +1230,12 @@ let example1 =
   let lparen = "("
   let rparen = ")"
   let id = "id"
-  
+
   let terminals = [plus; mul; lparen; rparen; id]
   let nonTerminals = [e; t; f]
-  
+
   let p2 = e, (NonAssoc, ExplicitPrec 1), [NonTerminal e; Terminal plus; NonTerminal t], None
-  let p3 = e, (NonAssoc, ExplicitPrec 2), [NonTerminal t], None in  
+  let p3 = e, (NonAssoc, ExplicitPrec 2), [NonTerminal t], None in
   let p4 = t, (NonAssoc, ExplicitPrec 3), [NonTerminal t; Terminal mul; NonTerminal f], None
   let p5 = t, (NonAssoc, ExplicitPrec 4), [NonTerminal f], None
   let p6 = f, (NonAssoc, ExplicitPrec  5), [Terminal lparen; NonTerminal e; Terminal rparen], None
@@ -1235,13 +1244,13 @@ let example1 =
   let prods = [p2;p3;p4;p5;p6;p7]
   Spec(terminals,nonTerminals,prods, [e])
 
-let example2 = 
-  let prods = [ "S", (NonAssoc, ExplicitPrec 1), [NonTerminal "C";NonTerminal "C"], None; 
+let example2 =
+  let prods = [ "S", (NonAssoc, ExplicitPrec 1), [NonTerminal "C";NonTerminal "C"], None;
                 "C", (NonAssoc, ExplicitPrec 2), [Terminal "c";NonTerminal "C"], None ;
                 "C", (NonAssoc, ExplicitPrec 3), [Terminal "d"] , None  ]in
   Spec(["c";"d"],["S";"C"],prods, ["S"])
 
-let example3 = 
+let example3 =
   let terminals = ["+"; "*"; "("; ")"; "id"]
   let nonTerminals = ["E"; "Terminal"; "E'"; "F"; "Terminal'"]
   let prods = [ "E", (NonAssoc, ExplicitPrec 1), [ NonTerminal "Terminal"; NonTerminal "E'" ], None;
@@ -1254,7 +1263,7 @@ let example3 =
                 "F", (NonAssoc, ExplicitPrec 8), [ Terminal "id"], None ]
   Spec(terminals,nonTerminals,prods, ["E"])
 
-let example4 = 
+let example4 =
   let terminals = ["+"; "*"; "("; ")"; "id"]
   let nonTerminals = ["E"]
   let prods = [ "E", (NonAssoc, ExplicitPrec 1), [ NonTerminal "E"; Terminal "+"; NonTerminal "E" ], None;
@@ -1263,7 +1272,7 @@ let example4 =
                 "E", (NonAssoc, ExplicitPrec 8), [ Terminal "id"],  None ]
   Spec(terminals,nonTerminals,prods, ["E"])
 
-let example5 = 
+let example5 =
   let terminals = ["+"; "*"; "("; ")"; "id"]
   let nonTerminals = ["E"]
   let prods = [ "E", (NonAssoc, ExplicitPrec 1), [ NonTerminal "E"; Terminal "+"; NonTerminal "E" ], None;
@@ -1272,7 +1281,7 @@ let example5 =
                 "E", (NonAssoc, ExplicitPrec 8), [ Terminal "id"], None ]
   Spec(terminals,nonTerminals,prods, ["E"])
 
-let example6 = 
+let example6 =
   let terminals = ["+"; "*"; "("; ")"; "id"; "-"]
   let nonTerminals = ["E"]
   let prods = [ "E", (RightAssoc, ExplicitPrec 1), [ NonTerminal "E"; Terminal "-"; NonTerminal "E" ], None;
@@ -1283,11 +1292,11 @@ let example6 =
   Spec(terminals,nonTerminals,prods, ["E"])
 
 
-let example7 = 
-  let prods = [ "S", (NonAssoc, ExplicitPrec 1), [NonTerminal "L";Terminal "="; NonTerminal "R"], None; 
+let example7 =
+  let prods = [ "S", (NonAssoc, ExplicitPrec 1), [NonTerminal "L";Terminal "="; NonTerminal "R"], None;
                 "S", (NonAssoc, ExplicitPrec 2), [NonTerminal "R"], None ;
                 "L", (NonAssoc, ExplicitPrec 3), [Terminal "*"; NonTerminal "R"], None;
-                "L", (NonAssoc, ExplicitPrec 3), [Terminal "id"], None; 
+                "L", (NonAssoc, ExplicitPrec 3), [Terminal "id"], None;
                 "R", (NonAssoc, ExplicitPrec 3), [NonTerminal "L"], None; ]
   Spec(["*";"=";"id"],["S";"L";"R"],prods, ["S"])
 
@@ -1297,8 +1306,8 @@ let test ex = CompilerLalrParserSpec stdout ex
 
 (* let _ = test example2*)
 (* let _ = exit 1*)
-(* let _ = test example3 
-let _ = test example1  
+(* let _ = test example3
+let _ = test example1
 let _ = test example4
 let _ = test example5
 let _ = test example6 *)

@@ -23,6 +23,7 @@ let mutable inputCodePage = None
 let mutable lexlib = "FSharp.Text.Lexing"
 let mutable parslib = "FSharp.Text.Parsing"
 let mutable bufferTypeArgument = "'cty"
+let mutable quiet = false
 
 let usage =
     [
@@ -59,6 +60,7 @@ let usage =
             "Assume input lexer specification file is encoded with the given codepage."
         )
         ArgInfo("--buffer-type-argument", ArgType.String(fun s -> bufferTypeArgument <- s), "Generic type argument of the LexBuffer type.")
+        ArgInfo("--quiet", ArgType.Unit(fun () -> quiet <- true), "Suppress all output except errors.")
     ]
 
 let _ =
@@ -71,6 +73,14 @@ let _ =
         "fsyacc <filename>"
     )
 
+let inline qprintf fmt =
+    fprintf
+        (if quiet then
+             System.IO.TextWriter.Null
+         else
+             System.Console.Out)
+        fmt
+
 let main () =
     let filename =
         (match input with
@@ -78,7 +88,7 @@ let main () =
          | None -> failwith "no input given") in
 
     if tokenize then
-        printTokens filename inputCodePage
+        printTokens filename inputCodePage quiet
 
     let spec =
         match readSpecFromFile filename inputCodePage with
@@ -92,17 +102,17 @@ let main () =
         | Some outputLogName -> new FileLogger(outputLogName) :> Logger
         | None -> new NullLogger() :> Logger
 
-    let compiledSpec = compileSpec spec logger
-    printfn "        building tables"
-    printfn "        %d states" compiledSpec.states.Length
-    printfn "        %d nonterminals" compiledSpec.gotoTable.[0].Length
-    printfn "        %d terminals" compiledSpec.actionTable.[0].Length
-    printfn "        %d productions" compiledSpec.prods.Length
-    printfn "        #rows in action table: %d" compiledSpec.actionTable.Length
+    let compiledSpec = compileSpec spec logger quiet
+    qprintf "        building tables"
+    qprintf "        %d states" compiledSpec.states.Length
+    qprintf "        %d nonterminals" compiledSpec.gotoTable.[0].Length
+    qprintf "        %d terminals" compiledSpec.actionTable.[0].Length
+    qprintf "        %d productions" compiledSpec.prods.Length
+    qprintf "        #rows in action table: %d" compiledSpec.actionTable.Length
     (*
-  printfn "#unique rows in action table: %d" (List.length (Array.foldBack (fun row acc -> insert (Array.to_list row) acc) actionTable [])); 
-  printfn "maximum #different actions per state: %d" (Array.foldBack (fun row acc ->max (List.length (List.foldBack insert (Array.to_list row) [])) acc) actionTable 0); 
-  printfn "average #different actions per state: %d" ((Array.foldBack (fun row acc -> (List.length (List.foldBack insert (Array.to_list row) [])) + acc) actionTable 0) / (Array.length states)); 
+  printfn "#unique rows in action table: %d" (List.length (Array.foldBack (fun row acc -> insert (Array.to_list row) acc) actionTable []));
+  printfn "maximum #different actions per state: %d" (Array.foldBack (fun row acc ->max (List.length (List.foldBack insert (Array.to_list row) [])) acc) actionTable 0);
+  printfn "average #different actions per state: %d" ((Array.foldBack (fun row acc -> (List.length (List.foldBack insert (Array.to_list row) [])) + acc) actionTable 0) / (Array.length states));
 *)
 
     let generatorState: GeneratorState =
@@ -118,6 +128,7 @@ let main () =
             parslib = parslib
             compat = compat
             bufferTypeArgument = bufferTypeArgument
+            quiet = quiet
         }
 
     writeSpecToFile generatorState spec compiledSpec

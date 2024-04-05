@@ -30,16 +30,24 @@ let readSpecFromFile fileName codePage =
     with e ->
         (e, lexbuf.StartPos.Line, lexbuf.StartPos.Column) |> Result.Error
 
-let printTokens filename codePage =
+let printTokens filename codePage quiet =
+    let qprintf fmt =
+        fprintf
+            (if quiet then
+                 System.IO.TextWriter.Null
+             else
+                 System.Console.Out)
+            fmt
+
     let stream, reader, lexbuf = UnicodeFileAsLexbuf(filename, codePage)
     use stream = stream
     use reader = reader
 
     try
         while true do
-            printf "tokenize - getting one token"
+            qprintf "tokenize - getting one token"
             let t = Lexer.token lexbuf in
-            printf "tokenize - got %s" (Parser.token_to_string t)
+            qprintf "tokenize - got %s" (Parser.token_to_string t)
 
             if t = Parser.EOF then
                 exit 0
@@ -177,6 +185,7 @@ type GeneratorState =
         map_action_to_int: Action -> int
         anyMarker: int
         bufferTypeArgument: string
+        quiet: bool
     }
 
     static member Default =
@@ -195,6 +204,7 @@ type GeneratorState =
             map_action_to_int = actionCoding
             anyMarker = anyMarker
             bufferTypeArgument = "'cty"
+            quiet = false
         }
 
 let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compiledSpec: CompiledSpec) =
@@ -668,6 +678,6 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
             generatorState.bufferTypeArgument
             ty
 
-let compileSpec (spec: ParserSpec) (logger: Logger) =
+let compileSpec (spec: ParserSpec) (logger: Logger) quiet =
     let spec1 = ProcessParserSpecAst spec
-    CompilerLalrParserSpec logger.LogStream spec1
+    CompilerLalrParserSpec logger.LogStream spec1 quiet

@@ -21,6 +21,7 @@ let mutable opens = []
 let mutable lexlib = "FSharp.Text.Lexing"
 let mutable unicode = false
 let mutable caseInsensitive = false
+let mutable quiet = false
 
 let usage =
     [
@@ -46,6 +47,7 @@ let usage =
         )
         ArgInfo("--unicode", ArgType.Unit(fun () -> unicode <- true), "Produce a lexer for use with 16-bit unicode characters.")
         ArgInfo("-i", ArgType.Unit(fun () -> caseInsensitive <- true), "Produce a case-insensitive lexer.")
+        ArgInfo("--quiet", ArgType.Unit(fun () -> quiet <- true), "Suppress all output except errors.")
     ]
 
 let _ =
@@ -62,6 +64,14 @@ let compileSpec (spec: Spec) (ctx: ParseContext) =
     let perRuleData, dfaNodes = Compile ctx spec
     let dfaNodes = dfaNodes |> List.sortBy (fun n -> n.Id)
     perRuleData, dfaNodes
+
+let inline qprintf fmt =
+    fprintf
+        (if quiet then
+             System.IO.TextWriter.Null
+         else
+             System.Console.Out)
+        fmt
 
 let main () =
     try
@@ -91,11 +101,10 @@ let main () =
 
                 exit 1
 
-        printfn "compiling to dfas (can take a while...)"
+        qprintf "compiling to dfas (can take a while...)"
         let perRuleData, dfaNodes = compileSpec spec parseContext
-        printfn "%d states" dfaNodes.Length
-
-        printfn "writing output"
+        qprintf "%d states" dfaNodes.Length
+        qprintf "writing output"
 
         let output =
             match out with

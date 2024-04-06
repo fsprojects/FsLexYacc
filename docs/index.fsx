@@ -14,6 +14,10 @@ Example:
  * [Parser](https://github.com/fsprojects/FsLexYacc/blob/master/tests/LexAndYaccMiniProject/Parser.fsy)
  * [Program](https://github.com/fsprojects/FsLexYacc/blob/master/tests/LexAndYaccMiniProject/Program.fs)
 
+Video Tutorial:
+
+ * [A gentle introduction to FsLexYacc](https://youtu.be/w7H_RQ6Fvvo?si=H0d2wBg9JcNCmJpn)
+
 *)
 
 (**

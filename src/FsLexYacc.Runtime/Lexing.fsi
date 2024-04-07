@@ -154,7 +154,7 @@ type UnicodeTables =
 
 /// Standard utility to create a Unicode LexBuffer
 ///
-/// One small annoyance is that LexBuffers and not IDisposable. This means
+/// One small annoyance is that LexBuffers are not IDisposable. This means
 /// we can't just return the LexBuffer object, since the file it wraps wouldn't
 /// get closed when we're finished with the LexBuffer. Hence we return the stream,
 /// the reader and the LexBuffer. The caller should dispose the first two when done.

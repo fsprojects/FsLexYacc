@@ -266,6 +266,7 @@ and [<Sealed>] LexBuffer<'char>(filler: LexBufferFiller<'char>) as this =
     static member FromString(s: string) =
         LexBuffer<char>.FromArray(s.ToCharArray())
 
+#if !FABLE_COMPILER
     static member FromTextReader(tr: System.IO.TextReader) : LexBuffer<char> =
         LexBuffer<char>
             .FromReadFunctions(Some tr.Read, Some(tr.ReadAsync >> Async.AwaitTask))
@@ -275,6 +276,7 @@ and [<Sealed>] LexBuffer<'char>(filler: LexBufferFiller<'char>) as this =
     static member FromStream(stream: System.IO.Stream) : LexBuffer<byte> =
         LexBuffer<byte>
             .FromReadFunctions(Some(stream.Read), Some(fun (buf, offset, len) -> stream.AsyncRead(buf, offset = offset, count = len)))
+#endif
 
 module GenericImplFragments =
     let startInterpret (lexBuffer: LexBuffer<_>) =
@@ -400,7 +402,13 @@ type UnicodeTables(trans: uint16[] array, accept: uint16[]) =
                     // which covers all Unicode characters not covered in other
                     // ways
                     let baseForUnicodeCategories = numLowUnicodeChars + numSpecificUnicodeChars * 2
-                    let unicodeCategory = System.Globalization.CharUnicodeInfo.GetUnicodeCategory(inp)
+
+                    let unicodeCategory =
+#if FABLE_COMPILER
+                        System.Char.GetUnicodeCategory(inp)
+#else
+                        System.Globalization.CharUnicodeInfo.GetUnicodeCategory(inp)
+#endif
                     //System.Console.WriteLine("inp = {0}, unicodeCategory = {1}", [| box inp; box unicodeCategory |])
                     int trans.[state].[baseForUnicodeCategories + int32 unicodeCategory]
                 else
@@ -489,7 +497,7 @@ type UnicodeTables(trans: uint16[] array, accept: uint16[]) =
     static member Create(trans, accept) = UnicodeTables(trans, accept)
 
 open System.IO
-
+#if !FABLE_COMPILER
 let UnicodeFileAsLexbuf (filename, codePage: int option) : FileStream * StreamReader * LexBuffer<char> =
     // Use the .NET functionality to auto-detect the unicode encoding
     // It also presents the bytes read to the lexer in UTF8 decoded form
@@ -504,3 +512,4 @@ let UnicodeFileAsLexbuf (filename, codePage: int option) : FileStream * StreamRe
     let lexbuf = LexBuffer.FromFunction(reader.Read)
     lexbuf.EndPos <- Position.FirstLine(filename)
     stream, reader, lexbuf
+#endif

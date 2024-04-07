@@ -307,7 +307,7 @@ and token  lexbuf =
           )
   | 2 -> ( 
 # 37 "fsyacclex.fsl"
-                                               typeDepth := 1; startPos := lexbuf.StartPos; clearBuf(); TOKEN (fs_type lexbuf) 
+                                               typeDepth.Value <- 1; startPos.Value <- lexbuf.StartPos; clearBuf(); TOKEN (fs_type lexbuf) 
 # 311 "fsyacclex.fs"
           )
   | 3 -> ( 
@@ -327,7 +327,7 @@ and token  lexbuf =
           )
   | 6 -> ( 
 # 41 "fsyacclex.fsl"
-                                              typeDepth := 1; startPos := lexbuf.StartPos; clearBuf(); TYPE (match fs_type lexbuf with Some x -> x | None -> failwith "gettype") 
+                                              typeDepth.Value <- 1; startPos.Value <- lexbuf.StartPos; clearBuf(); TYPE (match fs_type lexbuf with Some x -> x | None -> failwith "gettype") 
 # 331 "fsyacclex.fs"
           )
   | 7 -> ( 
@@ -425,13 +425,13 @@ and fs_type  lexbuf =
   match _fslex_tables.Interpret(61,lexbuf) with
   | 0 -> ( 
 # 65 "fsyacclex.fsl"
-                         incr typeDepth; appendBuf(lexeme lexbuf); fs_type lexbuf
+                         typeDepth.Value <- typeDepth.Value + 1; appendBuf(lexeme lexbuf); fs_type lexbuf
 # 429 "fsyacclex.fs"
           )
   | 1 -> ( 
 # 67 "fsyacclex.fsl"
-                     decr typeDepth; 
-                     if !typeDepth = 0
+                     typeDepth.Value <- typeDepth.Value - 1; 
+                     if typeDepth.Value = 0
                      then Some(string str_buf) 
                      else appendBuf(lexeme lexbuf); fs_type lexbuf 
 # 437 "fsyacclex.fs"

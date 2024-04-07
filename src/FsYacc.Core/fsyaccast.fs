@@ -249,13 +249,13 @@ let (|GotoItemIdx|) (i64: uint64) =
 /// to the worker function
 let ProcessWorkList start f =
     let work = ref (start: 'a list)
-    let queueWork = (fun x -> work := x :: !work)
+    let queueWork = (fun x -> work.Value <- x :: work.Value)
 
     let rec loop () =
-        match !work with
+        match work.Value with
         | [] -> ()
         | x :: t ->
-            work := t
+            work.Value <- t
             f queueWork x
             loop ()
 
@@ -268,11 +268,11 @@ let LeastFixedPoint f set =
     ProcessWorkList (Set.toList set) (fun queueWork item ->
         f (item)
         |> List.iter (fun i2 ->
-            if not (Set.contains i2 !acc) then
-                (acc := Set.add i2 !acc
+            if not (Set.contains i2 acc.Value) then
+                (acc.Value <- Set.add i2 acc.Value
                  queueWork i2)))
 
-    !acc
+    acc.Value
 
 /// A general standard memoization utility. Be sure to apply to only one (function) argument to build the
 /// residue function!
@@ -508,13 +508,13 @@ let CompilerLalrParserSpec logf (spec: ProcessedParserSpec) : CompiledSpec =
                                  Set.empty)
                 ]
 
-        let add changed ss (x, y) =
+        let add (changed: ref<bool>) ss (x, y) =
             let s = Map.find x ss
 
             if Set.contains y s then
                 ss
             else
-                (changed := true
+                (changed.Value <- true
                  Map.add x (Set.add y s) ss)
 
         let oneRound (ss: Map<_, _>) =
@@ -530,24 +530,24 @@ let CompilerLalrParserSpec logf (spec: ProcessedParserSpec) : CompiledSpec =
                         let rec place l =
                             match l with
                             | yi :: t ->
-                                res
-                                := List.choose
-                                    (function
-                                    | None -> None
-                                    | Some a -> Some(PNonTerminal nonTermX, Some a))
-                                    (Set.toList ss.[yi])
-                                   @ !res
+                                res.Value <-
+                                    List.choose
+                                        (function
+                                        | None -> None
+                                        | Some a -> Some(PNonTerminal nonTermX, Some a))
+                                        (Set.toList ss.[yi])
+                                    @ res.Value
 
                                 if ss.[yi].Contains(None) then
                                     place t
-                            | [] -> res := (PNonTerminal nonTermX, None) :: !res
+                            | [] -> res.Value <- (PNonTerminal nonTermX, None) :: res.Value
 
                         place rhs
 
-                !res
+                res.Value
 
             let ss' = List.fold (add changed) ss frontier
-            !changed, ss'
+            changed.Value, ss'
 
         let rec loop ss =
             let changed, ss' = oneRound ss
@@ -781,15 +781,15 @@ let CompilerLalrParserSpec logf (spec: ProcessedParserSpec) : CompiledSpec =
         let acc = ref Set.empty
 
         ProcessWorkList startKernels (fun addToWorkList kernel ->
-            if not ((!acc).Contains(kernel)) then
-                acc := (!acc).Add(kernel)
+            if not ((acc.Value).Contains(kernel)) then
+                acc.Value <- (acc.Value).Add(kernel)
 
                 for csym in RelevantSymbolsOfKernel kernel do
                     let gotoKernel = ComputeGotosOfKernel kernel csym
                     assert (gotoKernel.Count > 0)
                     addToWorkList gotoKernel)
 
-        !acc |> Seq.toList |> List.map (Set.filter IsKernelItem)
+        acc.Value |> Seq.toList |> List.map (Set.filter IsKernelItem)
 
     reportTime ()
     printf "building kernel table..."
@@ -887,7 +887,7 @@ let CompilerLalrParserSpec logf (spec: ProcessedParserSpec) : CompiledSpec =
                 let jset = closure1OfItem0WithDummy item0
                 //printf  "#jset = %d\n" jset.Count; stdout.Flush();
                 for KeyValue(closureItem0, lookaheadTokens) in jset.IEnumerable do
-                    incr count
+                    count.Value <- count.Value + 1
 
                     match rsym_of_item0 closureItem0 with
                     | None -> ()
@@ -1026,11 +1026,11 @@ let CompilerLalrParserSpec logf (spec: ProcessedParserSpec) : CompiledSpec =
                             | RightAssoc -> shiftItem
                             | NonAssoc ->
                                 reportConflict shiftItem reduceItem "we prefer shift on equal precedences"
-                                incr shiftReduceConflicts
+                                shiftReduceConflicts.Value <- shiftReduceConflicts.Value + 1
                                 shiftItem
                     | _ ->
                         reportConflict shiftItem reduceItem "we prefer shift when unable to compare precedences"
-                        incr shiftReduceConflicts
+                        shiftReduceConflicts.Value <- shiftReduceConflicts.Value + 1
                         shiftItem
                 | (_, Reduce prodIdx1), (_, Reduce prodIdx2) ->
                     "we prefer the rule earlier in the file"
@@ -1039,7 +1039,7 @@ let CompilerLalrParserSpec logf (spec: ProcessedParserSpec) : CompiledSpec =
                        else
                            reportConflict itemNew itemSoFar
 
-                    incr reduceReduceConflicts
+                    reduceReduceConflicts.Value <- reduceReduceConflicts.Value + 1
                     if prodIdx1 < prodIdx2 then itemSoFar else itemNew
                 | _ -> itemNew
 
@@ -1161,15 +1161,15 @@ let CompilerLalrParserSpec logf (spec: ProcessedParserSpec) : CompiledSpec =
     printfn "        returning tables."
     stdout.Flush()
 
-    if !shiftReduceConflicts > 0 then
-        printfn "        %d shift/reduce conflicts" !shiftReduceConflicts
+    if shiftReduceConflicts.Value > 0 then
+        printfn "        %d shift/reduce conflicts" shiftReduceConflicts.Value
         stdout.Flush()
 
-    if !reduceReduceConflicts > 0 then
-        printfn "        %d reduce/reduce conflicts" !reduceReduceConflicts
+    if reduceReduceConflicts.Value > 0 then
+        printfn "        %d reduce/reduce conflicts" reduceReduceConflicts.Value
         stdout.Flush()
 
-    if !shiftReduceConflicts > 0 || !reduceReduceConflicts > 0 then
+    if shiftReduceConflicts.Value > 0 || reduceReduceConflicts.Value > 0 then
         printfn
             "        consider setting precedences explicitly using %%left %%right and %%nonassoc on terminals and/or setting explicit precedence on rules using %%prec"
 

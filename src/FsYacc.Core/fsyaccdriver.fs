@@ -481,11 +481,11 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
              let max = ref 0
 
              for KeyValue(x, y) in countPerAction do
-                 if y > !max then
-                     (mostCommon := x
-                      max := y)
+                 if y > max.Value then
+                     (mostCommon.Value <- x
+                      max.Value <- y)
 
-             !mostCommon
+             mostCommon.Value
 
          (* Count the number of entries in the association table. *)
          let count = ref 0
@@ -493,11 +493,11 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
          for KeyValue(action, terminals) in terminalsByAction do
              for terminal in terminals do
                  if action <> mostCommonAction then
-                     incr count
+                     count.Value <- count.Value + 1
 
          (* Write the head of the table (i.e. the number of entries and the default value) *)
          actionTableCurrIndex <- actionTableCurrIndex + 1
-         writer.WriteUInt16 !count
+         writer.WriteUInt16 count.Value
          writer.WriteUInt16(generatorState.map_action_to_int mostCommonAction)
 
          (* Write the pairs of entries in incremental order by key *)
@@ -585,14 +585,14 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
              let c =
                  code
                  |> String.collect (fun c ->
-                     if not !dollar && c = '$' then
-                         (dollar := true
+                     if not dollar.Value && c = '$' then
+                         (dollar.Value <- true
                           "")
-                     elif !dollar && c >= '0' && c <= '9' then
-                         (dollar := false
+                     elif dollar.Value && c >= '0' && c <= '9' then
+                         (dollar.Value <- false
                           "_" + String(c, 1))
-                     elif !dollar then
-                         (dollar := false
+                     elif dollar.Value then
+                         (dollar.Value <- false
                           "$" + String(c, 1))
                      else
                          String(c, 1))
@@ -602,7 +602,7 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
              for line in lines do
                  writer.WriteLine "                     %s" line
 
-             if !dollar then
+             if dollar.Value then
                  writer.Write "$"
          | None -> writer.WriteLine "                      raise (%s.Accept(Microsoft.FSharp.Core.Operators.box _1))" generatorState.parslib
 

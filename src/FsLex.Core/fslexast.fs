@@ -430,8 +430,8 @@ let newDfaNodeId =
     let i = ref 0
 
     fun () ->
-        let res = !i in
-        incr i
+        let res = i.Value in
+        i.Value <- i.Value + 1
         res
 
 let NfaToDfa (nfaNodeMap: NfaNodeMap) nfaStartNode =

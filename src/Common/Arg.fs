@@ -79,40 +79,40 @@ type ArgParser() =
         pendline "display this list of options"
         sbuf.ToString()
 
-    static member ParsePartial(cursor, argv, arguments: seq<ArgInfo>, ?otherArgs, ?usageText) =
+    static member ParsePartial(cursor: ref<int>, argv, arguments: seq<ArgInfo>, ?otherArgs, ?usageText) =
         let other = defaultArg otherArgs (fun _ -> ())
         let usageText = defaultArg usageText ""
         let nargs = Array.length argv
-        incr cursor
+        cursor.Value <- cursor.Value + 1
         let argSpecs = arguments |> Seq.toList
         let specs = argSpecs |> List.map (fun (arg: ArgInfo) -> arg.Name, arg.ArgType)
 
-        while !cursor < nargs do
-            let arg = argv.[!cursor]
+        while cursor.Value < nargs do
+            let arg = argv.[cursor.Value]
 
             let rec findMatchingArg args =
                 match args with
                 | (s, action) :: _ when s = arg ->
                     let getSecondArg () =
-                        if !cursor + 1 >= nargs then
+                        if cursor.Value + 1 >= nargs then
                             raise (Bad("option " + s + " needs an argument.\n" + getUsage argSpecs usageText))
 
-                        argv.[!cursor + 1]
+                        argv.[cursor.Value + 1]
 
                     match action with
                     | UnitArg f ->
                         f ()
-                        incr cursor
+                        cursor.Value <- cursor.Value + 1
                     | SetArg f ->
-                        f := true
-                        incr cursor
+                        f.Value <- true
+                        cursor.Value <- cursor.Value + 1
                     | ClearArg f ->
-                        f := false
-                        incr cursor
+                        f.Value <- false
+                        cursor.Value <- cursor.Value + 1
                     | StringArg f ->
                         let arg2 = getSecondArg ()
                         f arg2
-                        cursor := !cursor + 2
+                        cursor.Value <- cursor.Value + 2
                     | IntArg f ->
                         let arg2 = getSecondArg ()
 
@@ -123,7 +123,7 @@ type ArgParser() =
                                 raise (Bad(getUsage argSpecs usageText)) in
 
                         f arg2
-                        cursor := !cursor + 2
+                        cursor.Value <- cursor.Value + 2
                     | FloatArg f ->
                         let arg2 = getSecondArg ()
 
@@ -134,13 +134,13 @@ type ArgParser() =
                                 raise (Bad(getUsage argSpecs usageText)) in
 
                         f arg2
-                        cursor := !cursor + 2
+                        cursor.Value <- cursor.Value + 2
                     | RestArg f ->
-                        incr cursor
+                        cursor.Value <- cursor.Value + 1
 
-                        while !cursor < nargs do
-                            f argv.[!cursor]
-                            incr cursor
+                        while cursor.Value < nargs do
+                            f argv.[cursor.Value]
+                            cursor.Value <- cursor.Value + 1
 
                 | _ :: more -> findMatchingArg more
                 | [] ->
@@ -156,7 +156,7 @@ type ArgParser() =
                         raise (Bad("unrecognized argument: " + arg + "\n" + getUsage argSpecs usageText))
                     else
                         other arg
-                        incr cursor
+                        cursor.Value <- cursor.Value + 1
 
             findMatchingArg specs
 

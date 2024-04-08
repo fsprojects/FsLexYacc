@@ -34,11 +34,11 @@ let ident = ident_start_char ident_char*
 rule token = parse
  | "%{" { let p = lexbuf.StartPos in header p (new StringBuilder 100) lexbuf }
  | "%%" { PERCENT_PERCENT }
- | "%token" (whitespace* '<') { typeDepth := 1; startPos := lexbuf.StartPos; clearBuf(); TOKEN (fs_type lexbuf) }
+ | "%token" (whitespace* '<') { typeDepth.Value <- 1; startPos.Value <- lexbuf.StartPos; clearBuf(); TOKEN (fs_type lexbuf) }
  | "%token" { TOKEN (None) }
  | "%start"{ START }
  | "%prec"{ PREC }
- | "%type" (whitespace* '<') { typeDepth := 1; startPos := lexbuf.StartPos; clearBuf(); TYPE (match fs_type lexbuf with Some x -> x | None -> failwith "gettype") }
+ | "%type" (whitespace* '<') { typeDepth.Value <- 1; startPos.Value <- lexbuf.StartPos; clearBuf(); TYPE (match fs_type lexbuf with Some x -> x | None -> failwith "gettype") }
  | "%left" { LEFT }
  | "%right" { RIGHT }
  | "%nonassoc" { NONASSOC }
@@ -62,10 +62,10 @@ rule token = parse
  | eof { EOF  }  
 
 and fs_type = parse
-  | '<' { incr typeDepth; appendBuf(lexeme lexbuf); fs_type lexbuf}
+  | '<' { typeDepth.Value <- typeDepth.Value + 1; appendBuf(lexeme lexbuf); fs_type lexbuf}
   | '>'
-    { decr typeDepth; 
-      if !typeDepth = 0
+    { typeDepth.Value <- typeDepth.Value - 1; 
+      if typeDepth.Value = 0
       then Some(string str_buf) 
       else appendBuf(lexeme lexbuf); fs_type lexbuf }
   | _ { appendBuf(lexeme lexbuf); fs_type lexbuf } 

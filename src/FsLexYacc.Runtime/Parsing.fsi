@@ -32,8 +32,8 @@ type IParseState =
     /// Raise an error in this parse context
     abstract RaiseError<'b> : unit -> 'b
 
-[<Sealed>]
 /// The context provided when a parse error occurs
+[<Sealed>]
 type ParseErrorContext<'tok> =
     /// The stack of state indexes active at the parse error
     member StateStack: int list

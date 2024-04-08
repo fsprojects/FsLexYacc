@@ -1,6 +1,6 @@
 // (c) Microsoft Corporation 2005-2009.
 
-/// A simple command-line argument processor.
+// A simple command-line argument processor.
 namespace FSharp.Text
 
 /// The spec value describes the action of the argument,

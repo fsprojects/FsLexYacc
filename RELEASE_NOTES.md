@@ -1,3 +1,6 @@
+#### 11.3.0 - Unreleased
+* Add Fable support to FsLexYacc.Runtime.
+
 #### 11.2.0 - 12 May, 2023
 * Add `--open` option for fslex.
 * Generate signature files for transformed files in fslex.

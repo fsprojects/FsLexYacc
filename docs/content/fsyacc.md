@@ -24,11 +24,11 @@ Parser generators typically produce numbers represented by values in an F# Union
      | Val of string 
      | Int of int
      | Float of float
-     | Decr of Sxpr
+     | Decr of Expr
     
     
     type Stmt = 
-     | Assign of string * Sxpr
+     | Assign of string * Expr
      | While of Expr * Stmt
      | Seq of Stmt list
      | IfThen of Expr * Stmt

@@ -225,7 +225,7 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
             writer.WriteLineInterface "module %s" s
 
     writer.WriteLine
-        "#nowarn \"64\";; // turn off warnings that type variables used in production annotations are instantiated to concrete type"
+        "#nowarn \"64\" // turn off warnings that type variables used in production annotations are instantiated to concrete type"
 
     writer.WriteLine "#nowarn \"1182\"  // the generated code often has unused variable 'parseState'"
 

@@ -7,6 +7,7 @@ open FsLexYacc.FsYacc
 open FsLexYacc.FsYacc.AST
 
 #nowarn "62" // This construct is for ML compatibility
+#nowarn "64" // Turn off warnings that type variables used in production annotations are instantiated to concrete type"
 
 %} 
 

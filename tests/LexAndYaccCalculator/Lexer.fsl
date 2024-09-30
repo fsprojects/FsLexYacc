@@ -1,0 +1,48 @@
+﻿{
+
+open FSharp.Text.Lexing
+open Parser
+
+type Lexbuf =  LexBuffer<char>
+
+let lexeme (lexbuf : Lexbuf) = Lexbuf.LexemeString lexbuf
+
+let newline (lexbuf: LexBuffer<_>) =
+  lexbuf.StartPos <- lexbuf.StartPos.NextLine
+
+}
+
+// Regular expressions
+let whitespace = [' ' '\t' ]
+let newline = ('\n' | '\r' '\n')
+let separator = '_'
+let letter = '\Lu' | '\Ll' | '\Lt' | '\Lm' | '\Lo' | '\Nl'
+let digit = '\Nd'
+let anystring = anychar*
+let integer = digit ((digit | separator)* digit)?
+let char = '\'' ( [^'\\''\n''\r''\t''\b'] | escape_char) '\''
+
+let ident_char =
+      letter
+    | digit
+    | '_'
+let ident = letter ident_char*
+
+let anychar = [^'\n''\r']
+
+let comment = "/*" anystring "*/"
+
+rule tokenstream = parse
+| whitespace	{ tokenstream lexbuf }
+| newline	{ newline lexbuf; tokenstream lexbuf }
+// Identifiers
+| ident         { ID(lexeme lexbuf) }
+| integer       { INT(int (lexeme lexbuf)) }
+// Operators
+| "+"           { OP_PLUS }
+| "-"           { OP_MINUS }
+| "*"           { OP_TIMES }
+| "/"           { OP_DIVIDE }
+// --------------------------
+| _             { failwith ("ParseError" + LexBuffer<_>.LexemeString lexbuf) }
+| eof           { Parser.EOF }

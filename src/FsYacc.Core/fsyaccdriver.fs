@@ -120,7 +120,11 @@ type Writer(outputFileName, outputFileInterface) =
     member x.WriteUInt16(i: int) = fprintf os "%dus;" i
 
     member x.WriteCode(code, pos) =
-        x.WriteLine "# %d \"%s\"" pos.pos_lnum pos.pos_fname
+        // This can arise if there was no header in the input file.
+        // A line directive with an empty file name causes a compiler error.
+        if pos.pos_fname <> "" then
+            x.WriteLine "# %d \"%s\"" pos.pos_lnum pos.pos_fname
+
         x.WriteLine "%s" code
         let codeLines = code.Replace("\r", "").Split([| '\n' |]).Length
         outputLineCount <- outputLineCount + codeLines

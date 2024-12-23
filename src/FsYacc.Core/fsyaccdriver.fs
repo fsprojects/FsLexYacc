@@ -120,11 +120,12 @@ type Writer(outputFileName, outputFileInterface) =
     member x.WriteUInt16(i: int) = fprintf os "%dus;" i
 
     member x.WriteCode(code, pos) =
-        x.WriteLine "# %d \"%s\"" pos.pos_lnum pos.pos_fname
-        x.WriteLine "%s" code
-        let codeLines = code.Replace("\r", "").Split([| '\n' |]).Length
-        outputLineCount <- outputLineCount + codeLines
-        x.WriteLine "# %d \"%s\"" outputLineCount outputFileName
+        if code <> "" then
+            x.WriteLine "# %d \"%s\"" pos.pos_lnum pos.pos_fname
+            x.WriteLine "%s" code
+            let codeLines = code.Replace("\r", "").Split([| '\n' |]).Length
+            outputLineCount <- outputLineCount + codeLines
+            x.WriteLine "# %d \"%s\"" outputLineCount outputFileName
 
     member x.OutputLineCount = outputLineCount
 

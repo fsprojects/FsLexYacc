@@ -230,9 +230,6 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
 
     writer.WriteLine "#nowarn \"1182\"  // the generated code often has unused variable 'parseState'"
 
-    writer.WriteLine
-        "#nowarn \"3261\"  // the generated code would need to properly annotate nulls, e.g. changing System.Object to `obj|null`"
-
     for s in generatorState.opens do
         writer.WriteLine "open %s" s
         writer.WriteLineInterface "open %s" s
@@ -372,7 +369,10 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
              | None -> "")
             (match typ with
              | Some _ -> "Microsoft.FSharp.Core.Operators.box _fsyacc_x"
-             | None -> "(null : System.Object)")
+             // We can't use null here because if all tokens are untyped, the function will be generic.
+             // We used to use (null : obj) but that leads to warnings when nullable reference types are enabled.
+             // box null does the right thing regardless of NRT and gets optimized to a single ldnull.
+             | None -> "Microsoft.FSharp.Core.Operators.box null")
 
     for key, _ in spec.Types |> Seq.countBy fst |> Seq.filter (fun (_, n) -> n > 1) do
         failwithf "%s is given multiple %%type declarations" key

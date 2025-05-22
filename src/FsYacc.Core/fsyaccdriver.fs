@@ -102,9 +102,14 @@ type NullLogger() =
         member _.Dispose() = ()
 
 type Writer(outputFileName, outputFileInterface) =
-    let os = File.CreateText outputFileName :> TextWriter
+    let os =
+        new StreamWriter(outputFileName, false, new System.Text.UTF8Encoding(true)) :> TextWriter
+
     let mutable outputLineCount = 0
-    let osi = File.CreateText outputFileInterface :> TextWriter
+
+    let osi =
+        new StreamWriter(outputFileInterface, false, new System.Text.UTF8Encoding(true)) :> TextWriter
+
     let mutable interfaceLineCount = 0
 
     member x.Write format = fprintf os format

@@ -28,9 +28,14 @@ type PerRuleData = list<DfaNode * seq<Code>>
 type DfaNodes = list<DfaNode>
 
 type Writer(outputFileName, outputFileInterface) =
-    let os = File.CreateText outputFileName :> TextWriter
+    let os =
+        new StreamWriter(outputFileName, false, new System.Text.UTF8Encoding(true)) :> TextWriter
+
     let mutable lineCount = 0
-    let osi = File.CreateText outputFileInterface :> TextWriter
+
+    let osi =
+        new StreamWriter(outputFileInterface, false, new System.Text.UTF8Encoding(true)) :> TextWriter
+
     let mutable interfaceLineCount = 0
     let incr () = lineCount <- lineCount + 1
 

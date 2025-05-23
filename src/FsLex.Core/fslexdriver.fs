@@ -27,14 +27,15 @@ type GeneratorState =
 type PerRuleData = list<DfaNode * seq<Code>>
 type DfaNodes = list<DfaNode>
 
-type Writer(outputFileName, outputFileInterface) =
+type Writer(outputFileName, outputFileInterface, isWithUnicodeByteOrderMark) =
+
     let os =
-        new StreamWriter(outputFileName, false, new System.Text.UTF8Encoding(true)) :> TextWriter
+        new StreamWriter(outputFileName, false, new System.Text.UTF8Encoding(isWithUnicodeByteOrderMark)) :> TextWriter
 
     let mutable lineCount = 0
 
     let osi =
-        new StreamWriter(outputFileInterface, false, new System.Text.UTF8Encoding(true)) :> TextWriter
+        new StreamWriter(outputFileInterface, false, new System.Text.UTF8Encoding(isWithUnicodeByteOrderMark)) :> TextWriter
 
     let mutable interfaceLineCount = 0
     let incr () = lineCount <- lineCount + 1
@@ -302,9 +303,9 @@ let writeBottomCode code (writer: Writer) = writer.WriteCode code
 let writeFooter outputFileName (writer: Writer) =
     writer.WriteLine "# 3000000 \"%s\"" outputFileName
 
-let writeSpecToFile (state: GeneratorState) (spec: Spec) (perRuleData: PerRuleData) (dfaNodes: DfaNodes) =
+let writeSpecToFile (state: GeneratorState) (spec: Spec) (perRuleData: PerRuleData) (dfaNodes: DfaNodes) isWithUnicodeByteOrderMark =
     let output, outputi = state.outputFileName, String.Concat(state.outputFileName, "i")
-    use writer = new Writer(output, outputi)
+    use writer = new Writer(output, outputi, isWithUnicodeByteOrderMark)
     writeLightMode state.disableLightMode state.outputFileName writer
     writeModuleExpression state.generatedModuleName state.generateInternalModule writer
     writeOpens state.opens writer

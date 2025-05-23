@@ -8,10 +8,10 @@
   </PropertyGroup>
   <ItemGroup>
     <FsYacc Include="Parser.fsy">
-      <OtherFlags>--module Parser</OtherFlags>
+      <OtherFlags>--module Parser --out-bom</OtherFlags>
     </FsYacc>
     <FsLex Include="Lexer.fsl">
-      <OtherFlags>--module Lexer --unicode</OtherFlags>
+      <OtherFlags>--module Lexer --unicode --out-bom</OtherFlags>
     </FsLex>
     <Compile Include="Parser.fsi" />
     <Compile Include="Parser.fs" />

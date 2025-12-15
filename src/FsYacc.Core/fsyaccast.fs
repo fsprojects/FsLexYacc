@@ -45,7 +45,10 @@ type Symbols = Symbol list
 //---------------------------------------------------------------------
 // Output Raw Parser Spec AST
 
-let StringOfSym sym = match sym with Terminal s -> String.Concat("'", s, "'") | NonTerminal s -> s
+let StringOfSym sym =
+    match sym with
+    | Terminal s -> String.Concat("'", s, "'")
+    | NonTerminal s -> s
 
 let OutputSym os sym = fprintf os "%s" (StringOfSym sym)
 
@@ -458,7 +461,9 @@ let CompilerLalrParserSpec logf (spec: ProcessedParserSpec) : CompiledSpec =
     stopWatch.Start()
 
     // Augment the grammar
-    let fakeStartNonTerminals = spec.StartSymbols |> List.map(fun nt -> String.Concat("_start", nt)) 
+    let fakeStartNonTerminals =
+        spec.StartSymbols |> List.map (fun nt -> String.Concat("_start", nt))
+
     let nonTerminals = fakeStartNonTerminals @ spec.NonTerminals
     let endOfInputTerminal = "$$"
     let dummyLookahead = "#"
@@ -615,7 +620,10 @@ let CompilerLalrParserSpec logf (spec: ProcessedParserSpec) : CompiledSpec =
     let IsKernelItem item0 =
         (IsStartItem item0 || dotIdx_of_item0 item0 <> 0)
 
-    let StringOfSym sym = match sym with PTerminal s -> String.Concat("'", termTab.OfIndex s, "'") | PNonTerminal s -> ntTab.OfIndex s
+    let StringOfSym sym =
+        match sym with
+        | PTerminal s -> String.Concat("'", termTab.OfIndex s, "'")
+        | PNonTerminal s -> ntTab.OfIndex s
 
     let OutputSym os sym = fprintf os "%s" (StringOfSym sym)
 

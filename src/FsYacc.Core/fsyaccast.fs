@@ -45,10 +45,7 @@ type Symbols = Symbol list
 //---------------------------------------------------------------------
 // Output Raw Parser Spec AST
 
-let StringOfSym sym =
-    match sym with
-    | Terminal s -> "'" ^ s ^ "'"
-    | NonTerminal s -> s
+let StringOfSym sym = match sym with Terminal s -> String.Concat("'", s, "'") | NonTerminal s -> s
 
 let OutputSym os sym = fprintf os "%s" (StringOfSym sym)
 

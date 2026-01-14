@@ -19,7 +19,7 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Update="FSharp.Core" Version="4.7.1" />
+    <PackageReference Update="FSharp.Core" Version="8.0.101" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\FsLexYacc.Runtime\FsLexYacc.Runtime.fsproj" />

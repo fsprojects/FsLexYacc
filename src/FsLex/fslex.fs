@@ -21,10 +21,16 @@ let mutable opens = []
 let mutable lexlib = "FSharp.Text.Lexing"
 let mutable unicode = false
 let mutable caseInsensitive = false
+let mutable isOutputWithUnicodeByteOrderMark = false
 
 let usage =
     [
         ArgInfo("-o", ArgType.String(fun s -> out <- Some s), "Name the output file.")
+        ArgInfo(
+            "--out-bom",
+            ArgType.Unit(fun () -> isOutputWithUnicodeByteOrderMark <- true),
+            "Generate output files with Unicode Byte Order Mark."
+        )
         ArgInfo("--module", ArgType.String(fun s -> modname <- Some s), "Define the F# module name to host the generated parser.")
         ArgInfo("--internal", ArgType.Unit(fun () -> internal_module <- true), "Generate an internal module")
         ArgInfo(
@@ -118,7 +124,7 @@ let main () =
                 domain = if unicode then Unicode else ASCII
             }
 
-        writeSpecToFile state spec perRuleData dfaNodes
+        writeSpecToFile state spec perRuleData dfaNodes isOutputWithUnicodeByteOrderMark
 
     with e ->
         eprintf

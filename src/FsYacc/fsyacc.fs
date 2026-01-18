@@ -23,10 +23,16 @@ let mutable inputCodePage = None
 let mutable lexlib = "FSharp.Text.Lexing"
 let mutable parslib = "FSharp.Text.Parsing"
 let mutable bufferTypeArgument = "'cty"
+let mutable isOutputWithUnicodeByteOrderMark = false
 
 let usage =
     [
         ArgInfo("-o", ArgType.String(fun s -> out <- Some s), "Name the output file.")
+        ArgInfo(
+            "--out-bom",
+            ArgType.Unit(fun () -> isOutputWithUnicodeByteOrderMark <- true),
+            "Generate output files with Unicode Byte Order Mark."
+        )
         ArgInfo("-v", ArgType.Unit(fun () -> log <- true), "Produce a listing file.")
         ArgInfo("--module", ArgType.String(fun s -> modname <- Some s), "Define the F# module name to host the generated parser.")
         ArgInfo("--internal", ArgType.Unit(fun () -> internal_module <- true), "Generate an internal module")
@@ -120,7 +126,7 @@ let main () =
             bufferTypeArgument = bufferTypeArgument
         }
 
-    writeSpecToFile generatorState spec compiledSpec
+    writeSpecToFile generatorState spec compiledSpec isOutputWithUnicodeByteOrderMark
 
 let result =
     try

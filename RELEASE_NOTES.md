@@ -1,5 +1,6 @@
 #### 11.3.0 - Unreleased
 * Add Fable support to FsLexYacc.Runtime.
+* Make the AssocTable lookup cache initial capacity configurable to avoid pre-allocating 2000 entries per parse #54
 
 #### 11.2.0 - 12 May, 2023
 * Add `--open` option for fslex.

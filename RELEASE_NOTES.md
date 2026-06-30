@@ -1,4 +1,4 @@
-#### 11.3.0 - Unreleased
+#### 11.4.0 - Unreleased
 * Add Fable support to FsLexYacc.Runtime.
 * Make the AssocTable lookup cache initial capacity configurable to avoid pre-allocating 2000 entries per parse #54
 

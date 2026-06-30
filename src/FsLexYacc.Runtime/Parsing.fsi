@@ -118,6 +118,14 @@ exception Accept of obj
 /// Indicates a parse error has occured and parse recovery is in progress
 exception RecoverableParseError
 
+/// Settings that tune the parser runtime.
+module ParseSettings =
+    /// Initial capacity of the per-AssocTable lookup cache allocated on each parse. The default
+    /// (2000) preserves historical behaviour. Set to 0 to grow the cache on demand, which greatly
+    /// reduces allocation for parsers invoked over many small inputs (issue #54), at the cost of a
+    /// few dictionary resizes for very large single parses. Set once at startup, before parsing.
+    val mutable AssocTableCacheInitialCapacity: int
+
 #if __DEBUG
 module internal Flags =
     val mutable debug: bool

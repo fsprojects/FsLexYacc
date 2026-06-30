@@ -117,7 +117,15 @@ module Flags =
     let mutable debug = false
 #endif
 
-module Implementation = 
+/// Settings that tune the parser runtime.
+module ParseSettings =
+    /// Initial capacity of the per-AssocTable lookup cache allocated on each parse. The default
+    /// (2000) preserves historical behaviour. Set to 0 to grow the cache on demand, which greatly
+    /// reduces allocation for parsers invoked over many small inputs (issue #54), at the cost of a
+    /// few dictionary resizes for very large single parses. Set once at startup, before parsing.
+    let mutable AssocTableCacheInitialCapacity = 2000
+
+module Implementation =
     
     // Definitions shared with fsyacc 
     let anyMarker = 0xffff
@@ -134,7 +142,11 @@ module Implementation =
     // Read the tables written by FSYACC.  
 
     type AssocTable(elemTab:uint16[], offsetTab:uint16[]) =
-        let cache = Dictionary<_,_>(2000)
+        // Cache capacity is configurable (issue #54): two AssocTables are constructed per Interpret
+        // call, so the historical fixed 2000-capacity dominated allocation for parsers run over many
+        // small inputs. Default is 2000 (unchanged); set ParseSettings.AssocTableCacheInitialCapacity
+        // to 0 to grow on demand instead.
+        let cache = Dictionary<_,_>(ParseSettings.AssocTableCacheInitialCapacity)
 
         member t.readAssoc (minElemNum,maxElemNum,defaultValueOfAssoc,keyToFind) =     
             // do a binary chop on the table 

@@ -113,6 +113,11 @@ type Tables<'tok> =
     /// Returns an object indicating the final synthesized value for the parse.
     member Interpret: lexer: (LexBuffer<'char> -> 'tok) * lexbuf: LexBuffer<'char> * startState: int -> obj
 
+    /// As Interpret, but with an explicit initial capacity for the per-parse AssocTable lookup caches
+    /// (issue #54); 0 grows them on demand. Overrides ParseSettings.AssocTableCacheInitialCapacity for
+    /// this parser. fsyacc emits a call to this overload when --assoc-cache-capacity is passed.
+    member Interpret: lexer: (LexBuffer<'char> -> 'tok) * lexbuf: LexBuffer<'char> * startState: int * assocTableCacheInitialCapacity: int -> obj
+
 /// Indicates an accept action has occured
 exception Accept of obj
 /// Indicates a parse error has occured and parse recovery is in progress

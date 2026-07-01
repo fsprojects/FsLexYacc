@@ -178,6 +178,10 @@ type GeneratorState =
         map_action_to_int: Action -> int
         anyMarker: int
         bufferTypeArgument: string
+        /// When set, the generated parser passes this initial capacity to the runtime's per-parse
+        /// AssocTable lookup caches (issue #54); 0 grows them on demand. None emits the default call,
+        /// which uses ParseSettings.AssocTableCacheInitialCapacity at runtime.
+        assocCacheCapacity: int option
     }
 
     static member Default =
@@ -196,6 +200,7 @@ type GeneratorState =
             map_action_to_int = actionCoding
             anyMarker = anyMarker
             bufferTypeArgument = "'cty"
+            assocCacheCapacity = None
         }
 
 let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compiledSpec: CompiledSpec) =
@@ -649,7 +654,9 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
 
     writer.WriteLine "    numTerminals = %d;" (Array.length compiledSpec.actionTable.[0])
     writer.WriteLine "    productionToNonTerminalTable = _fsyacc_productionToNonTerminalTable  }"
-    writer.WriteLine "let engine lexer lexbuf startState = tables.Interpret(lexer, lexbuf, startState)"
+    match generatorState.assocCacheCapacity with
+    | Some n -> writer.WriteLine "let engine lexer lexbuf startState = tables.Interpret(lexer, lexbuf, startState, %d)" n
+    | None -> writer.WriteLine "let engine lexer lexbuf startState = tables.Interpret(lexer, lexbuf, startState)"
 
     for id, startState in List.zip spec.StartSymbols compiledSpec.startStates do
         if not (types.ContainsKey id) then

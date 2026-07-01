@@ -23,6 +23,7 @@ let mutable inputCodePage = None
 let mutable lexlib = "FSharp.Text.Lexing"
 let mutable parslib = "FSharp.Text.Parsing"
 let mutable bufferTypeArgument = "'cty"
+let mutable assocCacheCapacity = None
 
 let usage =
     [
@@ -59,6 +60,11 @@ let usage =
             "Assume input lexer specification file is encoded with the given codepage."
         )
         ArgInfo("--buffer-type-argument", ArgType.String(fun s -> bufferTypeArgument <- s), "Generic type argument of the LexBuffer type.")
+        ArgInfo(
+            "--assoc-cache-capacity",
+            ArgType.Int(fun i -> assocCacheCapacity <- Some i),
+            "Initial capacity of the generated parser's per-parse AssocTable lookup caches (0 grows on demand). Omit to use the runtime default (2000). See FsLexYacc issue #54."
+        )
     ]
 
 let _ =
@@ -118,6 +124,7 @@ let main () =
             parslib = parslib
             compat = compat
             bufferTypeArgument = bufferTypeArgument
+            assocCacheCapacity = assocCacheCapacity
         }
 
     writeSpecToFile generatorState spec compiledSpec

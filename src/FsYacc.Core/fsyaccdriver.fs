@@ -654,6 +654,7 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
 
     writer.WriteLine "    numTerminals = %d;" (Array.length compiledSpec.actionTable.[0])
     writer.WriteLine "    productionToNonTerminalTable = _fsyacc_productionToNonTerminalTable  }"
+
     match generatorState.assocCacheCapacity with
     | Some n -> writer.WriteLine "let engine lexer lexbuf startState = tables.Interpret(lexer, lexbuf, startState, %d)" n
     | None -> writer.WriteLine "let engine lexer lexbuf startState = tables.Interpret(lexer, lexbuf, startState)"

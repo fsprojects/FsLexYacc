@@ -15,9 +15,9 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v7
     - name: Setup .NET for main project build
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v5
     - name: Install local tools
       run: dotnet tool restore
     - name: Paket restore

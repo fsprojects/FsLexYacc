@@ -113,10 +113,24 @@ type Tables<'tok> =
     /// Returns an object indicating the final synthesized value for the parse.
     member Interpret: lexer: (LexBuffer<'char> -> 'tok) * lexbuf: LexBuffer<'char> * startState: int -> obj
 
+    /// As Interpret, but with an explicit initial capacity for the per-parse AssocTable lookup caches
+    /// (issue #54); 0 grows them on demand. Overrides ParseSettings.AssocTableCacheInitialCapacity for
+    /// this parser. fsyacc emits a call to this overload when --assoc-cache-capacity is passed.
+    member Interpret:
+        lexer: (LexBuffer<'char> -> 'tok) * lexbuf: LexBuffer<'char> * startState: int * assocTableCacheInitialCapacity: int -> obj
+
 /// Indicates an accept action has occured
 exception Accept of obj
 /// Indicates a parse error has occured and parse recovery is in progress
 exception RecoverableParseError
+
+/// Settings that tune the parser runtime.
+module ParseSettings =
+    /// Initial capacity of the per-AssocTable lookup cache allocated on each parse. The default
+    /// (2000) preserves historical behaviour. Set to 0 to grow the cache on demand, which greatly
+    /// reduces allocation for parsers invoked over many small inputs (issue #54), at the cost of a
+    /// few dictionary resizes for very large single parses. Set once at startup, before parsing.
+    val mutable AssocTableCacheInitialCapacity: int
 
 #if __DEBUG
 module internal Flags =

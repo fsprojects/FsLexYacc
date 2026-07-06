@@ -117,7 +117,15 @@ module Flags =
     let mutable debug = false
 #endif
 
-module Implementation = 
+/// Settings that tune the parser runtime.
+module ParseSettings =
+    /// Initial capacity of the per-AssocTable lookup cache allocated on each parse. The default
+    /// (2000) preserves historical behaviour. Set to 0 to grow the cache on demand, which greatly
+    /// reduces allocation for parsers invoked over many small inputs (issue #54), at the cost of a
+    /// few dictionary resizes for very large single parses. Set once at startup, before parsing.
+    let mutable AssocTableCacheInitialCapacity = 2000
+
+module Implementation =
     
     // Definitions shared with fsyacc 
     let anyMarker = 0xffff
@@ -133,8 +141,12 @@ module Implementation =
     //-------------------------------------------------------------------------
     // Read the tables written by FSYACC.  
 
-    type AssocTable(elemTab:uint16[], offsetTab:uint16[]) =
-        let cache = Dictionary<_,_>(2000)
+    type AssocTable(elemTab:uint16[], offsetTab:uint16[], initialCacheCapacity:int) =
+        // Cache capacity is configurable (issue #54): two AssocTables are constructed per Interpret
+        // call, so the historical fixed 2000-capacity dominated allocation for parsers run over many
+        // small inputs. The capacity is supplied by the caller (Tables.Interpret), defaulting to
+        // ParseSettings.AssocTableCacheInitialCapacity (2000) unless an explicit value is passed.
+        let cache = Dictionary<_,_>(initialCacheCapacity)
 
         member t.readAssoc (minElemNum,maxElemNum,defaultValueOfAssoc,keyToFind) =     
             // do a binary chop on the table 
@@ -203,7 +215,7 @@ module Implementation =
 
         new(value,startPos,endPos) = { value=value; startPos=startPos; endPos=endPos }
 
-    let interpret (tables: Tables<'tok>) lexer (lexbuf : LexBuffer<_>) initialState =                                                                      
+    let interpret (tables: Tables<'tok>) lexer (lexbuf : LexBuffer<_>) initialState (assocCacheInitialCapacity: int) =
         let localStore = Dictionary<string,obj>() in
         localStore.["LexBuffer"] <- lexbuf
 #if __DEBUG
@@ -247,8 +259,8 @@ module Implementation =
         let lhsPos        = (Array.zeroCreate 2 : Position[])                                            
 
         let reductions = tables.reductions
-        let actionTable = AssocTable(tables.actionTableElements, tables.actionTableRowOffsets)
-        let gotoTable = AssocTable(tables.gotos, tables.sparseGotoTableRowOffsets)
+        let actionTable = AssocTable(tables.actionTableElements, tables.actionTableRowOffsets, assocCacheInitialCapacity)
+        let gotoTable = AssocTable(tables.gotos, tables.sparseGotoTableRowOffsets, assocCacheInitialCapacity)
         let stateToProdIdxsTable = IdxToIdxListTable(tables.stateToProdIdxsTableElements, tables.stateToProdIdxsTableRowOffsets)
 
         let parseState =                                                                                            
@@ -494,8 +506,10 @@ module Implementation =
         valueStack.Peep().value
 
 type Tables<'tok> with
-    member tables.Interpret (lexer,lexbuf,startState) = 
-        Implementation.interpret tables lexer lexbuf startState
+    member tables.Interpret (lexer,lexbuf,startState) =
+        Implementation.interpret tables lexer lexbuf startState ParseSettings.AssocTableCacheInitialCapacity
+    member tables.Interpret (lexer,lexbuf,startState,assocTableCacheInitialCapacity) =
+        Implementation.interpret tables lexer lexbuf startState assocTableCacheInitialCapacity
     
 module ParseHelpers = 
     let parse_error (_s:string) = ()

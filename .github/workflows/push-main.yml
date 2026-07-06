@@ -20,9 +20,9 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v7
     - name: Setup .NET for main project build
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v5
     - name: Install local tools
       run: dotnet tool restore
     - name: Paket restore
@@ -34,7 +34,7 @@ jobs:
     - name: Build documentation
       run: dotnet fake run build.fsx -t GenerateDocs
     - name: Upload documentation
-      uses: actions/upload-pages-artifact@v1
+      uses: actions/upload-pages-artifact@v5
       with:
         path: ./output
 
@@ -44,4 +44,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v5

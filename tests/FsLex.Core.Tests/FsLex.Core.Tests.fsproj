@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Compile Include="UnicodeTests.fs" />
+    <Compile Include="DriverTests.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
 

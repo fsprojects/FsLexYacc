@@ -1,4 +1,7 @@
-#### 11.4.0 - Unreleased
+#### 11.4.1 - 28 August, 2026
+* Fix fslex generating an invalid signature file when the header defines a module #240
+
+#### 11.4.0 - 6 July, 2026
 * Add Fable support to FsLexYacc.Runtime.
 * Make the AssocTable lookup cache initial capacity configurable to avoid pre-allocating 2000 entries per parse #54
 * Add `--assoc-cache-capacity` option for fsyacc to set the generated parser's AssocTable cache capacity from the command line #54

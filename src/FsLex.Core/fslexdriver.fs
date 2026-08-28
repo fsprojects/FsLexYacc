@@ -118,17 +118,22 @@ let writeOpens opens (writer: Writer) =
         writer.WriteLine ""
         writer.WriteLineInterface ""
 
+/// Picks the module declaration and open statements out of the header code, so they can be
+/// repeated in the generated signature file. A nested module definition (a `module ... =` line)
+/// is not a declaration: its body does not end up in the signature file, so copying it would
+/// leave an empty module behind.
+let getHeaderDeclarations (code: string) =
+    code.Split([| '\n'; '\r' |])
+    |> Array.filter (fun s ->
+        (s.StartsWith("module ", StringComparison.Ordinal)
+         && not (s.TrimEnd().EndsWith("=", StringComparison.Ordinal)))
+        || s.StartsWith("open ", StringComparison.Ordinal))
+
 let writeTopCode code (writer: Writer) =
     writer.WriteCode code
 
-    let moduleAndOpens =
-        (fst code).Split([| '\n'; '\r' |])
-        |> Array.filter (fun s ->
-            s.StartsWith("module ", StringComparison.Ordinal)
-            || s.StartsWith("open ", StringComparison.Ordinal))
-        |> String.concat Environment.NewLine
-
-    writer.WriteInterface "%s" moduleAndOpens
+    for line in getHeaderDeclarations (fst code) do
+        writer.WriteLineInterface "%s" line
 
 let writeUnicodeTranslationArray dfaNodes domain (writer: Writer) =
     let parseContext =

@@ -268,8 +268,7 @@ and [<Sealed>] LexBuffer<'char>(filler: LexBufferFiller<'char>) as this =
 
 #if !FABLE_COMPILER
     static member FromTextReader(tr: System.IO.TextReader) : LexBuffer<char> =
-        LexBuffer<char>
-            .FromReadFunctions(Some tr.Read, Some(tr.ReadAsync >> Async.AwaitTask))
+        LexBuffer<char>.FromReadFunctions(Some tr.Read, Some(tr.ReadAsync >> Async.AwaitTask))
 
     static member FromBinaryReader(br: System.IO.BinaryReader) : LexBuffer<byte> = LexBuffer<byte>.FromFunction(br.Read)
 

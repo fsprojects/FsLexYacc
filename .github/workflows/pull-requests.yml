@@ -17,7 +17,7 @@ jobs:
     steps:
     - uses: actions/checkout@v7
     - name: Setup .NET for main project build
-      uses: actions/setup-dotnet@v5
+      uses: actions/setup-dotnet@v6
     - name: Install local tools
       run: dotnet tool restore
     - name: Paket restore

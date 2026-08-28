@@ -78,7 +78,7 @@ Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
 let release = ReleaseNotes.parse (IO.File.ReadAllLines "RELEASE_NOTES.md")
 
 // Check if the source code was formatted
-Target.create "CheckFormat" (fun _ -> dotnet "fantomas . --check")
+Target.create "CheckFormat" (fun _ -> dotnet "fantomas check .")
 
 // Generate assembly info files with the right version & up-to-date information
 Target.create "AssemblyInfo" (fun _ ->
@@ -119,7 +119,7 @@ Target.create "CleanDocs" (fun _ -> Shell.cleanDirs [ "output"; ".fsdocs" ])
 // Build library & test project
 
 Target.create "Build" (fun _ ->
-    for framework in [ "net6.0" ] do
+    for framework in [ "net10.0" ] do
         [
             "src/FsLex.Core/fslexlex.fs"
             "src/FsLex.Core/fslexpars.fs"

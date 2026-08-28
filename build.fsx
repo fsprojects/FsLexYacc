@@ -1,138 +1,167 @@
-#r @"paket:
-frameworks: net6.0
+#!/usr/bin/env -S dotnet fsi
 
-nuget FSharp.Core ~> 6
-nuget Fake.Core.Target
-nuget Fake.Core.ReleaseNotes
-nuget Fake.IO.FileSystem
-nuget Fake.DotNet.AssemblyInfoFile
-nuget Fake.DotNet.Paket
-nuget Fake.Tools.Git
-nuget MsBuild.StructuredLogger //"
+#r "nuget: Fun.Build, 1.1.17"
 
-#if !FAKE
-#load "./.fake/build.fsx/intellisense.fsx"
-#r "netstandard" // Temp fix for https://github.com/fsharp/FAKE/issues/1985
-#endif
-
-open Fake.DotNet
-// --------------------------------------------------------------------------------------
-// FAKE build script
-// --------------------------------------------------------------------------------------
-
-//#I @"packages/FAKE/tools"
-//#r @"packages/FAKE/tools/FakeLib.dll"
-open Fake
-open Fake.Core.TargetOperators
-open Fake.Core
-open Fake.Tools.Git
-open Fake.IO
-open Fake.IO.FileSystemOperators
-open Fake.IO.Globbing.Operators
 open System
 open System.IO
+open Fun.Build
+
+let (</>) (a: string) (b: string) = Path.Combine(a, b)
+
+let root = __SOURCE_DIRECTORY__
 
 // --------------------------------------------------------------------------------------
-// START TODO: Provide project-specific details below
+// Project information, used for the generated AssemblyInfo files and the NuGet packages.
 // --------------------------------------------------------------------------------------
 
-// Information about the project are used
-//  - for version and project name in generated AssemblyInfo file
-//  - by the generated NuGet package
-//  - to run tests and to publish documentation on GitHub gh-pages
-//  - for documentation, you also need to edit info in "docs/tools/generate.fsx"
-
-// The name of the project
-// (used by attributes in AssemblyInfo, name of a NuGet package and directory in 'src')
+/// The tool projects. These carry the FsLexYacc product name.
 let projects = [ "FsLex"; "FsLex.Core"; "FsYacc"; "FsYacc.Core" ]
+
+/// The runtime library, which is its own product because it ships as its own package.
 let runtimeProjects = [ "FsLexYacc.Runtime" ]
-let project = "FsLexYacc"
-// Short summary of the project
-// (used as description in AssemblyInfo and as a short summary for NuGet package)
+
 let summary = "FsLex/FsYacc lexer/parser generation tools"
 
-// File system information
-// (<solutionFile>.sln is built during the building process)
-let solutionFile = "FsLexYacc"
-// Pattern specifying assemblies to be tested using NUnit
-let testAssemblies = "tests/**/bin/Release/*Tests*.dll"
-
-// Git configuration (used for publishing documentation in gh-pages branch)
-// The profile where the project is posted
-let gitHome = "https://github.com/fsprojects"
-// The name of the project on GitHub
-let gitName = "FsLexYacc"
-
 // --------------------------------------------------------------------------------------
-// END TODO: The rest of the file includes standard build steps
+// Release notes
 // --------------------------------------------------------------------------------------
 
-let dotnet arguments =
-    let result = CreateProcess.fromRawCommandLine "dotnet" arguments |> Proc.run
+type Release =
+    {
+        /// The version exactly as written in RELEASE_NOTES.md, prerelease suffix included.
+        NugetVersion: string
+        /// major.minor.patch only, because an assembly version cannot carry a prerelease suffix.
+        AssemblyVersion: string
+        Notes: string list
+    }
 
-    if result.ExitCode <> 0 then
-        failwithf "Failed to run \"dotnet %s\"" arguments
+/// The topmost entry of RELEASE_NOTES.md, which is the one being worked towards.
+///
+/// An entry is a "#### <version> - <date>" heading followed by "* " bullets, and the date is
+/// allowed to read "Unreleased" while the version is still in flight.
+let release: Release =
+    let isHeading (line: string) = line.StartsWith "####"
 
-// Read additional information from the release notes document
-Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
-let release = ReleaseNotes.parse (IO.File.ReadAllLines "RELEASE_NOTES.md")
+    let lines = File.ReadAllLines(root </> "RELEASE_NOTES.md")
+    let headingIndex = Array.findIndex isHeading lines
 
-// Check if the source code was formatted
-Target.create "CheckFormat" (fun _ -> dotnet "fantomas check .")
+    let version = lines.[headingIndex].TrimStart('#').Trim().Split(' ') |> Array.head
 
-// Generate assembly info files with the right version & up-to-date information
-Target.create "AssemblyInfo" (fun _ ->
-    for project in runtimeProjects do
-        let fileName = "src/" + project + "/AssemblyInfo.fs"
+    let notes =
+        lines
+        |> Array.skip (headingIndex + 1)
+        |> Array.takeWhile (isHeading >> not)
+        |> Array.filter (String.IsNullOrWhiteSpace >> not)
+        |> List.ofArray
 
-        AssemblyInfoFile.createFSharp
-            fileName
-            [
-                AssemblyInfo.Title project
-                AssemblyInfo.Product "FsLexYacc.Runtime"
-                AssemblyInfo.Description summary
-                AssemblyInfo.Version release.AssemblyVersion
-                AssemblyInfo.FileVersion release.AssemblyVersion
-            ]
-
-    for project in projects do
-        let fileName = "src/" + project + "/AssemblyInfo.fs"
-
-        AssemblyInfoFile.createFSharp
-            fileName
-            [
-                AssemblyInfo.Title project
-                AssemblyInfo.Product "FsLexYacc"
-                AssemblyInfo.Description summary
-                AssemblyInfo.Version release.AssemblyVersion
-                AssemblyInfo.FileVersion release.AssemblyVersion
-            ])
+    {
+        NugetVersion = version
+        AssemblyVersion = version.Split('-') |> Array.head
+        Notes = notes
+    }
 
 // --------------------------------------------------------------------------------------
-// Clean build results & restore NuGet packages
-
-Target.create "Clean" (fun _ -> Shell.cleanDirs [ "bin"; "temp" ])
-
-Target.create "CleanDocs" (fun _ -> Shell.cleanDirs [ "output"; ".fsdocs" ])
-
+// Helpers
 // --------------------------------------------------------------------------------------
-// Build library & test project
 
-Target.create "Build" (fun _ ->
-    for framework in [ "net10.0" ] do
+/// Start a process with an explicit argument list rather than a command line.
+///
+/// The packaging steps pass release notes through as a single argument, and those contain
+/// newlines. Handing them to a shell to be re-split would mangle them, so the arguments are
+/// never joined into a string in the first place.
+let exec (fileName: string) (arguments: string list) =
+    async {
+        let startInfo =
+            Diagnostics.ProcessStartInfo(fileName, UseShellExecute = false, WorkingDirectory = root)
+
+        for argument in arguments do
+            startInfo.ArgumentList.Add argument
+
+        use proc = Diagnostics.Process.Start startInfo
+        do! proc.WaitForExitAsync() |> Async.AwaitTask
+        return proc.ExitCode
+    }
+
+let cleanDirs (dirs: string list) =
+    async {
+        for dir in dirs do
+            if Directory.Exists dir then
+                Directory.Delete(dir, true)
+
+        return 0
+    }
+
+let deleteFiles (files: string list) =
+    async {
+        for file in files do
+            let path = root </> file
+
+            if File.Exists path then
+                File.Delete path
+
+        return 0
+    }
+
+/// Write the AssemblyInfo.fs that every project compiles, stamped with the release version.
+let writeAssemblyInfo (project: string) (product: string) =
+    let version = release.AssemblyVersion
+
+    let content =
         [
-            "src/FsLex.Core/fslexlex.fs"
-            "src/FsLex.Core/fslexpars.fs"
-            "src/FsLex.Core/fslexpars.fsi"
-            "src/FsYacc.Core/fsyacclex.fs"
-            "src/FsYacc.Core/fsyaccpars.fs"
-            "src/FsYacc.Core/fsyaccpars.fsi"
+            "// Auto-Generated by build.fsx; do not edit"
+            "namespace System"
+            "open System.Reflection"
+            ""
+            $"[<assembly: AssemblyTitleAttribute(\"{project}\")>]"
+            $"[<assembly: AssemblyProductAttribute(\"{product}\")>]"
+            $"[<assembly: AssemblyDescriptionAttribute(\"{summary}\")>]"
+            $"[<assembly: AssemblyVersionAttribute(\"{version}\")>]"
+            $"[<assembly: AssemblyFileVersionAttribute(\"{version}\")>]"
+            "do ()"
+            ""
+            "module internal AssemblyVersionInformation ="
+            $"    let [<Literal>] AssemblyTitle = \"{project}\""
+            $"    let [<Literal>] AssemblyProduct = \"{product}\""
+            $"    let [<Literal>] AssemblyDescription = \"{summary}\""
+            $"    let [<Literal>] AssemblyVersion = \"{version}\""
+            $"    let [<Literal>] AssemblyFileVersion = \"{version}\""
+            ""
         ]
-        |> File.deleteAll
+        |> String.concat Environment.NewLine
 
-        for project in [ "src/FsLex/fslex.fsproj"; "src/FsYacc/fsyacc.fsproj" ] do
-            dotnet $"publish {project} -c Release /v:n -f {framework}"
+    // A BOM, because that is what the file has always carried and the compiler reads either way.
+    File.WriteAllText(root </> "src" </> project </> "AssemblyInfo.fs", content, Text.UTF8Encoding true)
 
+let generateAssemblyInfo =
+    async {
+        for project in runtimeProjects do
+            writeAssemblyInfo project "FsLexYacc.Runtime"
+
+        for project in projects do
+            writeAssemblyInfo project "FsLexYacc"
+
+        return 0
+    }
+
+// --------------------------------------------------------------------------------------
+// Build
+// --------------------------------------------------------------------------------------
+
+let targetFramework = "net10.0"
+
+/// Sources fslex and fsyacc regenerate. They are deleted first so that a stale copy can never
+/// be what gets compiled into the tools that are about to regenerate it.
+let generatedSources =
+    [
+        "src/FsLex.Core/fslexlex.fs"
+        "src/FsLex.Core/fslexpars.fs"
+        "src/FsLex.Core/fslexpars.fsi"
+        "src/FsYacc.Core/fsyacclex.fs"
+        "src/FsYacc.Core/fsyaccpars.fs"
+        "src/FsYacc.Core/fsyaccpars.fsi"
+    ]
+
+let generatedTestSources =
     [
         "tests/JsonLexAndYaccExample/Lexer.fs"
         "tests/JsonLexAndYaccExample/Parser.fs"
@@ -141,85 +170,124 @@ Target.create "Build" (fun _ ->
         "tests/LexAndYaccMiniProject/Parser.fs"
         "tests/LexAndYaccMiniProject/Parser.fsi"
     ]
-    |> File.deleteAll
 
-    for project in
-        [
-            "src/FsLexYacc.Runtime/FsLexYacc.Runtime.fsproj"
-            "tests/JsonLexAndYaccExample/JsonLexAndYaccExample.fsproj"
-            "tests/LexAndYaccMiniProject/LexAndYaccMiniProject.fsproj"
-        ] do
-        dotnet $"build {project} -c Release /v:n")
+let buildTools =
+    async {
+        let! _ = deleteFiles generatedSources
 
-Target.create "RunTests" (fun _ -> dotnet "test .")
+        let mutable exitCode = 0
 
-// --------------------------------------------------------------------------------------
-// Run the unit tests using test runner
+        for project in [ "src/FsLex/fslex.fsproj"; "src/FsYacc/fsyacc.fsproj" ] do
+            if exitCode = 0 then
+                let! code =
+                    exec "dotnet" [ "publish"; project; "-c"; "Release"; "/v:n"; "-f"; targetFramework ]
 
-Target.create "RunOldFsYaccTests" (fun _ ->
-    let script =
-        Path.Combine(__SOURCE_DIRECTORY__, "tests", "fsyacc", "OldFsYaccTests.fsx")
+                exitCode <- code
 
-    dotnet $"fake run {script}")
+        return exitCode
+    }
 
-// --------------------------------------------------------------------------------------
-// Build a NuGet package
+/// The runtime, plus the two sample projects that exercise the freshly published tools.
+let buildLibraries =
+    async {
+        let! _ = deleteFiles generatedTestSources
 
-Target.create "NuGet" (fun _ ->
-    // project-specific packages
-    let releaseNotes = String.toLines release.Notes
-    dotnet $"pack FsLexYacc.sln -c Release -o bin /p:PackageReleaseNotes=\"{releaseNotes}\" /p:PackageVersion={release.NugetVersion}"
+        let mutable exitCode = 0
 
-    // the meta-package
-    Paket.pack (fun p ->
-        { p with
-            ToolType = ToolType.CreateLocalTool()
-            TemplateFile = "nuget/FsLexYacc.template"
-            Version = release.NugetVersion
-            OutputPath = "bin"
-            ReleaseNotes = String.toLines release.Notes
-        }))
+        for project in
+            [
+                "src/FsLexYacc.Runtime/FsLexYacc.Runtime.fsproj"
+                "tests/JsonLexAndYaccExample/JsonLexAndYaccExample.fsproj"
+                "tests/LexAndYaccMiniProject/LexAndYaccMiniProject.fsproj"
+            ] do
+            if exitCode = 0 then
+                let! code = exec "dotnet" [ "build"; project; "-c"; "Release"; "/v:n" ]
+                exitCode <- code
+
+        return exitCode
+    }
 
 // --------------------------------------------------------------------------------------
-// Generate the documentation
+// Packaging
+// --------------------------------------------------------------------------------------
 
-Target.create "GenerateDocs" (fun _ ->
-    let result =
-        DotNet.exec
-            (fun p ->
-                { p with
-                    WorkingDirectory = __SOURCE_DIRECTORY__
-                })
-            "fsdocs"
-            "build --eval"
+let pack =
+    async {
+        let releaseNotes = String.concat Environment.NewLine release.Notes
 
-    if not result.OK then
-        failwith "error generating docs")
+        // The per-project packages.
+        let! projectPackages =
+            exec
+                "dotnet"
+                [
+                    "pack"
+                    "FsLexYacc.sln"
+                    "-c"
+                    "Release"
+                    "-o"
+                    "bin"
+                    $"/p:PackageReleaseNotes={releaseNotes}"
+                    $"/p:PackageVersion={release.NugetVersion}"
+                ]
+
+        if projectPackages <> 0 then
+            return projectPackages
+        else
+            // The FsLexYacc meta-package, which is assembled by paket from a template rather
+            // than from a project, because it ships the published tools instead of a library.
+            return!
+                exec
+                    "dotnet"
+                    [
+                        "paket"
+                        "pack"
+                        "--template"
+                        "nuget/FsLexYacc.template"
+                        "--version"
+                        release.NugetVersion
+                        "--release-notes"
+                        releaseNotes
+                        "bin"
+                    ]
+    }
 
 // --------------------------------------------------------------------------------------
-// Release Scripts
-
-Target.create "Release" ignore
-
+// Pipelines
 // --------------------------------------------------------------------------------------
-// Run all targets by default. Invoke 'build <Target>' to override
 
-Target.create "All" ignore
+pipeline "Build" {
+    workingDir root
+    stage "Clean" { run (cleanDirs [ "bin"; "temp" ]) }
+    stage "CheckFormat" { run "dotnet fantomas check ." }
+    stage "AssemblyInfo" { run generateAssemblyInfo }
+    stage "BuildTools" { run buildTools }
+    stage "BuildLibraries" { run buildLibraries }
+    stage "UnitTests" { run "dotnet test ." }
+    stage "OldFsYaccTests" { run "dotnet fsi tests/fsyacc/OldFsYaccTests.fsx" }
+    runIfOnlySpecified false
+}
 
-"Clean"
-==> "CheckFormat"
-==> "AssemblyInfo"
-==> "Build"
-==> "RunTests"
-==> "RunOldFsYaccTests"
-==> "All"
+pipeline "Release" {
+    workingDir root
+    stage "Clean" { run (cleanDirs [ "bin"; "temp" ]) }
+    stage "CheckFormat" { run "dotnet fantomas check ." }
+    stage "AssemblyInfo" { run generateAssemblyInfo }
+    stage "BuildTools" { run buildTools }
+    stage "BuildLibraries" { run buildLibraries }
+    stage "UnitTests" { run "dotnet test ." }
+    stage "OldFsYaccTests" { run "dotnet fsi tests/fsyacc/OldFsYaccTests.fsx" }
+    stage "NuGet" { run pack }
+    runIfOnlySpecified true
+}
 
-"CleanDocs" ==> "Build" ==> "GenerateDocs"
+pipeline "Docs" {
+    workingDir root
+    stage "CleanDocs" { run (cleanDirs [ "output"; ".fsdocs" ]) }
+    stage "AssemblyInfo" { run generateAssemblyInfo }
+    stage "BuildTools" { run buildTools }
+    stage "BuildLibraries" { run buildLibraries }
+    stage "GenerateDocs" { run "dotnet fsdocs build --eval" }
+    runIfOnlySpecified true
+}
 
-"Build" ==> "NuGet"
-
-"All" ==> "Release"
-
-"NuGet" ==> "Release"
-
-Target.runOrDefaultWithArguments "All"
+tryPrintPipelineCommandHelp ()

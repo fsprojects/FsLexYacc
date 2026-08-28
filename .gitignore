@@ -177,7 +177,6 @@ TestResults.xml
 nuget/*.nupkg
 
 # FAKE build 
-.fake/
 
 # IDEs
 .vs/
@@ -193,6 +192,8 @@ src/FsLex/fslexpars.fsi
 src/FsYacc/fsyacclex.fs
 src/FsYacc/fsyaccpars.fs
 src/FsYacc/fsyaccpars.fsi
+src/FsLex.Core/fslexlex.fsi
+src/FsYacc.Core/fsyacclex.fsi
 tests/fsyacc/test1-unicode.exe.config
 tests/fsyacc/test1.exe.config
 tests/fsyacc/test1.input1.bsl.err
@@ -202,16 +203,22 @@ tests/fsyacc/test2compat.exe.config
 tests/fsyacc/Test1/test1.fs
 tests/fsyacc/Test1/test1.fsi
 tests/fsyacc/Test1/test1lex.fs
+tests/fsyacc/Test1/test1lex.fsi
 
 .paket
 .idea/
 .vs/
 .ionide/
 tests/fsyacc/unicode/test1-unicode-lex.fs
+tests/fsyacc/unicode/test1-unicode-lex.fsi
 tests/fsyacc/unicode/test1-unicode.fs
 tests/fsyacc/unicode/test1-unicode.fsi
 tests/fsyacc/unicode/test1-unicode.input3.tokens.bsl.err
 tests/fsyacc/Test2/test2lex.fs
+tests/fsyacc/Test2/test2lex.fsi
 tests/fsyacc/Test2/test2.fs
 tests/fsyacc/Test2/test2.fsi
 tests/fsyacc/repro_#141/Lexer_fail_option_i.fs
+tests/fsyacc/repro_#141/Lexer_fail_option_i.fsi
+tests/fsyacc/repro1885/repro1885.fs
+tests/fsyacc/repro1885/repro1885.fsi

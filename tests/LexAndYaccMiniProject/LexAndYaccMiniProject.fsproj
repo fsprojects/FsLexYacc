@@ -2,9 +2,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
-    <FsLexToolPath>..\..\src\FsLex\bin\$(Configuration)\net6.0</FsLexToolPath>
-    <FsYaccToolPath>..\..\src\FsYacc\bin\$(Configuration)\net6.0</FsYaccToolPath>
+    <TargetFramework>net10.0</TargetFramework>
+    <FsLexToolPath>..\..\src\FsLex\bin\$(Configuration)\net10.0</FsLexToolPath>
+    <FsYaccToolPath>..\..\src\FsYacc\bin\$(Configuration)\net10.0</FsYaccToolPath>
   </PropertyGroup>
   <ItemGroup>
     <FsYacc Include="Parser.fsy">
@@ -17,9 +17,6 @@
     <Compile Include="Parser.fs" />
     <Compile Include="Lexer.fs" />
     <Compile Include="Program.fs" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Update="FSharp.Core" Version="4.7.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\FsLexYacc.Runtime\FsLexYacc.Runtime.fsproj" />

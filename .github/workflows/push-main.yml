@@ -22,17 +22,17 @@ jobs:
     steps:
     - uses: actions/checkout@v7
     - name: Setup .NET for main project build
-      uses: actions/setup-dotnet@v5
+      uses: actions/setup-dotnet@v6
     - name: Install local tools
       run: dotnet tool restore
     - name: Paket restore
       run: dotnet paket restore
     - name: Build
-      run: dotnet fake run build.fsx -t Release
+      run: dotnet fsi build.fsx -p Release
     - name: Publish NuGets (if main version changed)
       run: dotnet nuget push "bin/*.nupkg" -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_KEY }} --skip-duplicate
     - name: Build documentation
-      run: dotnet fake run build.fsx -t GenerateDocs
+      run: dotnet fsi build.fsx -p Docs
     - name: Upload documentation
       uses: actions/upload-pages-artifact@v5
       with:

@@ -1,3 +1,7 @@
+#### 12.0.0 - Unreleased
+* Migrate fslex and fsyacc to net10.0. The tools now require a .NET 10 runtime #244
+* Raise the minimum FSharp.Core version to 10.0.0 #244
+
 #### 11.4.1 - 28 August, 2026
 * Fix fslex generating an invalid signature file when the header defines a module #240
 

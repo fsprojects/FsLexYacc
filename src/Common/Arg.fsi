@@ -32,15 +32,15 @@ type ArgParser =
     /// Parse some of the arguments given by 'argv', starting at the given position
     [<System.Obsolete("This method should not be used directly as it will be removed in a future revision of this library")>]
     static member ParsePartial:
-        cursor: int ref * argv: string[] * arguments: seq<ArgInfo> * ?otherArgs: (string -> unit) * ?usageText: string -> unit
+        cursor: int ref * argv: string array * arguments: ArgInfo seq * ?otherArgs: (string -> unit) * ?usageText: string -> unit
 
     /// Parse the arguments given by System.Environment.GetCommandLineArgs()
     /// according to the argument processing specifications "specs".
     /// Args begin with "-". Non-arguments are passed to "f" in
     /// order.  "use" is printed as part of the usage line if an error occurs.
 
-    static member Parse: arguments: seq<ArgInfo> * ?otherArgs: (string -> unit) * ?usageText: string -> unit
+    static member Parse: arguments: ArgInfo seq * ?otherArgs: (string -> unit) * ?usageText: string -> unit
 #endif
 
     /// Prints the help for each argument.
-    static member Usage: arguments: seq<ArgInfo> * ?usage: string -> unit
+    static member Usage: arguments: ArgInfo seq * ?usage: string -> unit

@@ -62,7 +62,7 @@ let test proj shouldBeOK (arguments: string list, baseLineOutput) =
         // For some reason, the output is captured in the stderr
         error.Split('\n', StringSplitOptions.RemoveEmptyEntries)
         |> Array.map (fun line ->
-            if line.StartsWith("parsed") then
+            if line.StartsWith("parsed", StringComparison.Ordinal) then
                 let pieces = line.Split(' ')
                 let pathPiece = pieces.[1]
 
@@ -73,7 +73,7 @@ let test proj shouldBeOK (arguments: string list, baseLineOutput) =
                         else
                             "/"
 
-                    pathPiece.LastIndexOf(value)
+                    pathPiece.LastIndexOf(value, StringComparison.Ordinal)
 
                 let pathPiece =
                     if idx >= 0 then
@@ -94,12 +94,12 @@ let test proj shouldBeOK (arguments: string list, baseLineOutput) =
         output.Length <> expectedLines.Length
         || Seq.map2 (=) output expectedLines |> Seq.exists not
     then
-        printfn "Expected:"
+        stdout.WriteLine "Expected:"
 
         for line in expectedLines do
             printfn "\t%s" line
 
-        printfn "Output:"
+        stdout.WriteLine "Output:"
 
         for line in output do
             printfn "\t%s" line

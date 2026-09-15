@@ -40,7 +40,8 @@ type Release =
 /// An entry is a "#### <version> - <date>" heading followed by "* " bullets, and the date is
 /// allowed to read "Unreleased" while the version is still in flight.
 let release: Release =
-    let isHeading (line: string) = line.StartsWith "####"
+    let isHeading (line: string) =
+        line.StartsWith("####", StringComparison.Ordinal)
 
     let lines = File.ReadAllLines(root </> "RELEASE_NOTES.md")
     let headingIndex = Array.findIndex isHeading lines
@@ -112,19 +113,19 @@ let writeAssemblyInfo (project: string) (product: string) =
             "namespace System"
             "open System.Reflection"
             ""
-            $"[<assembly: AssemblyTitleAttribute(\"{project}\")>]"
-            $"[<assembly: AssemblyProductAttribute(\"{product}\")>]"
-            $"[<assembly: AssemblyDescriptionAttribute(\"{summary}\")>]"
-            $"[<assembly: AssemblyVersionAttribute(\"{version}\")>]"
-            $"[<assembly: AssemblyFileVersionAttribute(\"{version}\")>]"
+            $"[<assembly: AssemblyTitleAttribute(\"%s{project}\")>]"
+            $"[<assembly: AssemblyProductAttribute(\"%s{product}\")>]"
+            $"[<assembly: AssemblyDescriptionAttribute(\"%s{summary}\")>]"
+            $"[<assembly: AssemblyVersionAttribute(\"%s{version}\")>]"
+            $"[<assembly: AssemblyFileVersionAttribute(\"%s{version}\")>]"
             "do ()"
             ""
             "module internal AssemblyVersionInformation ="
-            $"    let [<Literal>] AssemblyTitle = \"{project}\""
-            $"    let [<Literal>] AssemblyProduct = \"{product}\""
-            $"    let [<Literal>] AssemblyDescription = \"{summary}\""
-            $"    let [<Literal>] AssemblyVersion = \"{version}\""
-            $"    let [<Literal>] AssemblyFileVersion = \"{version}\""
+            $"    let [<Literal>] AssemblyTitle = \"%s{project}\""
+            $"    let [<Literal>] AssemblyProduct = \"%s{product}\""
+            $"    let [<Literal>] AssemblyDescription = \"%s{summary}\""
+            $"    let [<Literal>] AssemblyVersion = \"%s{version}\""
+            $"    let [<Literal>] AssemblyFileVersion = \"%s{version}\""
             ""
         ]
         |> String.concat Environment.NewLine
@@ -226,8 +227,8 @@ let pack =
                     "Release"
                     "-o"
                     "bin"
-                    $"/p:PackageReleaseNotes={releaseNotes}"
-                    $"/p:PackageVersion={release.NugetVersion}"
+                    $"/p:PackageReleaseNotes=%s{releaseNotes}"
+                    $"/p:PackageVersion=%s{release.NugetVersion}"
                 ]
 
         if projectPackages <> 0 then
@@ -318,7 +319,7 @@ let analyze =
                     // With a trailing separator, or the tool reads the last segment as a file name
                     // and reports every path as "FsLexYacc/...", which GitHub cannot link.
                     "--code-root"
-                    root + string Path.DirectorySeparatorChar
+                    root + Path.DirectorySeparatorChar.ToString()
                     "--report"
                     analysisReport
                 ]

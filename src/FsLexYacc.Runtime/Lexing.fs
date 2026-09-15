@@ -152,7 +152,7 @@ and [<Sealed>] LexBuffer<'char>(filler: LexBufferFiller<'char>) as this =
         and set v = lexemeLength <- v
 
     member _.Buffer
-        with internal get (): 'char[] = buffer
+        with internal get (): 'char array = buffer
         and internal set v = buffer <- v
 
     member _.BufferMaxScanLength
@@ -193,7 +193,7 @@ and [<Sealed>] LexBuffer<'char>(filler: LexBufferFiller<'char>) as this =
             buffer <- repl
 
     static member FromReadFunctions
-        (syncRead: ('char[] * int * int -> int) option, asyncRead: ('char[] * int * int -> Async<int>) option)
+        (syncRead: ('char array * int * int -> int) option, asyncRead: ('char array * int * int -> Async<int>) option)
         : LexBuffer<'char> =
         let extension = Array.zeroCreate 4096
 
@@ -224,10 +224,10 @@ and [<Sealed>] LexBuffer<'char>(filler: LexBufferFiller<'char>) as this =
         LexBuffer<_>(fillers)
 
     // A full type signature is required on this method because it is used at more specific types within its own scope
-    static member FromFunction(f: 'char[] * int * int -> int) : LexBuffer<'char> =
+    static member FromFunction(f: 'char array * int * int -> int) : LexBuffer<'char> =
         LexBuffer<_>.FromReadFunctions(Some(f), None)
 
-    static member FromAsyncFunction(f: 'char[] * int * int -> Async<int>) : LexBuffer<'char> =
+    static member FromAsyncFunction(f: 'char array * int * int -> Async<int>) : LexBuffer<'char> =
         LexBuffer<_>.FromReadFunctions(None, Some(f))
 
     static member FromCharFunction f : LexBuffer<char> =
@@ -245,7 +245,7 @@ and [<Sealed>] LexBuffer<'char>(filler: LexBufferFiller<'char>) as this =
             n)
 
     // A full type signature is required on this method because it is used at more specific types within its own scope
-    static member FromArray(s: 'char[]) : LexBuffer<'char> =
+    static member FromArray(s: 'char array) : LexBuffer<'char> =
         let lexBuffer =
             LexBuffer<_>
                 {
@@ -285,7 +285,7 @@ module GenericImplFragments =
         lexBuffer.LexemeLength <- 0
         lexBuffer.BufferAcceptAction <- -1
 
-    let afterRefill (trans: uint16[] array, sentinel, lexBuffer: LexBuffer<_>, scanUntilSentinel, endOfScan, state, eofPos) =
+    let afterRefill (trans: uint16 array array, sentinel, lexBuffer: LexBuffer<_>, scanUntilSentinel, endOfScan, state, eofPos) =
         // end of file occurs if we couldn't extend the buffer
         if lexBuffer.BufferScanLength = lexBuffer.BufferMaxScanLength then
             let snew = int trans.[state].[eofPos] // == EOF
@@ -309,7 +309,7 @@ module GenericImplFragments =
 open GenericImplFragments
 
 [<Sealed>]
-type AsciiTables(trans: uint16[] array, accept: uint16[]) =
+type AsciiTables(trans: uint16 array array, accept: uint16 array) =
     let rec scanUntilSentinel (lexBuffer, state) =
         let sentinel = 255 * 256 + 255
         // Return an endOfScan after consuming the input
@@ -378,7 +378,7 @@ type AsciiTables(trans: uint16[] array, accept: uint16[]) =
     static member Create(trans, accept) = AsciiTables(trans, accept)
 
 [<Sealed>]
-type UnicodeTables(trans: uint16[] array, accept: uint16[]) =
+type UnicodeTables(trans: uint16 array array, accept: uint16 array) =
     let sentinel = 255 * 256 + 255
     let numUnicodeCategories = 30
     let numLowUnicodeChars = 128

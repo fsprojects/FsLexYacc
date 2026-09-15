@@ -53,19 +53,19 @@ type ParseErrorContext<'tok>
 // This is the data structure emitted as code by FSYACC.  
 
 type Tables<'tok> = 
-    { reductions: (IParseState -> obj)[]
+    { reductions: (IParseState -> obj) array
       endOfInputTag: int
       tagOfToken: 'tok -> int
       dataOfToken: 'tok -> obj 
-      actionTableElements: uint16[]  
-      actionTableRowOffsets: uint16[]
-      reductionSymbolCounts: uint16[]
-      immediateActions: uint16[]
-      gotos: uint16[]
-      sparseGotoTableRowOffsets: uint16[]
-      stateToProdIdxsTableElements: uint16[]  
-      stateToProdIdxsTableRowOffsets: uint16[]  
-      productionToNonTerminalTable: uint16[]
+      actionTableElements: uint16 array  
+      actionTableRowOffsets: uint16 array
+      reductionSymbolCounts: uint16 array
+      immediateActions: uint16 array
+      gotos: uint16 array
+      sparseGotoTableRowOffsets: uint16 array
+      stateToProdIdxsTableElements: uint16 array  
+      stateToProdIdxsTableRowOffsets: uint16 array  
+      productionToNonTerminalTable: uint16 array
       /// For fsyacc.exe, this entry is filled in by context from the generated parser file. If no 'parse_error' function
       /// is defined by the user then ParseHelpers.parse_error is used by default (ParseHelpers is opened
       /// at the top of the generated parser file)
@@ -141,7 +141,7 @@ module Implementation =
     //-------------------------------------------------------------------------
     // Read the tables written by FSYACC.  
 
-    type AssocTable(elemTab:uint16[], offsetTab:uint16[], initialCacheCapacity:int) =
+    type AssocTable(elemTab:uint16 array, offsetTab:uint16 array, initialCacheCapacity:int) =
         // Cache capacity is configurable (issue #54): two AssocTables are constructed per Interpret
         // call, so the historical fixed 2000-capacity dominated allocation for parsers run over many
         // small inputs. The capacity is supplied by the caller (Tables.Interpret), defaulting to
@@ -194,7 +194,7 @@ module Implementation =
             [ for i in firstElemNumber .. (firstElemNumber+numberOfElementsInAssoc-1) -> 
                 (int elemTab.[i*2], int elemTab.[i*2+1]) ], defaultValueOfAssoc
 
-    type IdxToIdxListTable(elemTab:uint16[], offsetTab:uint16[]) =
+    type IdxToIdxListTable(elemTab:uint16 array, offsetTab:uint16 array) =
 
         // Read all entries in a row of the table
         member _.ReadAll(n) =       
@@ -253,10 +253,10 @@ module Implementation =
         let mutable eofCountDown = 20 // Number of EOFs to supply at the end for error recovery
 
         // The 100 here means a maximum of 100 elements for each rule
-        let ruleStartPoss = (Array.zeroCreate 100 : Position[])              
-        let ruleEndPoss   = (Array.zeroCreate 100 : Position[])              
-        let ruleValues    = (Array.zeroCreate 100 : obj[])              
-        let lhsPos        = (Array.zeroCreate 2 : Position[])                                            
+        let ruleStartPoss = (Array.zeroCreate 100 : Position array)              
+        let ruleEndPoss   = (Array.zeroCreate 100 : Position array)              
+        let ruleValues    = (Array.zeroCreate 100 : obj array)              
+        let lhsPos        = (Array.zeroCreate 2 : Position array)                                            
 
         let reductions = tables.reductions
         let actionTable = AssocTable(tables.actionTableElements, tables.actionTableRowOffsets, assocCacheInitialCapacity)

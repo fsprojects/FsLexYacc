@@ -99,7 +99,7 @@ let main () =
         | None -> new NullLogger() :> Logger
 
     let compiledSpec = compileSpec spec logger
-    printfn "        building tables"
+    stdout.WriteLine "        building tables"
     printfn "        %d states" compiledSpec.states.Length
     printfn "        %d nonterminals" compiledSpec.gotoTable.[0].Length
     printfn "        %d terminals" compiledSpec.actionTable.[0].Length

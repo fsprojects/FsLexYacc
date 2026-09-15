@@ -11,10 +11,15 @@ let main argv =
         let res = Parser.start Lexer.read lexbuf
         res
 
+    let printParsed (result: JsonValue option) =
+        match result with
+        | Some value -> printfn "%s" (JsonValue.print value)
+        | None -> failwith "expected a parse result"
+
     //a few parsing tests with simple and complex json
     let simpleJson = "{\"f\" : 1}"
     let parseResult = simpleJson |> parse 
-    printfn "%s" (JsonValue.print parseResult.Value)
+    printParsed parseResult
 
 
     let simpleJson2 = @"{
@@ -25,7 +30,7 @@ let main argv =
               ]
             }"
     let parseResult2 = simpleJson2 |> parse 
-    printfn "%s" (JsonValue.print parseResult2.Value)
+    printParsed parseResult2
 
     let complexJson = System.IO.File.ReadAllText "randomComplexTestsJson.json"
     complexJson |> parse |> ignore
@@ -64,7 +69,7 @@ let main argv =
     try
         let simpleJson = "{\"f\"\n" + "\n" + ";"
         let parseResult = simpleJson |> parse 
-        printfn "%s" (JsonValue.print parseResult.Value)
+        printParsed parseResult
     with 
         | e ->  printfn "Error is expected here: \n %s" (e.Message)
 

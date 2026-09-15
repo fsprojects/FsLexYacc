@@ -70,15 +70,16 @@ let EncodeUnicodeCategory s : Parser<uint32> =
         else
             failwithf "invalid Unicode category: '%s'" s
 
-let TryDecodeUnicodeCategory (x: Alphabet) : UnicodeCategory option =
+let TryDecodeUnicodeCategory (x: Alphabet) : UnicodeCategory voption =
     let maybeUnicodeCategory =
         x - encodedUnicodeCategoryBase |> int32 |> enum<UnicodeCategory>
 
     if UnicodeCategory.IsDefined(typeof<UnicodeCategory>, maybeUnicodeCategory) then
-        Some maybeUnicodeCategory
+        ValueSome maybeUnicodeCategory
     else
-        None
+        ValueNone
 
+[<return: Struct>]
 let (|UnicodeCategoryAP|_|) (x: Alphabet) = TryDecodeUnicodeCategory x
 
 let IsUnicodeCategory (x: Alphabet) =
@@ -249,7 +250,7 @@ type NfaNodeMap() =
         let node: NfaNode =
             {
                 Id = nodeId
-                Name = string nodeId
+                Name = string<int> nodeId
                 Transitions = trDict
                 Accepted = ac
             }
@@ -282,7 +283,7 @@ let LexerStateToNfa ctx (macros: Map<string, _>) (clauses: Clause list) =
                         UnicodeCategory.TitlecaseLetter
                     ]
 
-                let isCasedLetterCategory = allCasedCategories |> Seq.contains uc
+                let isCasedLetterCategory = allCasedCategories |> List.contains uc
 
                 if isCasedLetterCategory then
                     let trs =
@@ -446,7 +447,7 @@ let NfaToDfa (nfaNodeMap: NfaNodeMap) nfaStartNode =
                     //printfn "n.Id = %A, #Epsilon = %d" n.Id tr.Length
                     tr |> List.iter (EClosure1 acc)
 
-    let EClosure (moves: list<NodeId>) =
+    let EClosure (moves: NodeId list) =
         let acc = NfaNodeIdSetBuilder(HashIdentity.Structural)
 
         for i in moves do

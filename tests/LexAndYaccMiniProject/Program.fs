@@ -25,7 +25,7 @@ let testFile = Path.Combine(__SOURCE_DIRECTORY__, "test.txt")
 File.WriteAllText(testFile, "hello hello")
 testLexerAndParserFromFile testFile 2
 
-printfn "Press any key to continue..."
+stdout.WriteLine "Press any key to continue..."
 System.Console.ReadLine() |> ignore
 
 

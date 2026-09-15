@@ -6,6 +6,7 @@ open System.IO
 open FSharp.Text.Lexing
 open System.Collections.Generic
 
+[<Struct>]
 type Domain =
     | Unicode
     | ASCII
@@ -24,8 +25,8 @@ type GeneratorState =
         domain: Domain
     }
 
-type PerRuleData = list<DfaNode * seq<Code>>
-type DfaNodes = list<DfaNode>
+type PerRuleData = (DfaNode * Code seq) list
+type DfaNodes = DfaNode list
 
 type Writer(outputFileName, outputFileInterface) =
     let os = File.CreateText outputFileName :> TextWriter

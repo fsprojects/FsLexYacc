@@ -25,11 +25,11 @@ let tests =
             }
 
             testProperty "TryDecodeUnicodeCategory should decode all valid EncodeUnicodeCategoryIndex outputs" <| fun (a:UnicodeCategory) ->
-                a |> int |> AST.EncodeUnicodeCategoryIndex |> AST.TryDecodeUnicodeCategory = Some a
+                a |> int |> AST.EncodeUnicodeCategoryIndex |> AST.TryDecodeUnicodeCategory = ValueSome a
         
 
-            testProperty "TryDecodeUnicodeCategory should return None for all EncodeChar outputs" <| fun (c:FsCheck.UnicodeChar) ->
+            testProperty "TryDecodeUnicodeCategory should return ValueNone for all EncodeChar outputs" <| fun (c:FsCheck.UnicodeChar) ->
                 let encodedChar = AST.EncodeChar (c.Get) {unicode=true; caseInsensitive=false}
-                encodedChar |> AST.TryDecodeUnicodeCategory = None
+                encodedChar |> AST.TryDecodeUnicodeCategory = ValueNone
         ]
     ]

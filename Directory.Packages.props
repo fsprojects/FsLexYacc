@@ -4,12 +4,12 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- The lowest FSharp.Core published for .NET 10, and the floor our packages ask for. -->
-    <PackageVersion Include="FSharp.Core" Version="10.0.100" />
+    <PackageVersion Include="FSharp.Core" Version="10.1.401" />
     <!--
       Bootstrap only: the published tools generate the lexer and the parser that the tools in
       this repository are themselves built from. Never a dependency of what we ship.
     -->
-    <PackageVersion Include="FsLexYacc" Version="10.2.0" />
+    <PackageVersion Include="FsLexYacc" Version="12.1.2" />
     <PackageVersion Include="Ionide.KeepAChangelog.Tasks" Version="0.3.3" />
   </ItemGroup>
   <ItemGroup Label="Analyzers">
@@ -17,11 +17,11 @@
     <PackageVersion Include="Ionide.Analyzers" Version="0.19.0" />
   </ItemGroup>
   <ItemGroup Label="Tests">
-    <PackageVersion Include="Expecto" Version="9.0.4" />
-    <PackageVersion Include="Expecto.FsCheck" Version="9.0.4" />
+    <PackageVersion Include="Expecto" Version="11.1.0" />
+    <PackageVersion Include="Expecto.FsCheck" Version="11.1.0" />
     <!-- Expecto.FsCheck asks for 2.14.3, which has no FsCheck.UnicodeChar. UnicodeTests.fs needs it. -->
-    <PackageVersion Include="FsCheck" Version="2.16.5" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
-    <PackageVersion Include="YoloDev.Expecto.TestSdk" Version="0.13.3" />
+    <PackageVersion Include="FsCheck" Version="3.4.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
+    <PackageVersion Include="YoloDev.Expecto.TestSdk" Version="0.16.1" />
   </ItemGroup>
 </Project>

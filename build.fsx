@@ -1,6 +1,6 @@
-#!/usr/bin/env -S dotnet fsi
+#!/usr/bin/env -S dotnet fsi --
 
-#r "nuget: Fun.Build, 1.1.17"
+#r "nuget: Fun.Build, 1.2.0"
 
 open System
 open System.IO
@@ -221,7 +221,7 @@ let pack =
                 "dotnet"
                 [
                     "pack"
-                    "FsLexYacc.sln"
+                    "FsLexYacc.slnx"
                     "-c"
                     "Release"
                     "-o"
@@ -255,8 +255,17 @@ let pack =
 // Pipelines
 // --------------------------------------------------------------------------------------
 
+/// Local tools first, because paket is one of them, then the paket restore that writes the
+/// Paket.Restore.targets every project imports.
+let restore =
+    stage "Restore" {
+        run "dotnet tool restore"
+        run "dotnet paket restore"
+    }
+
 pipeline "Build" {
     workingDir root
+    restore
     stage "Clean" { run (cleanDirs [ "bin"; "temp" ]) }
     stage "CheckFormat" { run "dotnet fantomas check ." }
     stage "AssemblyInfo" { run generateAssemblyInfo }
@@ -269,6 +278,7 @@ pipeline "Build" {
 
 pipeline "Release" {
     workingDir root
+    restore
     stage "Clean" { run (cleanDirs [ "bin"; "temp" ]) }
     stage "CheckFormat" { run "dotnet fantomas check ." }
     stage "AssemblyInfo" { run generateAssemblyInfo }
@@ -282,6 +292,7 @@ pipeline "Release" {
 
 pipeline "Docs" {
     workingDir root
+    restore
     stage "CleanDocs" { run (cleanDirs [ "output"; ".fsdocs" ]) }
     stage "AssemblyInfo" { run generateAssemblyInfo }
     stage "BuildTools" { run buildTools }

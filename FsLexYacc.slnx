@@ -1,0 +1,28 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="Mixed Platforms" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/docs/" />
+  <Folder Name="/project/">
+    <File Path="build.fsx" />
+    <File Path="nuget/FsLexYacc.template" />
+    <File Path="README.md" />
+    <File Path="RELEASE_NOTES.md" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/FsLex.Core/FsLex.Core.fsproj" />
+    <Project Path="src/FsLex/fslex.fsproj" />
+    <Project Path="src/FsLexYacc.Runtime/FsLexYacc.Runtime.fsproj" />
+    <Project Path="src/FsYacc.Core/FsYacc.Core.fsproj" />
+    <Project Path="src/FsYacc/fsyacc.fsproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <File Path="tests/fsyacc/OldFsYaccTests.fsx" />
+    <Project Path="tests/FsLex.Core.Tests/FsLex.Core.Tests.fsproj" />
+    <Project Path="tests/FsYacc.Core.Tests/FsYacc.Core.Tests.fsproj" />
+    <Project Path="tests/JsonLexAndYaccExample/JsonLexAndYaccExample.fsproj" />
+    <Project Path="tests/LexAndYaccMiniProject/LexAndYaccMiniProject.fsproj" />
+  </Folder>
+</Solution>

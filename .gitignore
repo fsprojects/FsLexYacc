@@ -192,8 +192,19 @@ src/FsLex/fslexpars.fsi
 src/FsYacc/fsyacclex.fs
 src/FsYacc/fsyaccpars.fs
 src/FsYacc/fsyaccpars.fsi
+src/FsLex.Core/fslexlex.fs
 src/FsLex.Core/fslexlex.fsi
+src/FsLex.Core/fslexpars.fs
+src/FsLex.Core/fslexpars.fsi
+src/FsYacc.Core/fsyacclex.fs
 src/FsYacc.Core/fsyacclex.fsi
+src/FsYacc.Core/fsyaccpars.fs
+src/FsYacc.Core/fsyaccpars.fsi
+
+# ===================================================
+# Exclude generated AssemblyInfo files, written by the AssemblyInfo stage in build.fsx
+# ===================================================
+src/**/AssemblyInfo.fs
 tests/fsyacc/test1-unicode.exe.config
 tests/fsyacc/test1.exe.config
 tests/fsyacc/test1.input1.bsl.err

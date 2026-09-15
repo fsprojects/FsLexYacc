@@ -65,6 +65,12 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 			<Visible>false</Visible>
 		</AvailableItemName>
 	</ItemGroup>
+
+	<!-- Register .fsl/.fsy files as build inputs for IDE fast up-to-date checks -->
+	<ItemGroup>
+		<UpToDateCheckInput Include="@(FsLex)" />
+		<UpToDateCheckInput Include="@(FsYacc)" />
+	</ItemGroup>
 </Project>
 
 

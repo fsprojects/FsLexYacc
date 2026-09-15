@@ -22,19 +22,26 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v7
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - name: Setup .NET for main project build
-      uses: actions/setup-dotnet@v6
+      uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
     - name: Install local tools
       run: dotnet tool restore
     - name: Paket restore
       run: dotnet paket restore
+    # Trusted publishing: exchange the workflow's OIDC token for a short-lived NuGet API key,
+    # so no long-lived key has to be stored in the repository.
+    - name: Obtain NuGet key
+      uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
+      id: nuget-login
+      with:
+        user: ${{ secrets.NUGET_USER }}
     # Builds, tests, packs, and then publishes: the packages go to NuGet and a GitHub release is
     # created for the version at the top of CHANGELOG.md, unless that release already exists.
     - name: Build and release
       run: dotnet fsi build.fsx -p Release
       env:
-        NUGET_KEY: ${{ secrets.NUGET_KEY }}
+        NUGET_KEY: ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     # A baseline on the default branch, so code scanning can tell a pull request's new findings
     # from the ones it inherited.
@@ -42,13 +49,13 @@ jobs:
       run: dotnet fsi build.fsx -p Analyze
       continue-on-error: true
     - name: Upload SARIF file
-      uses: github/codeql-action/upload-sarif@v4
+      uses: github/codeql-action/upload-sarif@b96794f015dfd88f77b49b1c93e0fa7110f94c63 # v4.38.0
       with:
         sarif_file: ./analysis.sarif
     - name: Build documentation
       run: dotnet fsi build.fsx -p Docs
     - name: Upload documentation
-      uses: actions/upload-pages-artifact@v5
+      uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
       with:
         path: ./output
 
@@ -58,4 +65,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

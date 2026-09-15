@@ -45,7 +45,7 @@ let release: Release =
         | (version: SemanticVersion, _date, data) :: _ ->
             let notes =
                 match data with
-                | None -> failwith $"The {version} entry of CHANGELOG.md has no sections."
+                | None -> failwith $"The %O{version} entry of CHANGELOG.md has no sections."
                 | Some data ->
                     [
                         "Added", data.Added
@@ -64,7 +64,7 @@ let release: Release =
                     |> String.concat "\n\n"
 
             {
-                Version = string version
+                Version = string<SemanticVersion> version
                 IsPrerelease = not (String.IsNullOrEmpty version.Prerelease)
                 Notes = notes
             }

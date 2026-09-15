@@ -1,5 +1,9 @@
 <Project>
  <PropertyGroup>
+    <!-- Version and package release notes come from the changelog, see Ionide.KeepAChangelog.Tasks. -->
+    <ChangelogFile>$(MSBuildThisFileDirectory)../CHANGELOG.md</ChangelogFile>
+    <Product>FsLexYacc</Product>
+    <Description>FsLex/FsYacc lexer/parser generation tools</Description>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsPackable>true</IsPackable>
     <Authors>Microsoft Corporation, Don Syme, F# Software Foundation contributors</Authors>
@@ -13,9 +17,18 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.xml</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <FsDocsLicenseLink>https://github.com/fsprojects/fslexYacc/blob/master/LICENSE.txt</FsDocsLicenseLink>
-    <FsDocsReleaseNotesLink>https://github.com/fsprojects/FsLexYacc/blob/master/RELEASE_NOTES.md</FsDocsReleaseNotesLink>
+    <FsDocsReleaseNotesLink>https://github.com/fsprojects/FsLexYacc/blob/master/CHANGELOG.md</FsDocsReleaseNotesLink>
     <RepositoryUrl>https://github.com/fsprojects/FsLexYacc/</RepositoryUrl>
     <FsDocsLogoSource>img/logo.png</FsDocsLogoSource>
     <FsDocsFaviconSource>img/favicon.ico</FsDocsFaviconSource>
  </PropertyGroup>
+ <ItemGroup>
+    <!--
+      Sets Version, PackageVersion and PackageReleaseNotes from the ChangelogFile above.
+      Referenced here rather than through paket: paket has no setting for PrivateAssets and its
+      fix-nuspecs step lists every paket reference as a package dependency, which would make
+      every consumer depend on this build-only task.
+    -->
+    <PackageReference Include="Ionide.KeepAChangelog.Tasks" Version="0.3.3" PrivateAssets="all" />
+ </ItemGroup>
 </Project>

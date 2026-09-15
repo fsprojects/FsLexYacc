@@ -5,8 +5,9 @@ on:
     branches:
     - master
 
+# contents: write, so the build can create the GitHub release.
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
   security-events: write
@@ -28,10 +29,13 @@ jobs:
       run: dotnet tool restore
     - name: Paket restore
       run: dotnet paket restore
-    - name: Build
+    # Builds, tests, packs, and then publishes: the packages go to NuGet and a GitHub release is
+    # created for the version at the top of CHANGELOG.md, unless that release already exists.
+    - name: Build and release
       run: dotnet fsi build.fsx -p Release
-    - name: Publish NuGets (if main version changed)
-      run: dotnet nuget push "bin/*.nupkg" -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_KEY }} --skip-duplicate
+      env:
+        NUGET_KEY: ${{ secrets.NUGET_KEY }}
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     # A baseline on the default branch, so code scanning can tell a pull request's new findings
     # from the ones it inherited.
     - name: Analyze

@@ -9,6 +9,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  security-events: write
 
 jobs:
   build:
@@ -31,6 +32,15 @@ jobs:
       run: dotnet fsi build.fsx -p Release
     - name: Publish NuGets (if main version changed)
       run: dotnet nuget push "bin/*.nupkg" -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_KEY }} --skip-duplicate
+    # A baseline on the default branch, so code scanning can tell a pull request's new findings
+    # from the ones it inherited.
+    - name: Analyze
+      run: dotnet fsi build.fsx -p Analyze
+      continue-on-error: true
+    - name: Upload SARIF file
+      uses: github/codeql-action/upload-sarif@v4
+      with:
+        sarif_file: ./analysis.sarif
     - name: Build documentation
       run: dotnet fsi build.fsx -p Docs
     - name: Upload documentation

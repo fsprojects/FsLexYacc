@@ -252,6 +252,79 @@ let pack =
     }
 
 // --------------------------------------------------------------------------------------
+// Analyzers
+// --------------------------------------------------------------------------------------
+
+/// Every project in the solution. Reading the solution rather than globbing keeps the fixtures
+/// under tests/fsyacc out, which are inputs to OldFsYaccTests.fsx rather than code of their own.
+let projectsToAnalyze: string list =
+    File.ReadAllLines(root </> "FsLexYacc.slnx")
+    |> Array.choose (fun line ->
+        let m = Text.RegularExpressions.Regex.Match(line, "<Project Path=\"([^\"]+)\"")
+        if m.Success then Some m.Groups.[1].Value else None)
+    |> Array.toList
+
+/// The scripts the analyzers run over: the only F# in this repository no project compiles.
+let scriptsToAnalyze: string list =
+    [ "build.fsx"; "tests/fsyacc/OldFsYaccTests.fsx" ]
+
+/// Restored by paket into the Analyzers group, see paket.dependencies.
+let analyzerPaths: string list =
+    [ "Ionide.Analyzers"; "G-Research.FSharp.Analyzers" ]
+    |> List.map (fun package ->
+        root
+        </> "packages"
+        </> "analyzers"
+        </> package
+        </> "analyzers"
+        </> "dotnet"
+        </> "fs")
+
+let analysisReport = root </> "analysis.sarif"
+
+/// One run over every project and script, so a single SARIF covers the repository.
+///
+/// The tool only exits non-zero for error-severity findings, so a run full of warnings still
+/// passes; the findings are read from the report, or from the Code Scanning tab in CI.
+let analyze =
+    async {
+        let! _ = deleteFiles [ "analysis.sarif" ]
+
+        return!
+            exec
+                "dotnet"
+                [
+                    "fsharp-analyzers"
+                    for path in analyzerPaths do
+                        "--analyzers-path"
+                        path
+                    for project in projectsToAnalyze do
+                        "--project"
+                        root </> project
+                    for script in scriptsToAnalyze do
+                        "--script"
+                        root </> script
+                    // Not ours to fix: what fslex and fsyacc generate, what this script generates,
+                    // the test SDK entry point, and the scripts NuGet writes per `#r "nuget: ..."`.
+                    "--exclude-files"
+                    // Globs, because the tool matches these against absolute paths.
+                    for generated in generatedSources @ generatedTestSources do
+                        "**/" + Path.GetFileName generated
+                    "**/AssemblyInfo.fs"
+                    "**/Microsoft.NET.Test.Sdk.Program.fs"
+                    "**/.packagemanagement/**"
+                    "--configuration"
+                    "Release"
+                    // With a trailing separator, or the tool reads the last segment as a file name
+                    // and reports every path as "FsLexYacc/...", which GitHub cannot link.
+                    "--code-root"
+                    root + string Path.DirectorySeparatorChar
+                    "--report"
+                    analysisReport
+                ]
+    }
+
+// --------------------------------------------------------------------------------------
 // Pipelines
 // --------------------------------------------------------------------------------------
 
@@ -298,6 +371,18 @@ pipeline "Docs" {
     stage "BuildTools" { run buildTools }
     stage "BuildLibraries" { run buildLibraries }
     stage "GenerateDocs" { run "dotnet fsdocs build --eval" }
+    runIfOnlySpecified true
+}
+
+// The generated sources have to exist before a project can be type checked, so the tools and
+// libraries are built first, the same way the Build pipeline does.
+pipeline "Analyze" {
+    workingDir root
+    restore
+    stage "AssemblyInfo" { run generateAssemblyInfo }
+    stage "BuildTools" { run buildTools }
+    stage "BuildLibraries" { run buildLibraries }
+    stage "Analyze" { run analyze }
     runIfOnlySpecified true
 }
 

@@ -22,5 +22,12 @@
     <ProjectReference Include="..\FsLexYacc.Runtime\FsLexYacc.Runtime.fsproj" />
   </ItemGroup>
 
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <ItemGroup>
+    <!--
+      The released tools, which turn this project's .fsl and .fsy into F#. Build-time only:
+      PrivateAssets keeps it out of this package's dependencies.
+    -->
+    <PackageReference Include="FsLexYacc" PrivateAssets="all" />
+  </ItemGroup>
+
 </Project>

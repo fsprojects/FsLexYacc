@@ -1,4 +1,5 @@
 <Project>
+ <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
  <PropertyGroup>
     <!-- Version and package release notes come from the changelog, see Ionide.KeepAChangelog.Tasks. -->
     <ChangelogFile>$(MSBuildThisFileDirectory)../CHANGELOG.md</ChangelogFile>
@@ -23,12 +24,7 @@
     <FsDocsFaviconSource>img/favicon.ico</FsDocsFaviconSource>
  </PropertyGroup>
  <ItemGroup>
-    <!--
-      Sets Version, PackageVersion and PackageReleaseNotes from the ChangelogFile above.
-      Referenced here rather than through paket: paket has no setting for PrivateAssets and its
-      fix-nuspecs step lists every paket reference as a package dependency, which would make
-      every consumer depend on this build-only task.
-    -->
-    <PackageReference Include="Ionide.KeepAChangelog.Tasks" Version="0.3.3" PrivateAssets="all" />
+    <!-- Sets Version, PackageVersion and PackageReleaseNotes from the ChangelogFile above. -->
+    <PackageReference Include="Ionide.KeepAChangelog.Tasks" PrivateAssets="all" />
  </ItemGroup>
 </Project>

@@ -1,7 +1,6 @@
 version: 2
 updates:
-  # Reaches .config/dotnet-tools.json and global.json only. The packages in paket.dependencies
-  # are not covered: Dependabot has no Paket support, so those are still bumped by hand.
+  # Reaches Directory.Packages.props, .config/dotnet-tools.json and global.json.
   - package-ecosystem: "nuget"
     directory: "/"
     schedule:

@@ -1,0 +1,21 @@
+<Project>
+  <PropertyGroup>
+    <!--
+      FSharp.Core is referenced explicitly below, so its version sits in Directory.Packages.props
+      next to every other package instead of being whatever the SDK happens to bundle.
+    -->
+    <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="FSharp.Core" />
+  </ItemGroup>
+  <ItemGroup Label="Analyzers">
+    <!--
+      Nothing compiles against these; they are here so that a restore puts them on disk and
+      MSBuild knows where. The Analyze pipeline in build.fsx reads $(PkgIonide_Analyzers) and
+      $(PkgG-Research_FSharp_Analyzers) back out, which keeps the version in one place.
+    -->
+    <PackageReference Include="G-Research.FSharp.Analyzers" GeneratePathProperty="true" PrivateAssets="all" IncludeAssets="analyzers" />
+    <PackageReference Include="Ionide.Analyzers" GeneratePathProperty="true" PrivateAssets="all" IncludeAssets="analyzers" />
+  </ItemGroup>
+</Project>

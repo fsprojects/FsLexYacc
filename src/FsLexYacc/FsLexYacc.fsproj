@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The FsLexYacc meta-package: the fslex and fsyacc tools, the MSBuild targets that call them,
+  and the sources the .fsx entry points load. It has no sources and ships no assembly of its
+  own; everything it contains is picked up from elsewhere in the repository. Pack it only once
+  `dotnet publish` has written the tool output below, which is what the NuGet stage of build.fsx
+  takes care of.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>FsLexYacc</PackageId>
+    <Description>Tools for FsLex/FsYacc lexer/parser generation tools</Description>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <!-- NU5128: a dependency group for netstandard2.0 without a lib folder to match. By design. -->
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+    <ToolsFramework>net10.0</ToolsFramework>
+  </PropertyGroup>
+
+  <ItemGroup Label="Package contents">
+    <None Include="../FsLex/bin/Release/$(ToolsFramework)/publish/**" Pack="true" PackagePath="build/fslex/$(ToolsFramework)/" />
+    <None Include="../FsYacc/bin/Release/$(ToolsFramework)/publish/**" Pack="true" PackagePath="build/fsyacc/$(ToolsFramework)/" />
+    <!-- build/FsLexYacc.targets is what NuGet imports into a consuming project. -->
+    <None Include="../FsLexYacc.Build.Tasks/FsLexYacc.targets" Pack="true" PackagePath="build/;src/" />
+    <None Include="../../docs/img/logo.png" Pack="true" PackagePath="logo.png" />
+  </ItemGroup>
+
+  <!-- The sources fslex.fsx and fsyacc.fsx load, for running either tool straight from a script. -->
+  <ItemGroup Label="Script sources">
+    <None Include="../FsLexYacc.Runtime/Lexing.fsi" Pack="true" PackagePath="src/fslex/;src/fsyacc/" />
+    <None Include="../FsLexYacc.Runtime/Lexing.fs" Pack="true" PackagePath="src/fslex/;src/fsyacc/" />
+    <None Include="../FsLexYacc.Runtime/Parsing.fsi" Pack="true" PackagePath="src/fslex/;src/fsyacc/" />
+    <None Include="../FsLexYacc.Runtime/Parsing.fs" Pack="true" PackagePath="src/fslex/;src/fsyacc/" />
+    <None Include="../Common/Arg.fsi" Pack="true" PackagePath="src/fslex/;src/fsyacc/" />
+    <None Include="../Common/Arg.fs" Pack="true" PackagePath="src/fslex/;src/fsyacc/" />
+    <None Include="../FsLex.Core/fslexast.fs" Pack="true" PackagePath="src/fslex/" />
+    <None Include="../FsLex.Core/fslexpars.fs" Pack="true" PackagePath="src/fslex/" />
+    <None Include="../FsLex.Core/fslexlex.fs" Pack="true" PackagePath="src/fslex/" />
+    <None Include="../FsLex/fslex.fs" Pack="true" PackagePath="src/fslex/" />
+    <None Include="../FsLex/fslex.fsx" Pack="true" PackagePath="src/fslex/" />
+    <None Include="../FsYacc.Core/fsyaccast.fs" Pack="true" PackagePath="src/fsyacc/" />
+    <None Include="../FsYacc.Core/fsyaccpars.fs" Pack="true" PackagePath="src/fsyacc/" />
+    <None Include="../FsYacc.Core/fsyacclex.fs" Pack="true" PackagePath="src/fsyacc/" />
+    <None Include="../FsYacc/fsyacc.fs" Pack="true" PackagePath="src/fsyacc/" />
+    <None Include="../FsYacc/fsyacc.fsx" Pack="true" PackagePath="src/fsyacc/" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Packs as a dependency on FsLexYacc.Runtime of the very version being released. -->
+    <ProjectReference Include="../FsLexYacc.Runtime/FsLexYacc.Runtime.fsproj" />
+  </ItemGroup>
+
+</Project>

@@ -24,8 +24,8 @@ jobs:
       uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
     - name: Install local tools
       run: dotnet tool restore
-    - name: Paket restore
-      run: dotnet paket restore
+    - name: Restore
+      run: dotnet restore
     - name: Build
       run: dotnet fsi build.fsx
 
@@ -38,8 +38,8 @@ jobs:
       uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
     - name: Install local tools
       run: dotnet tool restore
-    - name: Paket restore
-      run: dotnet paket restore
+    - name: Restore
+      run: dotnet restore
     - name: Analyze
       run: dotnet fsi build.fsx -p Analyze
       continue-on-error: true

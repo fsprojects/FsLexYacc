@@ -27,8 +27,8 @@ jobs:
       uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
     - name: Install local tools
       run: dotnet tool restore
-    - name: Paket restore
-      run: dotnet paket restore
+    - name: Restore
+      run: dotnet restore
     # Trusted publishing: exchange the workflow's OIDC token for a short-lived NuGet API key,
     # so no long-lived key has to be stored in the repository.
     - name: Obtain NuGet key

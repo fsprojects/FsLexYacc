@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [12.1.2] - 2026-09-15
+
+### Changed
+* Packages are pushed to NuGet with trusted publishing, so the release workflow no longer needs a long-lived API key. [#251](https://github.com/fsprojects/FsLexYacc/issues/251)
+
 ## [12.1.1] - 2026-09-15
 
 ### Changed

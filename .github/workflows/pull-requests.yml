@@ -19,9 +19,9 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v7
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - name: Setup .NET for main project build
-      uses: actions/setup-dotnet@v6
+      uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
     - name: Install local tools
       run: dotnet tool restore
     - name: Paket restore
@@ -33,9 +33,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v7
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - name: Setup .NET
-      uses: actions/setup-dotnet@v6
+      uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
     - name: Install local tools
       run: dotnet tool restore
     - name: Paket restore
@@ -44,6 +44,6 @@ jobs:
       run: dotnet fsi build.fsx -p Analyze
       continue-on-error: true
     - name: Upload SARIF file
-      uses: github/codeql-action/upload-sarif@v4
+      uses: github/codeql-action/upload-sarif@b96794f015dfd88f77b49b1c93e0fa7110f94c63 # v4.38.0
       with:
         sarif_file: ./analysis.sarif

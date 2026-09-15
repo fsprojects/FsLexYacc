@@ -2,13 +2,6 @@
   "version": 1,
   "isRoot": true,
   "tools": {
-    "paket": {
-      "version": "10.3.1",
-      "commands": [
-        "paket"
-      ],
-      "rollForward": false
-    },
     "fantomas": {
       "version": "8.0.0",
       "commands": [

@@ -33,9 +33,9 @@ type Release =
 /// The newest released entry of CHANGELOG.md.
 ///
 /// The projects read the same file through Ionide.KeepAChangelog.Tasks, which sets their Version
-/// and PackageReleaseNotes. This copy is for the FsLexYacc meta-package, which paket packs from
-/// a template, and for the GitHub release. An `[Unreleased]` section on top is skipped, so
-/// merging work under it changes nothing until it moves under a versioned heading.
+/// and PackageReleaseNotes. This copy is for the GitHub release. An `[Unreleased]` section on
+/// top is skipped, so merging work under it changes nothing until it moves under a versioned
+/// heading.
 let release: Release =
     match Parser.parseChangeLog (FileInfo(root </> "CHANGELOG.md")) with
     | Error error -> failwith $"CHANGELOG.md could not be parsed: %A{error}"
@@ -73,11 +73,8 @@ let release: Release =
 // Helpers
 // --------------------------------------------------------------------------------------
 
-/// Start a process with an explicit argument list rather than a command line.
-///
-/// The meta-package step passes the release notes through as a single argument, and those
-/// contain newlines. Handing them to a shell to be re-split would mangle them, so the arguments
-/// are never joined into a string in the first place.
+/// Start a process with an explicit argument list rather than a command line, so an argument
+/// that contains a space or a newline survives instead of being re-split by a shell.
 let exec (fileName: string) (arguments: string list) =
     async {
         let startInfo =
@@ -89,6 +86,21 @@ let exec (fileName: string) (arguments: string list) =
         use proc = Diagnostics.Process.Start startInfo
         do! proc.WaitForExitAsync() |> Async.AwaitTask
         return proc.ExitCode
+    }
+
+/// `exec`, with standard output captured rather than inherited.
+let execCaptured (fileName: string) (arguments: string list) =
+    async {
+        let startInfo =
+            Diagnostics.ProcessStartInfo(fileName, UseShellExecute = false, WorkingDirectory = root, RedirectStandardOutput = true)
+
+        for argument in arguments do
+            startInfo.ArgumentList.Add argument
+
+        use proc = Diagnostics.Process.Start startInfo
+        let! output = proc.StandardOutput.ReadToEndAsync() |> Async.AwaitTask
+        do! proc.WaitForExitAsync() |> Async.AwaitTask
+        return proc.ExitCode, output
     }
 
 let cleanDirs (dirs: string list) =
@@ -189,22 +201,10 @@ let pack =
         if projectPackages <> 0 then
             return projectPackages
         else
-            // The FsLexYacc meta-package, which is assembled by paket from a template rather
-            // than from a project, because it ships the published tools instead of a library.
-            return!
-                exec
-                    "dotnet"
-                    [
-                        "paket"
-                        "pack"
-                        "--template"
-                        "nuget/FsLexYacc.template"
-                        "--version"
-                        release.Version
-                        "--release-notes"
-                        release.Notes
-                        "bin"
-                    ]
+            // The FsLexYacc meta-package. It stays out of the solution because it ships the
+            // tools BuildTools published rather than a library of its own, so it can only be
+            // packed once that publish output is on disk.
+            return! exec "dotnet" [ "pack"; "src/FsLexYacc/FsLexYacc.fsproj"; "-c"; "Release"; "-o"; "bin" ]
     }
 
 /// Push the packages to NuGet, then create the matching GitHub release.
@@ -285,17 +285,36 @@ let projectsToAnalyze: string list =
 let scriptsToAnalyze: string list =
     [ "build.fsx"; "tests/fsyacc/OldFsYaccTests.fsx" ]
 
-/// Restored by paket into the Analyzers group, see paket.dependencies.
-let analyzerPaths: string list =
-    [ "Ionide.Analyzers"; "G-Research.FSharp.Analyzers" ]
-    |> List.map (fun package ->
-        root
-        </> "packages"
-        </> "analyzers"
-        </> package
-        </> "analyzers"
-        </> "dotnet"
-        </> "fs")
+/// Where NuGet restored the analyzer packages to. MSBuild is asked rather than told, so that
+/// their versions live in Directory.Packages.props alone, see Directory.Build.props.
+let analyzerPaths =
+    async {
+        let! exitCode, output =
+            execCaptured
+                "dotnet"
+                [
+                    "msbuild"
+                    "src/FsLexYacc.Runtime/FsLexYacc.Runtime.fsproj"
+                    "-getProperty:PkgIonide_Analyzers"
+                    "-getProperty:PkgG-Research_FSharp_Analyzers"
+                ]
+
+        if exitCode <> 0 then
+            failwith "MSBuild could not be asked where the analyzer packages are."
+
+        use document = Text.Json.JsonDocument.Parse output
+
+        return
+            [
+                for property in document.RootElement.GetProperty("Properties").EnumerateObject() do
+                    let path = property.Value.GetString()
+
+                    if String.IsNullOrWhiteSpace path then
+                        failwith $"MSBuild has no value for %s{property.Name}. Did the restore stage run?"
+
+                    path </> "analyzers" </> "dotnet" </> "fs"
+            ]
+    }
 
 let analysisReport = root </> "analysis.sarif"
 
@@ -306,6 +325,7 @@ let analysisReport = root </> "analysis.sarif"
 let analyze =
     async {
         let! _ = deleteFiles [ "analysis.sarif" ]
+        let! analyzerPaths = analyzerPaths
 
         return!
             exec
@@ -346,12 +366,10 @@ let analyze =
 // Pipelines
 // --------------------------------------------------------------------------------------
 
-/// Local tools first, because paket is one of them, then the paket restore that writes the
-/// Paket.Restore.targets every project imports.
 let restore =
     stage "Restore" {
         run "dotnet tool restore"
-        run "dotnet paket restore"
+        run "dotnet restore"
     }
 
 pipeline "Build" {

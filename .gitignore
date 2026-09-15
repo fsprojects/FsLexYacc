@@ -173,9 +173,6 @@ temp/
 # Test results produced by build
 TestResults.xml
 
-# Nuget outputs
-nuget/*.nupkg
-
 # FAKE build 
 
 # IDEs
@@ -212,7 +209,6 @@ tests/fsyacc/Test1/test1.fsi
 tests/fsyacc/Test1/test1lex.fs
 tests/fsyacc/Test1/test1lex.fsi
 
-.paket
 .idea/
 .vs/
 .ionide/

@@ -20,5 +20,4 @@
     <ProjectReference Include="..\FsLex.Core\FsLex.Core.fsproj" />
     <ProjectReference Include="..\FsLexYacc.Runtime\FsLexYacc.Runtime.fsproj" />
   </ItemGroup>
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

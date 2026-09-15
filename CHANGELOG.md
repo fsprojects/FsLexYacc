@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### Changed
+* Lower the required `FSharp.Core` from `10.1.400` to `10.0.100`. [#253](https://github.com/fsprojects/FsLexYacc/pull/253)
+
+### Fixed
+* `FsLex.Core` and `FsYacc.Core` declare their dependency on `FsLexYacc.Runtime`, which was missing from both packages. [#253](https://github.com/fsprojects/FsLexYacc/pull/253)
+
 ## [12.1.2] - 2026-09-15
 
 ### Changed

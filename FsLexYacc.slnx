@@ -7,9 +7,11 @@
   <Folder Name="/docs/" />
   <Folder Name="/project/">
     <File Path="build.fsx" />
-    <File Path="nuget/FsLexYacc.template" />
+    <File Path="CHANGELOG.md" />
+    <File Path="Directory.Packages.props" />
     <File Path="README.md" />
-    <File Path="RELEASE_NOTES.md" />
+    <!-- Packed on its own by build.fsx, after the tools it ships have been published. -->
+    <File Path="src/FsLexYacc/FsLexYacc.fsproj" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/FsLex.Core/FsLex.Core.fsproj" />

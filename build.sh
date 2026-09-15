@@ -4,6 +4,5 @@ then
   cmd /C build.cmd
 else
   dotnet tool restore
-  dotnet paket restore
   dotnet fsi build.fsx $@
 fi

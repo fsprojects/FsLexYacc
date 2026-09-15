@@ -212,6 +212,25 @@ let buildLibraries =
 // Packaging
 // --------------------------------------------------------------------------------------
 
+/// Escape a value for a `/p:Name=value` switch.
+///
+/// MSBuild reads a newline, `;` or `,` in a property value as the start of the next switch, and
+/// treats `$`, `%` and friends as its own syntax. Each becomes its `%XX` escape, which MSBuild
+/// unescapes again when it reads the property, so the release notes arrive as written.
+let msbuildEscape (value: string) =
+    let special =
+        Collections.Generic.HashSet [ '%'; '$'; '@'; '\''; ';'; ','; '?'; '*'; '('; ')'; '\r'; '\n' ]
+
+    let escaped = Text.StringBuilder()
+
+    for c in value do
+        if special.Contains c then
+            escaped.Append('%').Append((int c).ToString "X2") |> ignore
+        else
+            escaped.Append c |> ignore
+
+    escaped.ToString()
+
 let pack =
     async {
         let releaseNotes = String.concat Environment.NewLine release.Notes
@@ -227,7 +246,7 @@ let pack =
                     "Release"
                     "-o"
                     "bin"
-                    $"/p:PackageReleaseNotes=%s{releaseNotes}"
+                    $"/p:PackageReleaseNotes=%s{msbuildEscape releaseNotes}"
                     $"/p:PackageVersion=%s{release.NugetVersion}"
                 ]
 

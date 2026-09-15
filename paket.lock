@@ -37,3 +37,10 @@ NUGET
       Expecto (>= 9.0 < 10.0) - restriction: || (== net10.0) (&& (== netstandard2.0) (>= netcoreapp3.1))
       FSharp.Core (>= 4.6.2) - restriction: || (== net10.0) (&& (== netstandard2.0) (>= netcoreapp3.1))
       System.Collections.Immutable (>= 6.0) - restriction: || (== net10.0) (&& (== netstandard2.0) (>= netcoreapp3.1))
+
+GROUP Analyzers
+STORAGE: PACKAGES
+NUGET
+  remote: https://api.nuget.org/v3/index.json
+    G-Research.FSharp.Analyzers (0.25)
+    Ionide.Analyzers (0.19)

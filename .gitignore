@@ -233,3 +233,6 @@ tests/fsyacc/repro_#141/Lexer_fail_option_i.fs
 tests/fsyacc/repro_#141/Lexer_fail_option_i.fsi
 tests/fsyacc/repro1885/repro1885.fs
 tests/fsyacc/repro1885/repro1885.fsi
+
+# Written by the Analyze pipeline in build.fsx
+analysis.sarif

@@ -73,31 +73,31 @@ type Tables<'tok> =
         dataOfToken: 'tok -> obj
 
         /// The sparse action table elements
-        actionTableElements: uint16[]
+        actionTableElements: uint16 array
 
         /// The sparse action table row offsets
-        actionTableRowOffsets: uint16[]
+        actionTableRowOffsets: uint16 array
 
         /// The number of symbols for each reduction
-        reductionSymbolCounts: uint16[]
+        reductionSymbolCounts: uint16 array
 
         /// The immediate action table
-        immediateActions: uint16[]
+        immediateActions: uint16 array
 
         /// The sparse goto table
-        gotos: uint16[]
+        gotos: uint16 array
 
         /// The sparse goto table row offsets
-        sparseGotoTableRowOffsets: uint16[]
+        sparseGotoTableRowOffsets: uint16 array
 
         /// The sparse table for the productions active for each state
-        stateToProdIdxsTableElements: uint16[]
+        stateToProdIdxsTableElements: uint16 array
 
         /// The sparse table offsets for the productions active for each state
-        stateToProdIdxsTableRowOffsets: uint16[]
+        stateToProdIdxsTableRowOffsets: uint16 array
 
         /// This table is logically part of the Goto table
-        productionToNonTerminalTable: uint16[]
+        productionToNonTerminalTable: uint16 array
 
         /// This function is used to hold the user specified "parse_error" or "parse_error_rich" functions
         parseError: ParseErrorContext<'tok> -> unit

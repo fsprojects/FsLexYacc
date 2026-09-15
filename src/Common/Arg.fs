@@ -79,7 +79,7 @@ type ArgParser() =
         pendline "display this list of options"
         sbuf.ToString()
 
-    static member ParsePartial(cursor: ref<int>, argv, arguments: seq<ArgInfo>, ?otherArgs, ?usageText) =
+    static member ParsePartial(cursor: int ref, argv, arguments: ArgInfo seq, ?otherArgs, ?usageText) =
         let other = defaultArg otherArgs (fun _ -> ())
         let usageText = defaultArg usageText ""
         let nargs = Array.length argv

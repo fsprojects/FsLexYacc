@@ -17,7 +17,7 @@ let chop_extension (s: string) =
 
     Path.Combine(Path.GetDirectoryName s, Path.GetFileNameWithoutExtension(s))
 
-let checkSuffix (x: string) (y: string) = x.EndsWith(y)
+let checkSuffix (x: string) (y: string) = x.EndsWith(y, StringComparison.Ordinal)
 
 let readSpecFromFile fileName codePage =
     let stream, reader, lexbuf = UnicodeFileAsLexbuf(fileName, codePage)
@@ -37,7 +37,7 @@ let printTokens filename codePage =
 
     try
         while true do
-            printf "tokenize - getting one token"
+            stdout.Write "tokenize - getting one token"
             let t = Lexer.token lexbuf in
             printf "tokenize - got %s" (Parser.token_to_string t)
 
@@ -157,10 +157,10 @@ let actionCoding =
     let acceptFlag = 0xc000
 
     function
-    | Accept -> acceptFlag
-    | Shift n -> shiftFlag ||| n
-    | Reduce n -> reduceFlag ||| n
-    | Error -> errorFlag
+    | Action.Accept -> acceptFlag
+    | Action.Shift n -> shiftFlag ||| n
+    | Action.Reduce n -> reduceFlag ||| n
+    | Action.Error -> errorFlag
 
 type GeneratorState =
     {
@@ -379,10 +379,10 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
              // box null does the right thing regardless of NRT and gets optimized to a single ldnull.
              | None -> "Microsoft.FSharp.Core.Operators.box null")
 
-    for key, _ in spec.Types |> Seq.countBy fst |> Seq.filter (fun (_, n) -> n > 1) do
+    for key, _ in spec.Types |> List.countBy fst |> List.filter (fun (_, n) -> n > 1) do
         failwithf "%s is given multiple %%type declarations" key
 
-    for key, _ in spec.Tokens |> Seq.countBy fst |> Seq.filter (fun (_, n) -> n > 1) do
+    for key, _ in spec.Tokens |> List.countBy fst |> List.filter (fun (_, n) -> n > 1) do
         failwithf "%s is given %%token declarations" key
 
     let types = Map.ofList spec.Types
@@ -488,7 +488,7 @@ let writeSpecToFile (generatorState: GeneratorState) (spec: ParserSpec) (compile
                  countPerAction.[action] <- 1
 
          let mostCommonAction =
-             let mostCommon = ref Error
+             let mostCommon = ref Action.Error
              let max = ref 0
 
              for KeyValue(x, y) in countPerAction do

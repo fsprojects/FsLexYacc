@@ -10,3 +10,13 @@ nuget Expecto ~> 9.0
 nuget Expecto.FsCheck
 nuget Microsoft.NET.Test.Sdk
 nuget YoloDev.Expecto.TestSdk
+
+// Only the Analyze pipeline in build.fsx uses these, so they live in their own group and no
+// project references them. A fixed on-disk location, rather than the NuGet cache, so the script
+// can point fsharp-analyzers at them without knowing the version.
+group Analyzers
+  source https://api.nuget.org/v3/index.json
+  storage: packages
+
+  nuget Ionide.Analyzers 0.19.0
+  nuget G-Research.FSharp.Analyzers 0.25.0

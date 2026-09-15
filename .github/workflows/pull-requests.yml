@@ -5,6 +5,10 @@ on:
     branches:
     - master
 
+permissions:
+  contents: read
+  security-events: write
+
 jobs:
   build:
 
@@ -24,3 +28,22 @@ jobs:
       run: dotnet paket restore
     - name: Build
       run: dotnet fsi build.fsx
+
+  analyze:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v7
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v6
+    - name: Install local tools
+      run: dotnet tool restore
+    - name: Paket restore
+      run: dotnet paket restore
+    - name: Analyze
+      run: dotnet fsi build.fsx -p Analyze
+      continue-on-error: true
+    - name: Upload SARIF file
+      uses: github/codeql-action/upload-sarif@v4
+      with:
+        sarif_file: ./analysis.sarif

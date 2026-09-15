@@ -91,11 +91,11 @@ let main () =
 
                 exit 1
 
-        printfn "compiling to dfas (can take a while...)"
+        stdout.WriteLine "compiling to dfas (can take a while...)"
         let perRuleData, dfaNodes = compileSpec spec parseContext
         printfn "%d states" dfaNodes.Length
 
-        printfn "writing output"
+        stdout.WriteLine "writing output"
 
         let output =
             match out with

@@ -40,7 +40,8 @@ type Release =
 /// An entry is a "#### <version> - <date>" heading followed by "* " bullets, and the date is
 /// allowed to read "Unreleased" while the version is still in flight.
 let release: Release =
-    let isHeading (line: string) = line.StartsWith "####"
+    let isHeading (line: string) =
+        line.StartsWith("####", StringComparison.Ordinal)
 
     let lines = File.ReadAllLines(root </> "RELEASE_NOTES.md")
     let headingIndex = Array.findIndex isHeading lines
@@ -112,19 +113,19 @@ let writeAssemblyInfo (project: string) (product: string) =
             "namespace System"
             "open System.Reflection"
             ""
-            $"[<assembly: AssemblyTitleAttribute(\"{project}\")>]"
-            $"[<assembly: AssemblyProductAttribute(\"{product}\")>]"
-            $"[<assembly: AssemblyDescriptionAttribute(\"{summary}\")>]"
-            $"[<assembly: AssemblyVersionAttribute(\"{version}\")>]"
-            $"[<assembly: AssemblyFileVersionAttribute(\"{version}\")>]"
+            $"[<assembly: AssemblyTitleAttribute(\"%s{project}\")>]"
+            $"[<assembly: AssemblyProductAttribute(\"%s{product}\")>]"
+            $"[<assembly: AssemblyDescriptionAttribute(\"%s{summary}\")>]"
+            $"[<assembly: AssemblyVersionAttribute(\"%s{version}\")>]"
+            $"[<assembly: AssemblyFileVersionAttribute(\"%s{version}\")>]"
             "do ()"
             ""
             "module internal AssemblyVersionInformation ="
-            $"    let [<Literal>] AssemblyTitle = \"{project}\""
-            $"    let [<Literal>] AssemblyProduct = \"{product}\""
-            $"    let [<Literal>] AssemblyDescription = \"{summary}\""
-            $"    let [<Literal>] AssemblyVersion = \"{version}\""
-            $"    let [<Literal>] AssemblyFileVersion = \"{version}\""
+            $"    let [<Literal>] AssemblyTitle = \"%s{project}\""
+            $"    let [<Literal>] AssemblyProduct = \"%s{product}\""
+            $"    let [<Literal>] AssemblyDescription = \"%s{summary}\""
+            $"    let [<Literal>] AssemblyVersion = \"%s{version}\""
+            $"    let [<Literal>] AssemblyFileVersion = \"%s{version}\""
             ""
         ]
         |> String.concat Environment.NewLine
@@ -211,6 +212,25 @@ let buildLibraries =
 // Packaging
 // --------------------------------------------------------------------------------------
 
+/// Escape a value for a `/p:Name=value` switch.
+///
+/// MSBuild reads a newline, `;` or `,` in a property value as the start of the next switch, and
+/// treats `$`, `%` and friends as its own syntax. Each becomes its `%XX` escape, which MSBuild
+/// unescapes again when it reads the property, so the release notes arrive as written.
+let msbuildEscape (value: string) =
+    let special =
+        Collections.Generic.HashSet [ '%'; '$'; '@'; '\''; ';'; ','; '?'; '*'; '('; ')'; '\r'; '\n' ]
+
+    let escaped = Text.StringBuilder()
+
+    for c in value do
+        if special.Contains c then
+            escaped.Append('%').Append((int c).ToString "X2") |> ignore
+        else
+            escaped.Append c |> ignore
+
+    escaped.ToString()
+
 let pack =
     async {
         let releaseNotes = String.concat Environment.NewLine release.Notes
@@ -226,8 +246,8 @@ let pack =
                     "Release"
                     "-o"
                     "bin"
-                    $"/p:PackageReleaseNotes={releaseNotes}"
-                    $"/p:PackageVersion={release.NugetVersion}"
+                    $"/p:PackageReleaseNotes=%s{msbuildEscape releaseNotes}"
+                    $"/p:PackageVersion=%s{release.NugetVersion}"
                 ]
 
         if projectPackages <> 0 then
@@ -249,6 +269,79 @@ let pack =
                         releaseNotes
                         "bin"
                     ]
+    }
+
+// --------------------------------------------------------------------------------------
+// Analyzers
+// --------------------------------------------------------------------------------------
+
+/// Every project in the solution. Reading the solution rather than globbing keeps the fixtures
+/// under tests/fsyacc out, which are inputs to OldFsYaccTests.fsx rather than code of their own.
+let projectsToAnalyze: string list =
+    File.ReadAllLines(root </> "FsLexYacc.slnx")
+    |> Array.choose (fun line ->
+        let m = Text.RegularExpressions.Regex.Match(line, "<Project Path=\"([^\"]+)\"")
+        if m.Success then Some m.Groups.[1].Value else None)
+    |> Array.toList
+
+/// The scripts the analyzers run over: the only F# in this repository no project compiles.
+let scriptsToAnalyze: string list =
+    [ "build.fsx"; "tests/fsyacc/OldFsYaccTests.fsx" ]
+
+/// Restored by paket into the Analyzers group, see paket.dependencies.
+let analyzerPaths: string list =
+    [ "Ionide.Analyzers"; "G-Research.FSharp.Analyzers" ]
+    |> List.map (fun package ->
+        root
+        </> "packages"
+        </> "analyzers"
+        </> package
+        </> "analyzers"
+        </> "dotnet"
+        </> "fs")
+
+let analysisReport = root </> "analysis.sarif"
+
+/// One run over every project and script, so a single SARIF covers the repository.
+///
+/// The tool only exits non-zero for error-severity findings, so a run full of warnings still
+/// passes; the findings are read from the report, or from the Code Scanning tab in CI.
+let analyze =
+    async {
+        let! _ = deleteFiles [ "analysis.sarif" ]
+
+        return!
+            exec
+                "dotnet"
+                [
+                    "fsharp-analyzers"
+                    for path in analyzerPaths do
+                        "--analyzers-path"
+                        path
+                    for project in projectsToAnalyze do
+                        "--project"
+                        root </> project
+                    for script in scriptsToAnalyze do
+                        "--script"
+                        root </> script
+                    // Not ours to fix: what fslex and fsyacc generate, what this script generates,
+                    // the test SDK entry point, and the scripts NuGet writes per `#r "nuget: ..."`.
+                    "--exclude-files"
+                    // Globs, because the tool matches these against absolute paths.
+                    for generated in generatedSources @ generatedTestSources do
+                        "**/" + Path.GetFileName generated
+                    "**/AssemblyInfo.fs"
+                    "**/Microsoft.NET.Test.Sdk.Program.fs"
+                    "**/.packagemanagement/**"
+                    "--configuration"
+                    "Release"
+                    // With a trailing separator, or the tool reads the last segment as a file name
+                    // and reports every path as "FsLexYacc/...", which GitHub cannot link.
+                    "--code-root"
+                    root + Path.DirectorySeparatorChar.ToString()
+                    "--report"
+                    analysisReport
+                ]
     }
 
 // --------------------------------------------------------------------------------------
@@ -298,6 +391,18 @@ pipeline "Docs" {
     stage "BuildTools" { run buildTools }
     stage "BuildLibraries" { run buildLibraries }
     stage "GenerateDocs" { run "dotnet fsdocs build --eval" }
+    runIfOnlySpecified true
+}
+
+// The generated sources have to exist before a project can be type checked, so the tools and
+// libraries are built first, the same way the Build pipeline does.
+pipeline "Analyze" {
+    workingDir root
+    restore
+    stage "AssemblyInfo" { run generateAssemblyInfo }
+    stage "BuildTools" { run buildTools }
+    stage "BuildLibraries" { run buildLibraries }
+    stage "Analyze" { run analyze }
     runIfOnlySpecified true
 }
 

@@ -1,4 +1,5 @@
 #### 12.1.0 - Unreleased
+* Fix `CallFsYacc` not regenerating the parser when only the `.fsi` is missing, and register both fsyacc outputs for `dotnet clean` #231
 * Register `FsLex` and `FsYacc` items as `UpToDateCheckInput` so IDE fast up-to-date checks rebuild after grammar edits #242
 * fsyacc no longer prints every shift/reduce and reduce/reduce conflict to stdout. It prints the counts and writes the detail of each conflict to the `-v` listing file #241
 

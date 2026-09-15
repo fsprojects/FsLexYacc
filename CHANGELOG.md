@@ -7,14 +7,14 @@
 ### Changed
 * Versions and package release notes come from `CHANGELOG.md` through Ionide.KeepAChangelog.Tasks, and every release gets a matching GitHub release. [#250](https://github.com/fsprojects/FsLexYacc/issues/250)
 
+### Fixed
+* `CallFsLex` and `CallFsYacc` regenerate their output when only the `.fsi` is missing, and both tools' outputs are registered for `dotnet clean`. [#231](https://github.com/fsprojects/FsLexYacc/issues/231)
+
 ## [12.1.0] - 2026-09-15
 
 ### Changed
 * fsyacc no longer prints every shift/reduce and reduce/reduce conflict to stdout. It prints the counts and writes the detail of each conflict to the `-v` listing file. [#241](https://github.com/fsprojects/FsLexYacc/issues/241)
 * Register `FsLex` and `FsYacc` items as `UpToDateCheckInput` so IDE fast up-to-date checks rebuild after grammar edits. [#242](https://github.com/fsprojects/FsLexYacc/issues/242)
-
-### Fixed
-* `CallFsYacc` regenerates the parser when only the `.fsi` is missing, and both fsyacc outputs are registered for `dotnet clean`. [#231](https://github.com/fsprojects/FsLexYacc/issues/231)
 
 ## [12.0.0] - 2026-09-02
 

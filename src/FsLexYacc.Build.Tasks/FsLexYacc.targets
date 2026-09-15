@@ -26,7 +26,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 	<Target
 		Name="CallFsLex"
 		Inputs="@(FsLex)"
-		Outputs="@(FsLex->'$(FsLexOutputFolder)%(Filename).fs')"
+		Outputs="@(FsLex->'$(FsLexOutputFolder)%(Filename).fs');@(FsLex->'$(FsLexOutputFolder)%(Filename).fsi')"
 		Condition="'@(FsLex)'!=''"
     BeforeTargets="CoreCompile">
 
@@ -36,7 +36,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 		<Exec Command="$(FsLexYaccToolRunner)&quot;$(FsLexToolPath)\$(FsLexToolExe)&quot;  -o &quot;$(FsLexOutputFolder)%(FsLex.Filename).fs&quot; %(FsLex.OtherFlags) %(FsLex.Identity)"/>
 		<!-- Make sure it will get cleaned  -->
 		<ItemGroup>
-			<FileWrites Include="$(FsLexOutputFolder)%(FsLex.Filename).fs"/>
+			<FileWrites Include="$(FsLexOutputFolder)%(FsLex.Filename).fs;$(FsLexOutputFolder)%(FsLex.Filename).fsi"/>
 		</ItemGroup>
 	</Target>
 

@@ -1,5 +1,11 @@
 <Project>
  <PropertyGroup>
     <IsPackable>false</IsPackable>
+    <!--
+      Paket emits a PackageReference for every transitive package. On net10.0 the SDK prunes
+      packages that ship with the runtime, such as System.Collections.Immutable pulled in by
+      YoloDev.Expecto.TestSdk, and NU1510 flags the redundant reference. Paket cannot omit it.
+    -->
+    <NoWarn>$(NoWarn);NU1510</NoWarn>
  </PropertyGroup>
 </Project>

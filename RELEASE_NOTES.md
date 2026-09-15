@@ -1,4 +1,7 @@
-#### 12.0.0 - Unreleased
+#### 12.0.1 - Unreleased
+* Register `FsLex` and `FsYacc` items as `UpToDateCheckInput` so IDE fast up-to-date checks rebuild after grammar edits #242
+
+#### 12.0.0 - 2 September, 2026
 * Migrate fslex and fsyacc to net10.0. The tools now require a .NET 10 runtime #244
 * Raise the minimum FSharp.Core version to 10.0.0 #244
 

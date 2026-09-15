@@ -143,7 +143,7 @@ let GetSingleCharAlphabet: Parser<Set<char>> =
         if ctx.unicode then
             Set.ofList
                 [
-                    yield! { char 0 .. char <| numLowUnicodeChars - 1 }
+                    yield! seq { char 0 .. char (numLowUnicodeChars - 1) }
                     yield! GetSpecificUnicodeChars()
                 ]
         else

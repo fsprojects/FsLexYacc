@@ -1,65 +1,73 @@
 #!/usr/bin/env -S dotnet fsi --
 
 #r "nuget: Fun.Build, 1.2.0"
+#r "nuget: Ionide.KeepAChangelog, 0.2.0"
 
 open System
 open System.IO
 open Fun.Build
+open Ionide.KeepAChangelog
+open Ionide.KeepAChangelog.Domain
+open SemVersion
 
 let (</>) (a: string) (b: string) = Path.Combine(a, b)
 
 let root = __SOURCE_DIRECTORY__
 
 // --------------------------------------------------------------------------------------
-// Project information, used for the generated AssemblyInfo files and the NuGet packages.
+// Release
 // --------------------------------------------------------------------------------------
 
-/// The tool projects. These carry the FsLexYacc product name.
-let projects = [ "FsLex"; "FsLex.Core"; "FsYacc"; "FsYacc.Core" ]
-
-/// The runtime library, which is its own product because it ships as its own package.
-let runtimeProjects = [ "FsLexYacc.Runtime" ]
-
-let summary = "FsLex/FsYacc lexer/parser generation tools"
-
-// --------------------------------------------------------------------------------------
-// Release notes
-// --------------------------------------------------------------------------------------
+/// Whether this run was asked not to publish anything: `-p Release --dry-run`.
+let isDryRun = fsi.CommandLineArgs |> Array.contains "--dry-run"
 
 type Release =
     {
-        /// The version exactly as written in RELEASE_NOTES.md, prerelease suffix included.
-        NugetVersion: string
-        /// major.minor.patch only, because an assembly version cannot carry a prerelease suffix.
-        AssemblyVersion: string
-        Notes: string list
+        /// As written in CHANGELOG.md, prerelease suffix included.
+        Version: string
+        IsPrerelease: bool
+        /// The entry's sections as markdown: the package release notes and the GitHub release body.
+        Notes: string
     }
 
-/// The topmost entry of RELEASE_NOTES.md, which is the one being worked towards.
+/// The newest released entry of CHANGELOG.md.
 ///
-/// An entry is a "#### <version> - <date>" heading followed by "* " bullets, and the date is
-/// allowed to read "Unreleased" while the version is still in flight.
+/// The projects read the same file through Ionide.KeepAChangelog.Tasks, which sets their Version
+/// and PackageReleaseNotes. This copy is for the FsLexYacc meta-package, which paket packs from
+/// a template, and for the GitHub release. An `[Unreleased]` section on top is skipped, so
+/// merging work under it changes nothing until it moves under a versioned heading.
 let release: Release =
-    let isHeading (line: string) =
-        line.StartsWith("####", StringComparison.Ordinal)
+    match Parser.parseChangeLog (FileInfo(root </> "CHANGELOG.md")) with
+    | Error error -> failwith $"CHANGELOG.md could not be parsed: %A{error}"
+    | Ok changelog ->
+        match changelog.Releases with
+        | [] -> failwith "CHANGELOG.md has no release entry."
+        | (version: SemanticVersion, _date, data) :: _ ->
+            let notes =
+                match data with
+                | None -> failwith $"The {version} entry of CHANGELOG.md has no sections."
+                | Some data ->
+                    [
+                        "Added", data.Added
+                        "Changed", data.Changed
+                        "Deprecated", data.Deprecated
+                        "Removed", data.Removed
+                        "Fixed", data.Fixed
+                        "Security", data.Security
+                        yield! Map.toList data.Custom
+                    ]
+                    |> List.choose (fun (header: string, body: string) ->
+                        if String.IsNullOrWhiteSpace body then
+                            None
+                        else
+                            Some $"### %s{header}\n%s{body.Trim()}")
+                    |> String.concat "\n\n"
 
-    let lines = File.ReadAllLines(root </> "RELEASE_NOTES.md")
-    let headingIndex = Array.findIndex isHeading lines
-
-    let version = lines.[headingIndex].TrimStart('#').Trim().Split(' ') |> Array.head
-
-    let notes =
-        lines
-        |> Array.skip (headingIndex + 1)
-        |> Array.takeWhile (isHeading >> not)
-        |> Array.filter (String.IsNullOrWhiteSpace >> not)
-        |> List.ofArray
-
-    {
-        NugetVersion = version
-        AssemblyVersion = version.Split('-') |> Array.head
-        Notes = notes
-    }
+            {
+                Version = string version
+                IsPrerelease = not (String.IsNullOrEmpty version.Prerelease)
+                Notes = notes
+            }
 
 // --------------------------------------------------------------------------------------
 // Helpers
@@ -67,9 +75,9 @@ let release: Release =
 
 /// Start a process with an explicit argument list rather than a command line.
 ///
-/// The packaging steps pass release notes through as a single argument, and those contain
-/// newlines. Handing them to a shell to be re-split would mangle them, so the arguments are
-/// never joined into a string in the first place.
+/// The meta-package step passes the release notes through as a single argument, and those
+/// contain newlines. Handing them to a shell to be re-split would mangle them, so the arguments
+/// are never joined into a string in the first place.
 let exec (fileName: string) (arguments: string list) =
     async {
         let startInfo =
@@ -99,47 +107,6 @@ let deleteFiles (files: string list) =
 
             if File.Exists path then
                 File.Delete path
-
-        return 0
-    }
-
-/// Write the AssemblyInfo.fs that every project compiles, stamped with the release version.
-let writeAssemblyInfo (project: string) (product: string) =
-    let version = release.AssemblyVersion
-
-    let content =
-        [
-            "// Auto-Generated by build.fsx; do not edit"
-            "namespace System"
-            "open System.Reflection"
-            ""
-            $"[<assembly: AssemblyTitleAttribute(\"%s{project}\")>]"
-            $"[<assembly: AssemblyProductAttribute(\"%s{product}\")>]"
-            $"[<assembly: AssemblyDescriptionAttribute(\"%s{summary}\")>]"
-            $"[<assembly: AssemblyVersionAttribute(\"%s{version}\")>]"
-            $"[<assembly: AssemblyFileVersionAttribute(\"%s{version}\")>]"
-            "do ()"
-            ""
-            "module internal AssemblyVersionInformation ="
-            $"    let [<Literal>] AssemblyTitle = \"%s{project}\""
-            $"    let [<Literal>] AssemblyProduct = \"%s{product}\""
-            $"    let [<Literal>] AssemblyDescription = \"%s{summary}\""
-            $"    let [<Literal>] AssemblyVersion = \"%s{version}\""
-            $"    let [<Literal>] AssemblyFileVersion = \"%s{version}\""
-            ""
-        ]
-        |> String.concat Environment.NewLine
-
-    // A BOM, because that is what the file has always carried and the compiler reads either way.
-    File.WriteAllText(root </> "src" </> project </> "AssemblyInfo.fs", content, Text.UTF8Encoding true)
-
-let generateAssemblyInfo =
-    async {
-        for project in runtimeProjects do
-            writeAssemblyInfo project "FsLexYacc.Runtime"
-
-        for project in projects do
-            writeAssemblyInfo project "FsLexYacc"
 
         return 0
     }
@@ -212,43 +179,12 @@ let buildLibraries =
 // Packaging
 // --------------------------------------------------------------------------------------
 
-/// Escape a value for a `/p:Name=value` switch.
-///
-/// MSBuild reads a newline, `;` or `,` in a property value as the start of the next switch, and
-/// treats `$`, `%` and friends as its own syntax. Each becomes its `%XX` escape, which MSBuild
-/// unescapes again when it reads the property, so the release notes arrive as written.
-let msbuildEscape (value: string) =
-    let special =
-        Collections.Generic.HashSet [ '%'; '$'; '@'; '\''; ';'; ','; '?'; '*'; '('; ')'; '\r'; '\n' ]
-
-    let escaped = Text.StringBuilder()
-
-    for c in value do
-        if special.Contains c then
-            escaped.Append('%').Append((int c).ToString "X2") |> ignore
-        else
-            escaped.Append c |> ignore
-
-    escaped.ToString()
-
 let pack =
     async {
-        let releaseNotes = String.concat Environment.NewLine release.Notes
-
-        // The per-project packages.
+        // The per-project packages. Their version and release notes come from CHANGELOG.md
+        // through Ionide.KeepAChangelog.Tasks, see src/Directory.Build.props.
         let! projectPackages =
-            exec
-                "dotnet"
-                [
-                    "pack"
-                    "FsLexYacc.slnx"
-                    "-c"
-                    "Release"
-                    "-o"
-                    "bin"
-                    $"/p:PackageReleaseNotes=%s{msbuildEscape releaseNotes}"
-                    $"/p:PackageVersion=%s{release.NugetVersion}"
-                ]
+            exec "dotnet" [ "pack"; "FsLexYacc.slnx"; "-c"; "Release"; "-o"; "bin" ]
 
         if projectPackages <> 0 then
             return projectPackages
@@ -264,11 +200,72 @@ let pack =
                         "--template"
                         "nuget/FsLexYacc.template"
                         "--version"
-                        release.NugetVersion
+                        release.Version
                         "--release-notes"
-                        releaseNotes
+                        release.Notes
                         "bin"
                     ]
+    }
+
+/// Push the packages to NuGet, then create the matching GitHub release.
+///
+/// Every push to master runs this, so it is gated on the GitHub release: a version that has one
+/// is done, and the run changes nothing. The NuGet push skips a version that is already there,
+/// so a release that was pushed by hand still gets its GitHub release.
+let publish (ctx: Internal.StageContext) =
+    async {
+        let tag = $"v%s{release.Version}"
+
+        match! ctx.RunCommandCaptureOutput $"gh release view %s{tag} --json tagName" with
+        | Ok _ ->
+            printfn $"Release %s{tag} already exists on GitHub, nothing to do."
+            return 0
+        | Error _ ->
+
+            let packages = Directory.GetFiles(root </> "bin", $"*.%s{release.Version}.nupkg")
+
+            if Array.isEmpty packages then
+                failwith $"No packages for %s{release.Version} in bin. Did the NuGet stage run?"
+
+            let nugetLinks =
+                packages
+                |> Array.map (fun package ->
+                    let id = Path.GetFileName(package).Replace($".%s{release.Version}.nupkg", "")
+
+                    $"* [%s{id}](https://www.nuget.org/packages/%s{id}/%s{release.Version})")
+                |> String.concat "\n"
+
+            let notes = $"%s{release.Notes}\n\n### NuGet\n%s{nugetLinks}\n"
+
+            if isDryRun then
+                printfn $"[dry-run] Would push %d{packages.Length} packages and create release %s{tag}:"
+                printfn "---\n%s\n---" notes
+                return 0
+            else
+
+                let key = Environment.GetEnvironmentVariable "NUGET_KEY"
+
+                for package in packages do
+                    match!
+                        ctx.RunSensitiveCommand
+                            $"dotnet nuget push \"{package}\" --api-key {key} --source https://api.nuget.org/v3/index.json --skip-duplicate"
+                    with
+                    | Ok() -> ()
+                    | Error _ -> failwith $"Pushing %s{Path.GetFileName package} failed."
+
+                let notesFile = Path.GetTempFileName()
+                File.WriteAllText(notesFile, notes)
+                let files = packages |> Array.map (sprintf "\"%s\"") |> String.concat " "
+                let prerelease = if release.IsPrerelease then "--prerelease" else ""
+
+                let! result =
+                    ctx.RunCommand $"gh release create %s{tag} %s{files} --title %s{tag} --notes-file \"%s{notesFile}\" %s{prerelease}"
+
+                File.Delete notesFile
+
+                match result with
+                | Ok() -> return 0
+                | Error _ -> return failwith $"Creating the GitHub release %s{tag} failed."
     }
 
 // --------------------------------------------------------------------------------------
@@ -324,13 +321,14 @@ let analyze =
                     for script in scriptsToAnalyze do
                         "--script"
                         root </> script
-                    // Not ours to fix: what fslex and fsyacc generate, what this script generates,
-                    // the test SDK entry point, and the scripts NuGet writes per `#r "nuget: ..."`.
+                    // Not ours to fix: what fslex and fsyacc generate, the AssemblyInfo the SDK
+                    // generates, the test SDK entry point, and the scripts NuGet writes per
+                    // `#r "nuget: ..."`.
                     "--exclude-files"
                     // Globs, because the tool matches these against absolute paths.
                     for generated in generatedSources @ generatedTestSources do
                         "**/" + Path.GetFileName generated
-                    "**/AssemblyInfo.fs"
+                    "**/*.AssemblyInfo.fs"
                     "**/Microsoft.NET.Test.Sdk.Program.fs"
                     "**/.packagemanagement/**"
                     "--configuration"
@@ -361,7 +359,6 @@ pipeline "Build" {
     restore
     stage "Clean" { run (cleanDirs [ "bin"; "temp" ]) }
     stage "CheckFormat" { run "dotnet fantomas check ." }
-    stage "AssemblyInfo" { run generateAssemblyInfo }
     stage "BuildTools" { run buildTools }
     stage "BuildLibraries" { run buildLibraries }
     stage "UnitTests" { run "dotnet test ." }
@@ -374,12 +371,12 @@ pipeline "Release" {
     restore
     stage "Clean" { run (cleanDirs [ "bin"; "temp" ]) }
     stage "CheckFormat" { run "dotnet fantomas check ." }
-    stage "AssemblyInfo" { run generateAssemblyInfo }
     stage "BuildTools" { run buildTools }
     stage "BuildLibraries" { run buildLibraries }
     stage "UnitTests" { run "dotnet test ." }
     stage "OldFsYaccTests" { run "dotnet fsi tests/fsyacc/OldFsYaccTests.fsx" }
     stage "NuGet" { run pack }
+    stage "Publish" { run publish }
     runIfOnlySpecified true
 }
 
@@ -387,7 +384,6 @@ pipeline "Docs" {
     workingDir root
     restore
     stage "CleanDocs" { run (cleanDirs [ "output"; ".fsdocs" ]) }
-    stage "AssemblyInfo" { run generateAssemblyInfo }
     stage "BuildTools" { run buildTools }
     stage "BuildLibraries" { run buildLibraries }
     stage "GenerateDocs" { run "dotnet fsdocs build --eval" }
@@ -399,7 +395,6 @@ pipeline "Docs" {
 pipeline "Analyze" {
     workingDir root
     restore
-    stage "AssemblyInfo" { run generateAssemblyInfo }
     stage "BuildTools" { run buildTools }
     stage "BuildLibraries" { run buildLibraries }
     stage "Analyze" { run analyze }

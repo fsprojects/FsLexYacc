@@ -1,12 +1,12 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <OutputType>Library</OutputType>
+    <Product>FsLexYacc.Runtime</Product>
     <Description>Runtime for FsLex/FsYacc lexer/parser generation tools</Description>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Lexing.fsi" />
     <Compile Include="Lexing.fs" />
     <Compile Include="Parsing.fsi" />

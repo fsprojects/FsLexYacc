@@ -201,10 +201,6 @@ src/FsYacc.Core/fsyacclex.fsi
 src/FsYacc.Core/fsyaccpars.fs
 src/FsYacc.Core/fsyaccpars.fsi
 
-# ===================================================
-# Exclude generated AssemblyInfo files, written by the AssemblyInfo stage in build.fsx
-# ===================================================
-src/**/AssemblyInfo.fs
 tests/fsyacc/test1-unicode.exe.config
 tests/fsyacc/test1.exe.config
 tests/fsyacc/test1.input1.bsl.err

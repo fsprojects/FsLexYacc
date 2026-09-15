@@ -44,7 +44,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 	<Target
 		Name="CallFsYacc"
 		Inputs="@(FsYacc)"
-		Outputs="@(FsYacc->'$(FsYaccOutputFolder)%(Filename).fs')"
+		Outputs="@(FsYacc->'$(FsYaccOutputFolder)%(Filename).fs');@(FsYacc->'$(FsYaccOutputFolder)%(Filename).fsi')"
 		Condition="'@(FsYacc)'!=''"
     BeforeTargets="CoreCompile">
 
@@ -54,7 +54,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 
 		<!-- Make sure it will get cleaned  -->
 		<ItemGroup>
-			<FileWrites Include="$(FsLexOutputFolder)%(FsLex.Filename).fs"/>
+			<FileWrites Include="$(FsYaccOutputFolder)%(FsYacc.Filename).fs;$(FsYaccOutputFolder)%(FsYacc.Filename).fsi"/>
 		</ItemGroup>
 	</Target>
 	<ItemGroup>

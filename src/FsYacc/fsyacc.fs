@@ -28,7 +28,7 @@ let mutable assocCacheCapacity = None
 let usage =
     [
         ArgInfo("-o", ArgType.String(fun s -> out <- Some s), "Name the output file.")
-        ArgInfo("-v", ArgType.Unit(fun () -> log <- true), "Produce a listing file.")
+        ArgInfo("-v", ArgType.Unit(fun () -> log <- true), "Produce a listing file with the LALR tables and the detail of each conflict.")
         ArgInfo("--module", ArgType.String(fun s -> modname <- Some s), "Define the F# module name to host the generated parser.")
         ArgInfo("--internal", ArgType.Unit(fun () -> internal_module <- true), "Generate an internal module")
         ArgInfo(

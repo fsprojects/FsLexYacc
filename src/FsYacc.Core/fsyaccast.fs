@@ -997,15 +997,19 @@ let CompilerLalrParserSpec logf (spec: ProcessedParserSpec) : CompiledSpec =
                     let a1n, astr1 = reportAction x1
                     let a2n, astr2 = reportAction x2
 
-                    printfn
-                        "        %s/%s error at state %d on terminal %s between %s and %s - assuming the former because %s"
-                        a1n
-                        a2n
-                        kernelIdx
-                        (termTab.OfIndex termIdx)
-                        astr1
-                        astr2
-                        reason
+                    // Per-conflict detail is only of interest to whoever authors the grammar, so it goes
+                    // to the listing file rather than stdout, where it would flood every build log.
+                    logf (fun logStream ->
+                        fprintfn
+                            logStream
+                            "%s/%s error at state %d on terminal %s between %s and %s - assuming the former because %s"
+                            a1n
+                            a2n
+                            kernelIdx
+                            (termTab.OfIndex termIdx)
+                            astr1
+                            astr2
+                            reason)
 
                 match itemSoFar, itemNew with
                 | (_, Shift _), (_, Shift _) ->
@@ -1174,6 +1178,9 @@ let CompilerLalrParserSpec logf (spec: ProcessedParserSpec) : CompiledSpec =
     if shiftReduceConflicts.Value > 0 || reduceReduceConflicts.Value > 0 then
         printfn
             "        consider setting precedences explicitly using %%left %%right and %%nonassoc on terminals and/or setting explicit precedence on rules using %%prec"
+
+        printfn "        the detail of each conflict is written to the listing file produced by -v"
+        stdout.Flush()
 
     /// The final results
     let states = kernels |> Array.ofList

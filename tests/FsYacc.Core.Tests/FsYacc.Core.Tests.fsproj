@@ -9,6 +9,7 @@
   <ItemGroup>
     <Compile Include="Sample.fs" />
     <Compile Include="AssocCacheCapacity.fs" />
+    <Compile Include="ConflictReporting.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
 

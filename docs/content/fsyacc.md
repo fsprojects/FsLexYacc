@@ -93,7 +93,7 @@ But you must manually add `FsLex` andd `FsYacc` entries inside of an `ItemGroup`
       <OtherFlags>--unicode</OtherFlags>
     </FsLex>
     
-If you want to see `verbose` output from `FsYacc` you need to add `-v` in the `OtherFlags` section like this:
+When the grammar has shift/reduce or reduce/reduce conflicts, `FsYacc` prints only how many there are. To see each conflict, with the state, the terminal and the two actions involved, add `-v` in the `OtherFlags` section. That writes a `.fsyacc.output` listing file next to the generated parser containing the conflicts and the LALR tables:
 
     <FsYacc Include="..\LexAndYaccMiniProject\Parser.fsy">
       <OtherFlags>--module Parser -v</OtherFlags>
@@ -106,7 +106,7 @@ Command line options
 
         -o <string>: Name the output file.
 
-        -v: Produce a listing file.
+        -v: Produce a listing file with the LALR tables and the detail of each conflict.
 
         --module <string>: Define the F# module name to host the generated parser.
 

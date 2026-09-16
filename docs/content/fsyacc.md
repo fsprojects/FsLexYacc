@@ -93,6 +93,25 @@ But you must manually add `FsLex` andd `FsYacc` entries inside of an `ItemGroup`
       <OtherFlags>--unicode</OtherFlags>
     </FsLex>
     
+By default the generated `.fs` and `.fsi` files are written next to the grammar, and `dotnet clean` leaves them in place. Set `FsLexYaccOutputToIntermediate` to write them to the intermediate folder (`obj/...`) instead, where `dotnet clean` removes them and they stay out of your source tree. Reference the generated files through `FsLexOutputFolder` and `FsYaccOutputFolder`:
+
+    <PropertyGroup>
+      <FsLexYaccOutputToIntermediate>true</FsLexYaccOutputToIntermediate>
+    </PropertyGroup>
+    <ItemGroup>
+      <FsYacc Include="Parser.fsy">
+        <OtherFlags>--module Parser</OtherFlags>
+      </FsYacc>
+      <FsLex Include="Lexer.fsl">
+        <OtherFlags>--unicode</OtherFlags>
+      </FsLex>
+      <Compile Include="$(FsYaccOutputFolder)Parser.fsi" />
+      <Compile Include="$(FsYaccOutputFolder)Parser.fs" />
+      <Compile Include="$(FsLexOutputFolder)Lexer.fs" />
+    </ItemGroup>
+
+Setting `FsLexOutputFolder` or `FsYaccOutputFolder` yourself still takes precedence. The option relies on `FsLexYacc.targets` being imported after the SDK targets, which is how the NuGet package imports it. If you import the targets file yourself from the project body, the build fails with an error telling you so. A future major version will make the intermediate folder the default.
+
 When the grammar has shift/reduce or reduce/reduce conflicts, `FsYacc` prints only how many there are. To see each conflict, with the state, the terminal and the two actions involved, add `-v` in the `OtherFlags` section. That writes a `.fsyacc.output` listing file next to the generated parser containing the conflicts and the LALR tables:
 
     <FsYacc Include="..\LexAndYaccMiniProject\Parser.fsy">

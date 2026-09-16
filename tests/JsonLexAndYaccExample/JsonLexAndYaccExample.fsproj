@@ -1,10 +1,18 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Imports the SDK explicitly so that FsLexYacc.targets is evaluated after it, the way a project
+  that gets the targets from the NuGet package sees them. That is what lets the Compile items
+  below use $(FsLexOutputFolder) and $(FsYaccOutputFolder), which FsLexYaccOutputToIntermediate
+  points at the intermediate folder. LexAndYaccMiniProject covers the default, in-tree output.
+-->
+<Project>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
     <FsLexToolPath>..\..\src\FsLex\bin\$(Configuration)\net10.0</FsLexToolPath>
     <FsYaccToolPath>..\..\src\FsYacc\bin\$(Configuration)\net10.0</FsYaccToolPath>
+    <FsLexYaccOutputToIntermediate>true</FsLexYaccOutputToIntermediate>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="JsonValue.fs" />
@@ -14,8 +22,8 @@
     <FsLex Include="Lexer.fsl">
       <OtherFlags>--unicode</OtherFlags>
     </FsLex>
-    <Compile Include="Parser.fs" />
-    <Compile Include="Lexer.fs" />
+    <Compile Include="$(FsYaccOutputFolder)Parser.fs" />
+    <Compile Include="$(FsLexOutputFolder)Lexer.fs" />
     <Compile Include="Program.fs" />
     <None Include="Script.fsx" />
     <None Include="randomComplexTestsJson.json">
@@ -25,5 +33,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\FsLexYacc.Runtime\FsLexYacc.Runtime.fsproj" />
   </ItemGroup>
-  <Import Project="..\..\src\FsLexYacc.Build.Tasks\FsLexYacc.targets"  />
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+  <Import Project="..\..\src\FsLexYacc.Build.Tasks\FsLexYacc.targets" />
 </Project>

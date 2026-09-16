@@ -1,6 +1,9 @@
 # Changelog
 
-## [Unreleased]
+## [12.2.0] - 2026-09-16
+
+### Added
+* `FsLexYaccOutputToIntermediate` writes the generated lexer and parser to the intermediate folder instead of next to the grammar, so `dotnet clean` removes them. Reference the generated files as `$(FsLexOutputFolder)Lexer.fs` and `$(FsYaccOutputFolder)Parser.fs(i)`. This is opt-in for now and becomes the default in the next major version. [#247](https://github.com/fsprojects/FsLexYacc/issues/247)
 
 ### Changed
 * Lower the required `FSharp.Core` from `10.1.400` to `10.0.100`. [#253](https://github.com/fsprojects/FsLexYacc/pull/253)

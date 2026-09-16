@@ -1,0 +1,27 @@
+%{
+open Syntax
+%}
+
+%start start
+%token <string> ID
+%token <int> INT
+
+%token LPAREN RPAREN EOF
+
+%token OP_PLUS OP_MINUS OP_TIMES OP_DIVIDE
+
+%left OP_PLUS OP_MINUS
+%left OP_TIMES OP_DIVIDE
+%type < Syntax.Expr > start
+
+
+%%
+
+start: Expr { $1 }
+
+Expr: ID  { Var($1) }
+    | INT { Int($1) }
+    | Expr OP_PLUS Expr   { Add($1,$3) }
+    | Expr OP_MINUS Expr  { Sub($1,$3) }
+    | Expr OP_TIMES Expr  { Mul($1,$3) }
+    | Expr OP_DIVIDE Expr { Div($1,$3) }

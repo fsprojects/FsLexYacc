@@ -5,6 +5,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <FsLexToolPath>..\..\src\FsLex\bin\$(Configuration)\net10.0</FsLexToolPath>
     <FsYaccToolPath>..\..\src\FsYacc\bin\$(Configuration)\net10.0</FsYaccToolPath>
+    <!-- Covers the opt-out: the generated sources are written next to the grammar. -->
+    <FsLexYaccOutputToIntermediate>false</FsLexYaccOutputToIntermediate>
   </PropertyGroup>
   <ItemGroup>
     <FsYacc Include="Parser.fsy">

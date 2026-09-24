@@ -114,7 +114,7 @@ Reload/Open the project and add the following code to ``Parser.fsy``:
       | value { [$1] }
       | rev_values COMMA value { $3 :: $1 }
 
-This file is describing parsing rules and tokens. When you build the project, a new file called ``Parser.fs`` will be created in the project root directory. Include it in your project.
+This file is describing parsing rules and tokens. When you build the project, a new file called ``Parser.fs`` will be created in the intermediate folder (``obj/...``). Include it in your project with ``<Compile Include="$(FsYaccOutputFolder)Parser.fs" />``.
 
 Lets take a closer look at the parser definition (``Parser.fsy)``. At the very top of the file there is a section for ``open`` statements. You can open any namespace or module you want. We need only ``JsonParsing`` where we defined our ``JsonValue`` structure. All open statements should be between `` %{`` and ``%}``.
 
@@ -215,7 +215,7 @@ Reload/Open the project and add the following code to ``Lexer.fsl:``
       | [^ '"' '\\']+ { read_string (str + (lexeme lexbuf)) false lexbuf }
       | eof           { raise (Exception ("String is not terminated")) }
 
-When you build the project, a new file called ``Lexer.fs`` will be created in the project root directory. Include it in your project after ``Parser.fs``.
+When you build the project, a new file called ``Lexer.fs`` will be created in the intermediate folder. Include it in your project after ``Parser.fs`` with ``<Compile Include="$(FsLexOutputFolder)Lexer.fs" />``.
 
 The first part of a lexer is simply F# code enclosed in ``{}``. It defines a module, opens namespaces and defines helper functions. The ``lexeme`` function will extract the matched string from the buffer. The ``newline`` function updates the buffer position to skip new line characters. Notice that we open the <em>Parser</em> module which contains the union type with the tokens. We will use them in our productions.
 

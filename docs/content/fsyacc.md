@@ -93,6 +93,30 @@ But you must manually add `FsLex` andd `FsYacc` entries inside of an `ItemGroup`
       <OtherFlags>--unicode</OtherFlags>
     </FsLex>
     
+The generated `.fs` and `.fsi` files are written to the intermediate folder (`obj/...`), so they stay out of your source tree and `dotnet clean` removes them. Reference them through `FsLexOutputFolder` and `FsYaccOutputFolder`:
+
+    <ItemGroup>
+      <FsYacc Include="Parser.fsy">
+        <OtherFlags>--module Parser</OtherFlags>
+      </FsYacc>
+      <FsLex Include="Lexer.fsl">
+        <OtherFlags>--unicode</OtherFlags>
+      </FsLex>
+      <Compile Include="$(FsYaccOutputFolder)Parser.fsi" />
+      <Compile Include="$(FsYaccOutputFolder)Parser.fs" />
+      <Compile Include="$(FsLexOutputFolder)Lexer.fs" />
+    </ItemGroup>
+
+Setting `FsLexOutputFolder` or `FsYaccOutputFolder` yourself takes precedence. The default relies on `FsLexYacc.targets` being imported after the SDK targets, which is how the NuGet package imports it. If you import the targets file yourself from the project body, the build fails with an error telling you so.
+
+To write the generated files next to the grammar instead, as FsLexYacc 12 and earlier did, set `FsLexYaccOutputToIntermediate` to `false`:
+
+    <PropertyGroup>
+      <FsLexYaccOutputToIntermediate>false</FsLexYaccOutputToIntermediate>
+    </PropertyGroup>
+
+When upgrading from FsLexYacc 12, a project that still compiles `Parser.fs` or `Lexer.fs` next to the grammar fails the build, because those copies are no longer regenerated. Change the `Compile` items as shown above and delete the old generated files, or opt out.
+
 When the grammar has shift/reduce or reduce/reduce conflicts, `FsYacc` prints only how many there are. To see each conflict, with the state, the terminal and the two actions involved, add `-v` in the `OtherFlags` section. That writes a `.fsyacc.output` listing file next to the generated parser containing the conflicts and the LALR tables:
 
     <FsYacc Include="..\LexAndYaccMiniProject\Parser.fsy">

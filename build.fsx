@@ -141,11 +141,11 @@ let generatedSources =
         "src/FsYacc.Core/fsyaccpars.fsi"
     ]
 
+/// JsonLexAndYaccExample is not listed: it uses the default output to the intermediate folder, so
+/// its generated sources live under obj and go away with `dotnet clean`. LexAndYaccMiniProject
+/// opts out with FsLexYaccOutputToIntermediate=false.
 let generatedTestSources =
     [
-        "tests/JsonLexAndYaccExample/Lexer.fs"
-        "tests/JsonLexAndYaccExample/Parser.fs"
-        "tests/JsonLexAndYaccExample/Parser.fsi"
         "tests/LexAndYaccMiniProject/Lexer.fs"
         "tests/LexAndYaccMiniProject/Parser.fs"
         "tests/LexAndYaccMiniProject/Parser.fsi"

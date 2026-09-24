@@ -22,13 +22,61 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 		<FsLexYaccToolRunner Condition="'$(UseFsLexYaccToolRunner)' != 'false' AND '$(FsLexYaccToolRunner)' == ''">dotnet </FsLexYaccToolRunner>
 	</PropertyGroup>
 
+	<!--
+		The generated .fs and .fsi go under $(IntermediateOutputPath) by default, so they stay out of the source
+		tree and `dotnet clean` removes them (MSBuild only honours FileWrites under the output or intermediate
+		folder). Projects reference the generated code as $(FsLexOutputFolder)Lexer.fs and
+		$(FsYaccOutputFolder)Parser.fs(i). FsLexYaccOutputToIntermediate=false writes them next to the grammar
+		instead, as FsLexYacc 12 and earlier did.
+
+		The defaults are resolved here, at evaluation time, so that the properties can be used in Compile items.
+		That requires IntermediateOutputPath to be set already, which is the case when this file is imported
+		through the NuGet package (after the SDK targets). A project that imports this file directly from its
+		body evaluates it before the SDK targets, where IntermediateOutputPath is still empty; the Compile items
+		would then silently point next to the grammar, so FsLexYaccCheckOutputFolders fails the build instead.
+	-->
+	<PropertyGroup>
+		<FsLexYaccOutputToIntermediate Condition="'$(FsLexYaccOutputToIntermediate)' == ''">true</FsLexYaccOutputToIntermediate>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(FsLexYaccOutputToIntermediate)' == 'true' AND '$(IntermediateOutputPath)' != ''">
+		<FsLexOutputFolder Condition="'$(FsLexOutputFolder)' == ''">$(IntermediateOutputPath)</FsLexOutputFolder>
+		<FsYaccOutputFolder Condition="'$(FsYaccOutputFolder)' == ''">$(IntermediateOutputPath)</FsYaccOutputFolder>
+	</PropertyGroup>
+
+	<Target Name="FsLexYaccCheckOutputFolders">
+		<Error
+			Condition="'$(FsLexYaccOutputToIntermediate)' == 'true' AND ('$(FsLexOutputFolder)' == '' OR '$(FsYaccOutputFolder)' == '')"
+			Text="FsLexYacc writes the generated lexer and parser to the intermediate folder, but FsLexYacc.targets was imported before IntermediateOutputPath was defined, so FsLexOutputFolder and FsYaccOutputFolder could not be resolved. Import FsLexYacc.targets after the SDK targets (for example through the FsLexYacc NuGet package, or after an explicit &lt;Import Project=&quot;Sdk.targets&quot; Sdk=&quot;Microsoft.NET.Sdk&quot; /&gt;), set FsLexOutputFolder and FsYaccOutputFolder yourself, or set FsLexYaccOutputToIntermediate to false to write them next to the grammar." />
+
+		<!--
+			A project written for the old default compiles Parser.fs next to Parser.fsy. After the upgrade that file
+			is no longer regenerated, so the build would keep compiling a stale copy. Fail on any Compile item that
+			points next to a grammar when the generated file is written somewhere else.
+		-->
+		<ItemGroup>
+			<_FsLexYaccNextToGrammar Include="@(FsLex->'%(RootDir)%(Directory)%(Filename).fs');@(FsLex->'%(RootDir)%(Directory)%(Filename).fsi')" />
+			<_FsLexYaccNextToGrammar Include="@(FsYacc->'%(RootDir)%(Directory)%(Filename).fs');@(FsYacc->'%(RootDir)%(Directory)%(Filename).fsi')" />
+			<_FsLexYaccGenerated Include="@(FsLex->'$(FsLexOutputFolder)%(Filename).fs');@(FsLex->'$(FsLexOutputFolder)%(Filename).fsi')" />
+			<_FsLexYaccGenerated Include="@(FsYacc->'$(FsYaccOutputFolder)%(Filename).fs');@(FsYacc->'$(FsYaccOutputFolder)%(Filename).fsi')" />
+			<_FsLexYaccNextToGrammar Remove="@(_FsLexYaccGenerated->'%(FullPath)')" />
+			<_FsLexYaccCompiled Include="@(Compile->'%(FullPath)')" />
+			<_FsLexYaccNotCompiled Include="@(_FsLexYaccNextToGrammar)" Exclude="@(_FsLexYaccCompiled)" />
+			<_FsLexYaccStaleCompile Include="@(_FsLexYaccNextToGrammar)" Exclude="@(_FsLexYaccNotCompiled)" />
+		</ItemGroup>
+		<Error
+			Condition="'@(_FsLexYaccStaleCompile)' != ''"
+			Text="The project compiles @(_FsLexYaccStaleCompile->'%(Filename)%(Extension)', ', ') next to the grammar, but FsLexYacc writes the generated files to $(FsLexOutputFolder) (FsLex) and $(FsYaccOutputFolder) (FsYacc). Reference them through the FsLexOutputFolder and FsYaccOutputFolder properties, for example &lt;Compile Include=&quot;%24(FsYaccOutputFolder)Parser.fs&quot; /&gt;, and delete the stale copies. Set FsLexYaccOutputToIntermediate to false to keep writing them next to the grammar." />
+	</Target>
+
 	<!-- Build FsLex files. -->
 	<Target
 		Name="CallFsLex"
 		Inputs="@(FsLex)"
 		Outputs="@(FsLex->'$(FsLexOutputFolder)%(Filename).fs');@(FsLex->'$(FsLexOutputFolder)%(Filename).fsi')"
 		Condition="'@(FsLex)'!=''"
-    BeforeTargets="CoreCompile">
+		DependsOnTargets="FsLexYaccCheckOutputFolders"
+		BeforeTargets="CoreCompile">
 
 		<!-- Create the output directory -->
 		<MakeDir Directories="$(FsLexOutputFolder)"/>
@@ -46,7 +94,8 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 		Inputs="@(FsYacc)"
 		Outputs="@(FsYacc->'$(FsYaccOutputFolder)%(Filename).fs');@(FsYacc->'$(FsYaccOutputFolder)%(Filename).fsi')"
 		Condition="'@(FsYacc)'!=''"
-    BeforeTargets="CoreCompile">
+		DependsOnTargets="FsLexYaccCheckOutputFolders"
+		BeforeTargets="CoreCompile">
 
 		<!-- Create the output directory -->
 		<MakeDir Directories="$(FsYaccOutputFolder)"/>

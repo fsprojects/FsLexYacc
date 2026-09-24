@@ -1,8 +1,9 @@
 # Changelog
 
-## [Unreleased]
+## [13.0.0] - 2026-09-24
 
 ### Changed
+* **Breaking:** the generated lexer and parser are written to the intermediate folder (`obj/...`) instead of next to the grammar, so they stay out of the source tree and `dotnet clean` removes them. Reference the generated files as `$(FsLexOutputFolder)Lexer.fs` and `$(FsYaccOutputFolder)Parser.fs(i)`. The build fails with an explanation when a project still compiles `Parser.fs` or `Lexer.fs` next to the grammar. Set `FsLexYaccOutputToIntermediate` to `false` to keep the old location. [#247](https://github.com/fsprojects/FsLexYacc/issues/247)
 * Lower the required `FSharp.Core` from `10.1.400` to `10.0.100`. [#253](https://github.com/fsprojects/FsLexYacc/pull/253)
 
 ### Fixed

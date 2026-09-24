@@ -22,8 +22,8 @@ Or you can add it to your build project via entries like this:
     <FsLex Include="..\LexAndYaccMiniProject\Lexer.fsl">
       <OtherFlags>--module Lexer --unicode</OtherFlags>
     </FsLex>
-    
-    <Import Project="FsLexYacc.Build.Tasks\FsLexYacc.targets" />
+
+The generated files are written to the intermediate folder (`obj/...`). See [MSBuild support](fsyacc.html) for how to reference them, or how to write them next to the grammar instead.
 
 
 Lexer syntax

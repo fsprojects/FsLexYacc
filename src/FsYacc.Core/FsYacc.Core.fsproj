@@ -12,8 +12,8 @@
       <OtherFlags>--module FsLexYacc.FsYacc.Parser --lexlib FSharp.Text.Lexing --parslib FSharp.Text.Parsing</OtherFlags>
     </FsYacc>
     <Compile Include="fsyaccast.fs" />
-    <Compile Include="fsyaccpars.fs" />
-    <Compile Include="fsyacclex.fs" />
+    <Compile Include="$(FsYaccOutputFolder)fsyaccpars.fs" />
+    <Compile Include="$(FsLexOutputFolder)fsyacclex.fs" />
     <Compile Include="fsyaccdriver.fs" />
     <Content Include="../../docs/img/logo.png" PackagePath="logo.png" />
   </ItemGroup>

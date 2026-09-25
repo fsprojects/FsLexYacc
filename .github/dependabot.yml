@@ -5,6 +5,9 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
+    ignore:
+      # The floor our packages ask for, pinned on purpose in Directory.Packages.props.
+      - dependency-name: "FSharp.Core"
     groups:
       dotnet:
         patterns:

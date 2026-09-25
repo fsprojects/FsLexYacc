@@ -1,2 +1,2 @@
 ﻿[<EntryPoint>]
-let main argv = Expecto.Tests.runTestsInAssembly Expecto.Tests.defaultConfig argv
+let main argv = Expecto.Tests.runTestsInAssemblyWithCLIArgs [] argv

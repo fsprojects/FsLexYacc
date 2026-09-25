@@ -12,8 +12,8 @@
       <OtherFlags>--unicode --lexlib FSharp.Text.Lexing</OtherFlags>
     </FsLex>
     <Compile Include="fslexast.fs" />
-    <Compile Include="fslexpars.fs" />
-    <Compile Include="fslexlex.fs" />
+    <Compile Include="$(FsYaccOutputFolder)fslexpars.fs" />
+    <Compile Include="$(FsLexOutputFolder)fslexlex.fs" />
     <Compile Include="fslexdriver.fs" />
     <Content Include="../../docs/img/logo.png" PackagePath="logo.png" />
   </ItemGroup>

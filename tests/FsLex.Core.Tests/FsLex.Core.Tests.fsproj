@@ -15,7 +15,6 @@
   <ItemGroup>
     <PackageReference Include="Expecto" />
     <PackageReference Include="Expecto.FsCheck" />
-    <PackageReference Include="FsCheck" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="YoloDev.Expecto.TestSdk" />
   </ItemGroup>
